@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LoginServer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<!-- This is the name of your server, for internal use. -->
+	<ServerName>Tortus Login Server</ServerName>
+	
+	<!-- This is the port the Server listens on for client connections. -->
+	<ClientListenPort>9974</ClientListenPort>
+	
+	<!-- This is the address the Server listens on for clients connections.
+ 			0.0.0.0 is any address -->
+	<ClientListenAddress>0.0.0.0</ClientListenAddress>
+	
+	<!-- This is the port the server listens on for other server connections. -->
+	<ServerListenPort>9994</ServerListenPort>
+	
+	<!-- This is the address the server listens on for server connections.
+ 			0.0.0.0 is any address.
+ 			It is recommended to use 127.0.0.1 unless you have a multi-server configuration.
+			It is also recommended that you use private addressing in a multi-server configeration, if possible.-->
+	<ServerListenAddress>127.0.0.1</ServerListenAddress>
+	
+	<!-- This is the list of IP addresses and host masks the system accepts connections on for server connections.
+		 It also accepts fully qualified domain names.
+ 			0.0.0.0\0 is any address. 
+			60.10.15.128\32 will only accept connections from 60.10.15.128
+			192.168.1.0\24 will accept connections from 192.168.1.0 to 192.168.1.255-->
+	<ServerListenAcceptedAddresses>
+		<string>0.0.0.0\0</string>
+		<!-- Some examples:
+		<string>192.168.1.0\24</string>
+		<string>MyGameServer03.MyGameSite.com</string>
+		-->
+		
+		<!-- Go to http://stormraidergames.com/TortusPoll for more info. -->
+		<!-- <string>tortuspoll.stormraidergames.com</string> -->
+	</ServerListenAcceptedAddresses>
+	
+	<!-- This is the port that Mysql listens on. Leave alone if you are not sure. -->
+	<MysqlPort>3306</MysqlPort>
+	
+	<!-- This is the address to connect to Mysql. Leave alone if you are not sure. -->
+	<MysqlAddress>127.0.0.1</MysqlAddress>
+	
+	<!-- This is the Database for user account information. Leave alone if you are not sure. -->
+	<MysqlAccountDatabse>TortusAccounts</MysqlAccountDatabse>
+	
+	<!-- This is the Database for server information. Leave alone if you are not sure. -->
+	<MysqlServerDatabse>TortusServers</MysqlServerDatabse>
+	
+	<!-- This is the Database user. It is NOT recomended to use your root mysql account. -->
+	<MysqlUser>tortus</MysqlUser>
+	
+	<!-- This is the Database user's Password. -->
+	<MysqlPass>password</MysqlPass>
+	
+	<!-- It is important to know that the next 2 values are just for the Login system. It handles users untill they connect
+ 		 to a game server(or disconnect from the login server.) When a user connects after all the slots are full, they will
+		 get a  "Login server is Busy, try again later" message. Normally users should not have this issue. -->
+	
+	<!-- This is the number of threads for the system to create, for listining to clients. -->
+	<ClientListenThreads>2</ClientListenThreads>
+	
+	<!-- This is the number of users each thread will handle. -->
+	<MaxUsersPerThread>1000</MaxUsersPerThread>
+	
+	<!-- This is randomly generated when this file is created. This must be the same between all Servers. -->
+	<SyncKey>{KEY}</SyncKey>
+	
+	<!-- This is randomly generated when this file is created. This must be the same between all Servers. -->
+	<SyncVector>{VECTOR}</SyncVector>
+</LoginServer>

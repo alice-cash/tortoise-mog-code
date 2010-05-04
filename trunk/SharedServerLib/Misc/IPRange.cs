@@ -110,17 +110,17 @@ namespace SharedServerLib.Misc
 			string[] Split = input.Split(new char[] {'\\'});
 			string IP = Split[0];
 			int HostIndex = int.Parse(Split[1]);
-			IPRange IP = new IPRange(IP, Hostmasks[HostIndex]);
+			IPRange NewIPRange = new IPRange(IP, Hostmasks[HostIndex]);
 			
-			return IP;
+			return NewIPRange;
 		}
 		
 
 		
 		public bool IsIPInRange(string IP)
 		{
-			
-			
+			//TODO: finish
+			return false;
 		}
 
 		#endregion

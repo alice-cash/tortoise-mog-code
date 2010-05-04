@@ -31,6 +31,8 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using System.IO;
+using System.Reflection;
 using System.Xml.Serialization;
 
 namespace LoginServer.XML
@@ -95,11 +97,17 @@ namespace LoginServer.XML
 		{ get; set; }
 		
 		/// <summary>
-		/// This is the Database for the Mysql Database.
+		/// This is the Account Databse for the Mysql Database.
 		/// </summary>
-		public string MysqlDatabse
+		public string MysqlAccountDatabse
 		{ get; set; }
-		
+
+		/// <summary>
+		/// This is the Server Databse for the Mysql Database.
+		/// </summary>	
+		public string MysqlServerDatabse
+		{ get; set; }
+
 		/// <summary>
 		/// This is the User for the Mysql Database.
 		/// </summary>
@@ -179,37 +187,30 @@ namespace LoginServer.XML
 		private	byte[] _Vector;
 		
 		 
-		
-		public static void Default()
+		/// <summary>
+		/// This creates a default Config and saves it.
+		/// </summary>
+		public static void CreateDefault()
 		{
 			
-			LoginServer NewLoginServer = new LoginServer();
-			NewLoginServer.ServerName = "Tortus Login Server";
-			NewLoginServer.ClientListenPort = 9974;
-			NewLoginServer.ClientListenAddress = "0.0.0.0";
-			NewLoginServer.ServerListenPort = 9994;
-			NewLoginServer.ServerListenAddress = "127.0.0.1";
+
 			
-			NewLoginServer.ServerListenAcceptedAddresses = new string[]
-			{ "10.0.1.10"
-			
-			NewLoginServer.MysqlAddress = "127.0.0.1";
-			NewLoginServer.MysqlPort = 3306
-			NewLoginServer.MysqlAccountDatabse = "TortusAccounts";
-			NewLoginServer.MysqlServerDatabse = "TortusServers";
-			NewLoginServer.MysqlUser = "tortus"
-			NewLoginServer.MysqlPass = "password"
+		
+		}
+		
+		public static void LoadConfig()
+		{
+			if(!File.Exists("./LoginConfig.xml"))
+			{
+				CreateDefault();
+			}
+			TextReader reader = new StreamReader("./LoginConfig.xml");
+         	XmlSerializer serializer = new XmlSerializer(typeof(LoginServer));
+         	LoginServer.Instance = (LoginServer)serializer.Deserialize(reader);
+         	reader.Close();
 				
-			NewLoginServer.ClientListenThreads = 2;
-			NewLoginServer.MaxUsersPerThread = 1000;
 			
-			NewLoginServer._Key = SharedServerLib.Communication.AESEncryption.GenerateEncryptionKey();
-			NewLoginServer._Vector = SharedServerLib.Communication.AESEncryption.GenerateEncryptionVector();
-			
-			NewLoginServer._SyncKey = SharedServerLib.Misc.ByteStringConverter.BytesToString(_Key);
-			NewLoginServer._SyncVector = SharedServerLib.Misc.ByteStringConverter.BytesToString(_SyncVector);
-	
-			LoginServer.Instance = NewLoginServer;
+		
 		}
 	}
 	
