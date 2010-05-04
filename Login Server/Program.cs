@@ -39,7 +39,7 @@ namespace LoginServer
 		public static void Main(string[] args)
 		{
 
-			
+			XML.LoginServer.CreateDefault();
 		}
 	}
 }

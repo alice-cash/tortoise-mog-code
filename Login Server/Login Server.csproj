@@ -47,12 +47,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Database\IData.cs" />
     <Compile Include="XML\LoginServer.cs" />
+    <EmbeddedResource Include="XML\DefaultConfig.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Database" />
     <Folder Include="XML" />
     <ProjectReference Include="..\SharedServerLib\SharedServerLib.csproj">
       <Project>{14D29E3B-DFCB-42AC-99F4-0E9DAF07B091}</Project>
