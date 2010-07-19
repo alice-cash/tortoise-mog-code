@@ -1,4 +1,7 @@
-﻿/*
+﻿/* Do not use */
+
+
+/*
  * Created by SharpDevelop.
  * User: Matthew
  * Date: 5/2/2010
@@ -30,6 +33,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
+ 
 using System;
 using System.Text.RegularExpressions;
 using System.Linq;
@@ -40,7 +44,7 @@ using SharedServerLib.Exceptions;
 namespace SharedServerLib.Misc
 {
 	/// <summary>
-	/// Description of IPRange.
+	/// Holds a range of IPv4 Addresses.
 	/// </summary>
 	[Serializable]
 	public class IPRange
@@ -58,7 +62,7 @@ namespace SharedServerLib.Misc
 			{
 				if(!Hostmasks.Contains(value))
 				{
-					throw new TortusFormatException("Subnet Mask is invalid");
+					throw new TortusFormatException("Subnet Mask is invalid", value, "Input must be a proper subnet mask.");
 				}
 				_IPHostMask = value;
 			}
@@ -76,7 +80,7 @@ namespace SharedServerLib.Misc
 		{
 			if(!Hostmasks.Contains(subnetmask))
 			{
-				throw new TortusFormatException("Subnet Mask is invalid");
+				throw new TortusFormatException("Subnet Mask is invalid", subnetmask, "Input must be a proper subnet mask.");
 			}
 		}
 		
@@ -104,7 +108,7 @@ namespace SharedServerLib.Misc
 			Regex IPMaskPattern = new Regex("[0-223]\\.[0-255]\\.[0-255]\\.[0-255]\\\\[0-32]");
 			if(!IPMaskPattern.IsMatch(input))
 			{
-				throw new TortusFormatException("IPMask Input is Invalid");
+				throw new TortusFormatException("IPMask Input is Invalid", input, "Input must be in the format of xxx.xxx.xxx.xxx\\yy, with the xxx being a value between 0 and 255, and yy being a value between 0 and 32.");
 			}
 			
 			string[] Split = input.Split(new char[] {'\\'});
@@ -120,7 +124,21 @@ namespace SharedServerLib.Misc
 		public bool IsIPInRange(string IP)
 		{
 			//TODO: finish
+			uint IP;
+			uint 
+			uint LowerBounds;
+			uint UpperBounds;
+			
 			return false;
+		}
+		
+		private uint ConvertIPToInt(String IP)
+		{
+			string[] Parsed = IP.Split(new char[] {'.'});
+			if(Parsed.Length != 4)
+			{
+				throw new TortusFormatException("String invalid.", IP, "Input must be in the format of xxx.xxx.xxx.xxx");
+			}
 		}
 
 		#endregion
