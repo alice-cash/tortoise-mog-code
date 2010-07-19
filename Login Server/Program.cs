@@ -32,14 +32,78 @@
  * */
 using System;
 
-namespace LoginServer
+using SharedServerLib.Exceptions;
+#if LINUX
+using System.Threading;
+using Mono.Unix;
+#endif
+namespace LoginServer 
 {
 	class Program
 	{
+#if LINUX
+        static UnixSignal[] signals = new UnixSignal[] {
+            new UnixSignal (Mono.Unix.Native.Signum.SIGTERM)
+        };
+
+        static Thread signal_thread = new Thread(delegate()
+        {
+            while (true)
+            {
+                // Wait for a signal to be delivered
+                int index = UnixSignal.WaitAny(signals, -1);
+
+                Mono.Unix.Native.Signum signal = signals[index].Signum;
+                if (signal == Mono.Unix.Native.Signum.SIGTERM)
+                    RunServer = false;
+
+            }
+        });
+#endif
+		public static bool RunServer{get;set;}
+		
 		public static void Main(string[] args)
 		{
+			#if LINUX
+			signal_thread.Start();
+			#endif
+			//Load up the configeration file
+			try{
+				XML.LoginServerConfig.LoadConfig();
+			} catch(TortusMissingResourceException ex)
+			{
+				Console.WriteLine("The server could not load the embeded resource. Please check following embeded resource: {0}", ex.Data["ResourceName"]);
+                return;
+            }
+            catch (TortusFileException ex)
+			{
+				Console.WriteLine("The server could not load or create the configeration file. More information: {0}", ex.InnerException.ToString());
+                return;
+            }
+            catch (InvalidOperationException ex)
+			{
+				Console.WriteLine("An uknown error occured during deserialization. More information: {0}", ex.InnerException.ToString());
+                return;
+            }
+			if(XML.LoginServerConfig.Instance.MysqlUser == "{EDIT ME}" ||
+			   XML.LoginServerConfig.Instance.MysqlPass == "{EDIT ME}")
+			{
+				Console.WriteLine("Edit the LoginConfig.xml file");
+                return;
+			}
+            if (XML.LoginServerConfig.Instance.AcceptAnyAddress)
+            {
+                Console.WriteLine("Warning: This server is set to accept server connections from any IP address. ANY server with the secrets can connect.");
+            }
+			
+            //Start the various Listiners.
+            LoginServer.Connections.ServerListen.CreateInstance();
 
-			XML.LoginServer.CreateDefault();
+            LoginServer.Connections.ClientListen.CreateInstance();
+#if DEBUG
+			Console.WriteLine("Press a key...");
+			Console.ReadKey(true);
+#endif
 		}
 	}
 }
