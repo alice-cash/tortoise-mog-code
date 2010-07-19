@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{14D29E3B-DFCB-42AC-99F4-0E9DAF07B091}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -8,6 +9,10 @@
     <AssemblyName>SharedServerLib</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -28,6 +33,15 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_Linux|x86'">
+    <OutputPath>bin\x86\Release_Linux\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>None</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="System" />
@@ -42,15 +56,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Communication\AESEncryption.cs" />
+    <Compile Include="Exceptions\TortusFileException.cs" />
     <Compile Include="Exceptions\TortusFormatException.cs" />
     <Compile Include="Exceptions\TortusGeneralException.cs" />
+    <Compile Include="Exceptions\TortusMissingResourceException .cs" />
     <Compile Include="Misc\ByteStringConverter.cs" />
-    <Compile Include="Misc\IPRange.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Communication" />
-    <Folder Include="Misc" />
-    <Folder Include="Exceptions" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

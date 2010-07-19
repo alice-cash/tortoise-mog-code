@@ -39,14 +39,10 @@ namespace SharedServerLib.Exceptions
 	/// </summary>
 	public class TortusFormatException : TortusGeneralException
 	{
-		public TortusFormatException():base()
+		public TortusFormatException(string message, Object Value, string RequiredFormat):base(message)
 		{
-		}
-		public TortusFormatException(string message):base(message)
-		{
-		}
-		public TortusFormatException(string message, Exception InnerException):base(message,InnerException)
-		{
+			Data.Add("Value", Value);
+			Data.Add("RequiredFormat", RequiredFormat);
 		}
 	}
 }

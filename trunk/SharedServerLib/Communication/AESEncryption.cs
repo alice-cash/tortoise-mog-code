@@ -7,10 +7,14 @@
  * Orignal source from http://stackoverflow.com/questions/165808/simple-2-way-encryption-for-c/212707#212707
  * by Mark Brittingham
  * 
- * 
- * 
  * Modifyed by Matthew
  */
+ 
+ /*
+  * Notice: 
+  * TODO: Possible Exceptions not documented.
+  */
+ 
 using System;
 using System.Data;
 using System.Security.Cryptography;
@@ -24,38 +28,32 @@ namespace SharedServerLib.Communication
 	public class AESEncryption
 	{
 		
-		// Change these keys
-		private byte[] Key;
-		private byte[] Vector;
-		
-		
-		private ICryptoTransform EncryptorTransform, DecryptorTransform;
+		private byte[] _key;
+		private byte[] _vector;
+
+        private static RijndaelManaged _rm = new RijndaelManaged();
+
+		private ICryptoTransform _encryptorTransform, _decryptorTransform;
 		private System.Text.UTF8Encoding UTFEncoder;
 		
-		public AESEncryption(byte[] Key, byte[] Vector)
+		public AESEncryption(byte[] key, byte[] vector)
 		{
-		    //This is our encryption method
-		    RijndaelManaged rm = new RijndaelManaged();
-		
-		    //Create an encryptor and a decryptor using our encryption method, key, and vector.
-		    EncryptorTransform = rm.CreateEncryptor(this.Key, this.Vector);
-		    DecryptorTransform = rm.CreateDecryptor(this.Key, this.Vector);
+            _key = key;
+            _vector = vector;
+
+            _encryptorTransform = _rm.CreateEncryptor(this._key, this._vector);
+            _decryptorTransform = _rm.CreateDecryptor(this._key, this._vector);
 		    
-		
-		    //Used to translate bytes to text and vice versa
 		    UTFEncoder = new System.Text.UTF8Encoding();
 		}
 		
-		/// Generates an encryption key.
 		static public byte[] GenerateEncryptionKey()
 		{
-		    //Generate a Key.
 		    RijndaelManaged rm = new RijndaelManaged();
 		    rm.GenerateKey();
 		    return rm.Key;
 		}
 		
-		/// Generates a unique encryption vector
 		static public byte[] GenerateEncryptionVector()
 		{
 		    //Generate a Vector
@@ -65,18 +63,10 @@ namespace SharedServerLib.Communication
 		}
 		
 		
-		/// Encrypt some text and return a string suitable for passing in a URL.
-		public string EncryptToString(string TextValue)
-		{
-		    return ByteArrToString(Encrypt(TextValue));
-		}
+
 		
-		/// Encrypt some text and return an encrypted byte array.
-		public byte[] Encrypt(string TextValue)
-		{
-		    //Translates our text value into a byte array.
-		    Byte[] bytes = UTFEncoder.GetBytes(TextValue);
-		
+		public byte[] Encrypt(byte[] bytes)
+		{   
 		    //Used to stream the data in and out of the CryptoStream.
 		    MemoryStream memoryStream = new MemoryStream();
 		
@@ -85,7 +75,7 @@ namespace SharedServerLib.Communication
 		     * then read the encrypted result back from the stream.
 		     */
 		    #region Write the decrypted value to the encryption stream
-		    CryptoStream cs = new CryptoStream(memoryStream, EncryptorTransform, CryptoStreamMode.Write);
+            CryptoStream cs = new CryptoStream(memoryStream, _encryptorTransform, CryptoStreamMode.Write);
 		    cs.Write(bytes, 0, bytes.Length);
 		    cs.FlushFinalBlock();
 		    #endregion
@@ -102,19 +92,35 @@ namespace SharedServerLib.Communication
 		
 		    return encrypted;
 		}
+
+		public string EncryptToString(string TextValue)
+		{
+			return ByteArrToString(Encrypt(UTFEncoder.GetBytes(TextValue)));
+		}
 		
+		public string EncryptToString(byte[] Data)
+		{
+			return ByteArrToString(Encrypt(Data));
+		}
+
 		/// The other side: Decryption methods
 		public string DecryptString(string EncryptedString)
 		{
-		    return Decrypt(StrToByteArray(EncryptedString));
+			return ByteArrToString(Decrypt(StrToByteArray(EncryptedString)));
+			
 		}
 		
 		/// Decryption when working with byte arrays.    
-		public string Decrypt(byte[] EncryptedValue)
+		public string DecryptToString(byte[] EncryptedValue)
+		{
+		    return UTFEncoder.GetString(Decrypt(EncryptedValue));
+		}
+		
+		public byte[] Decrypt(byte[] EncryptedValue)
 		{
 		    #region Write the encrypted value to the decryption stream
 		    MemoryStream encryptedStream = new MemoryStream();
-		    CryptoStream decryptStream = new CryptoStream(encryptedStream, DecryptorTransform, CryptoStreamMode.Write);
+		    CryptoStream decryptStream = new CryptoStream(encryptedStream, _decryptorTransform, CryptoStreamMode.Write);
 		    decryptStream.Write(EncryptedValue, 0, EncryptedValue.Length);
 		    decryptStream.FlushFinalBlock();
 		    #endregion
@@ -125,7 +131,7 @@ namespace SharedServerLib.Communication
 		    encryptedStream.Read(decryptedBytes, 0, decryptedBytes.Length);
 		    encryptedStream.Close();
 		    #endregion
-		    return UTFEncoder.GetString(decryptedBytes);
+		    return decryptedBytes;
 		}
 		
 		/// Convert a string to a byte array.  NOTE: Normally we'd create a Byte Array from a string using an ASCII encoding (like so).
