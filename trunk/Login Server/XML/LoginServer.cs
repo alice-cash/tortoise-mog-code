@@ -32,188 +32,294 @@
  */
 using System;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Xml.Serialization;
+using System.Security;
+
+using SharedServerLib.Communication;
+using SharedServerLib.Exceptions;
+using SharedServerLib.Misc;
 
 namespace LoginServer.XML
 {
-	/// <summary>
-	/// Configeration Database for Login Server
-	/// </summary>
-	[Serializable]
-	public class LoginServer
-	{
-		
-		public static LoginServer Instance;
-		
-		
-		/// <summary>
-		/// This is the name that the server uses when sharing info about its self.
-		/// </summary>
-		public string ServerName
-		{ get; set; }
-		
-		
-		/// <summary>
-		/// This is the port the server listen on for clients.
-		/// </summary>
-		public int ClientListenPort
-		{ get; set; }
-		
-		/// <summary>
-		/// this is the address the server listens on for clients.
-		/// </summary>
-		public string ClientListenAddress
-		{ get; set; }
-		
-		
-		/// <summary>
-		/// This is the port the server listen on for servers.
-		/// </summary>
-		public int ServerListenPort
-		{ get; set; }
-		
-		/// <summary>
-		/// this is the address the server listens on for clients.
-		/// </summary>
-		public string ServerListenAddress
-		{ get; set; }
-		
-		public string[] ServerListenAcceptedAddresses
-		{ get; set; }
-		
-		
-		
-		/// <summary>
-		/// This is the Port for the Mysql Database.
-		/// </summary>
-		public int MysqlPort
-		{ get; set; }
-		
-		/// <summary>
-		/// This is the address for the Mysql Database.
-		/// </summary>
-		public string MysqlAddress
-		{ get; set; }
-		
-		/// <summary>
-		/// This is the Account Databse for the Mysql Database.
-		/// </summary>
-		public string MysqlAccountDatabse
-		{ get; set; }
+    /// <summary>
+    /// Configeration Database for Login Server
+    /// </summary>
+    [Serializable]
+    public class LoginServerConfig
+    {
 
-		/// <summary>
-		/// This is the Server Databse for the Mysql Database.
-		/// </summary>	
-		public string MysqlServerDatabse
-		{ get; set; }
+        private static LoginServerConfig _instance;
+        public static LoginServerConfig Instance
+        {
+            get { return _instance; }
+        }
+        private const string DefaultConfigPath = "LoginServer.XML.DefaultConfig.xml";
 
-		/// <summary>
-		/// This is the User for the Mysql Database.
-		/// </summary>
-		public string MysqlUser
-		{ get; set; }
-		
-		/// <summary>
-		/// This is the Password for the Mysql Database.
-		/// </summary>
-		public string MysqlPass
-		{ get; set; }
-		
-		/// <summary>
-		/// This is the number of threads that the server will use to handle Clients.
-		/// </summary>
-		public int ClientListenThreads
-		{ get; set; }
 
-		/// <summary>
-		/// This is the number of Clients each thread will handle.
-		/// </summary>
-		public int MaxUsersPerThread
-		{ get; set; }
+        /// <summary>
+        /// This is the name that the server uses when sharing info about its self.
+        /// </summary>
+        public string ServerName;
 
-		
-		
-		
-		public string SyncKey
-		{	
-			get
-			{
-				return _SyncKey;
-			}
-			set
-			{
-				_Key = SharedServerLib.Misc.ByteStringConverter.StringToBytes(value);
-				_SyncKey = value;
-			}
-		}
-		public string SyncVector
-		{	
-			get
-			{
-				return _SyncKey;
-			}
-			set
-			{
-				_Key = SharedServerLib.Misc.ByteStringConverter.StringToBytes(value);	
-				_SyncKey = value;
-			}
-		}
-		
-		
-		public byte[] Key
-		{	
-			get
-			{
-				return _Key;
-			}
-		}
 
-		public byte[] Vector
-		{	
-			get
-			{
-				return _Vector;
-			}
-		}
-		
-		
-		
-		
-		
-		private string _SyncKey;
-		private string _SyncVector;
-		private	byte[] _Key;
-		private	byte[] _Vector;
-		
-		 
-		/// <summary>
-		/// This creates a default Config and saves it.
-		/// </summary>
-		public static void CreateDefault()
-		{
-			
+        /// <summary>
+        /// This is the port the server listen on for clients.
+        /// </summary>
+        public int ClientListenPort;
 
-			
-		
-		}
-		
-		public static void LoadConfig()
-		{
-			if(!File.Exists("./LoginConfig.xml"))
-			{
-				CreateDefault();
-			}
-			TextReader reader = new StreamReader("./LoginConfig.xml");
-         	XmlSerializer serializer = new XmlSerializer(typeof(LoginServer));
-         	LoginServer.Instance = (LoginServer)serializer.Deserialize(reader);
-         	reader.Close();
-				
-			
-		
-		}
-	}
-	
-	
-	
+        /// <summary>
+        /// this is the address the server listens on for clients.
+        /// </summary>
+        public string ClientListenAddress;
+
+        [System.Xml.Serialization.XmlIgnore]
+        public IPAddress ConvertedClientListenAddress;
+
+
+
+        /// <summary>
+        /// This is the port the server listen on for servers.
+        /// </summary>
+        public int ServerListenPort;
+
+        /// <summary>
+        /// this is the address the server listens on for clients.
+        /// </summary>
+        public string ServerListenAddress;
+
+        [NonSerialized]
+        [System.Xml.Serialization.XmlIgnore]
+        public IPAddress ConvertedServerListenAddress;
+
+
+        [NonSerialized]
+        [System.Xml.Serialization.XmlIgnore]
+        public bool AcceptAnyAddress;
+
+
+        public string[] ServerListenAcceptedAddresses;
+
+        [NonSerialized]
+        [System.Xml.Serialization.XmlIgnore]
+        public IPAddress[] ConvertedAcceptedServerAddresses;
+
+
+
+        /// <summary>
+        /// This is the Port for the Mysql Database.
+        /// </summary>
+        public int MysqlPort;
+
+        /// <summary>
+        /// This is the address for the Mysql Database.
+        /// </summary>
+        public string MysqlAddress;
+
+        /// <summary>
+        /// This is the Account Databse for the Mysql Database.
+        /// </summary>
+        public string MysqlAccountDatabse;
+
+        /// <summary>
+        /// This is the Server Databse for the Mysql Database.
+        /// </summary>	
+        public string MysqlServerDatabse;
+
+        /// <summary>
+        /// This is the User for the Mysql Database.
+        /// </summary>
+        public string MysqlUser;
+
+        /// <summary>
+        /// This is the Password for the Mysql Database.
+        /// </summary>
+        public string MysqlPass;
+
+        /// <summary>
+        /// This is the number of threads that the server will use to handle Clients.
+        /// </summary>
+        public int ClientListenThreads;
+
+        /// <summary>
+        /// This is the number of Clients each thread will handle.
+        /// </summary>
+        public int MaxUsersPerThread;
+
+
+
+
+        public string SyncKey
+        {
+            get
+            {
+                return _SyncKey;
+            }
+            set
+            {
+                _Key = SharedServerLib.Misc.ByteStringConverter.StringToBytes(value);
+                _SyncKey = value;
+            }
+        }
+        public byte[] Key
+        {
+            get
+            {
+                return _Key;
+            }
+        }
+
+
+
+
+
+        private string _SyncKey;
+        private byte[] _Key;
+
+
+        /// <summary>
+        /// This creates a default Config and saves it.
+        /// </summary>
+        /// <exception cref="SharedServerLib.Exceptions.TortusMissingResourceException">The embeded resource cannot be loaded.</exception>
+        /// <exception cref="SharedServerLib.Exceptions.TortusFileException">The configeration cannot be saved.</exception>
+        public static void CreateDefault()
+        {
+
+            Assembly Selfassembly;
+            StreamReader SR;
+            String DefaultFile;
+
+            Selfassembly = Assembly.GetExecutingAssembly();
+
+
+            try
+            {
+                SR = new StreamReader(Selfassembly.GetManifestResourceStream(DefaultConfigPath));
+            }
+            catch (ArgumentNullException)
+            {
+                throw new TortusMissingResourceException("The resource could not be loaded.", DefaultConfigPath);
+            }
+
+            DefaultFile = SR.ReadToEnd();
+
+            byte[] Key;
+            string cKey;
+
+            Key = AESEncryption.GenerateEncryptionKey();
+
+            cKey = ByteStringConverter.BytesToString(Key);
+
+            DefaultFile = DefaultFile.Replace("{KEY}", cKey);
+
+            try
+            {
+                File.WriteAllText("./LoginConfig.xml", DefaultFile);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new TortusFileException(string.Format("The application does not have permission to save the file ./LoginConfig.xml"), "./LoginConfig.xml", ex);
+            }
+            catch (SecurityException ex)
+            {
+                throw new TortusFileException(string.Format("The application does not have permission to save the file ./LoginConfig.xml"), "./LoginConfig.xml", ex);
+            }
+        }
+
+        /// <summary>
+        /// This Loads the configeration file into the static feild LoginServer.XML.LoginServer.Instance.
+        /// </summary>
+        /// <exception cref="SharedServerLib.Exceptions.TortusMissingResourceException">The embeded resource cannot be loaded.</exception>
+        /// <exception cref="SharedServerLib.Exceptions.TortusFileException">The configeration cannot be loaded or initally created.</exception>
+        /// <exception cref="SharedServerLib.Exceptions.TortusFormatException">An IP or Hostname is invalid.</exception>
+        /// <exception cref="System.InvalidOperationException"> An error occurred during deserialization. The original exception is available using the <see cref="System.InnerException">InnerException</see>  property. </exception>
+        public static void LoadConfig()
+        {
+            LoadConfig(true);
+        }
+        /// <summary>
+        /// This Loads the configeration file into the static feild LoginServer.XML.LoginServer.Instance.
+        /// </summary>
+        /// <exception cref="SharedServerLib.Exceptions.TortusMissingResourceException">The embeded resource cannot be loaded.</exception>
+        /// <exception cref="SharedServerLib.Exceptions.TortusFileException">The configeration cannot be loaded or initally created.</exception>
+        /// <exception cref="SharedServerLib.Exceptions.TortusFormatException">An IP or Hostname is invalid.</exception>
+        /// <exception cref="System.InvalidOperationException"> An error occurred during deserialization. The original exception is available using the <see cref="System.InnerException">InnerException</see>  property. </exception>
+        public static void LoadConfig(bool ignoreErrors)
+        {
+            if (!File.Exists("./LoginConfig.xml"))
+            {
+                CreateDefault();
+            }
+
+            TextReader reader = new StreamReader("./LoginConfig.xml");
+
+            XmlSerializer serializer = new XmlSerializer(typeof(LoginServerConfig));
+            LoginServerConfig._instance = (LoginServerConfig)serializer.Deserialize(reader);
+            reader.Close();
+
+            string[] AcceptedAddresses = LoginServerConfig.Instance.ServerListenAcceptedAddresses;
+            int AddressLen = AcceptedAddresses.Length;
+
+            LoginServerConfig.Instance.ConvertedAcceptedServerAddresses = new IPAddress[AddressLen];
+            for (int Index = 0; Index < AddressLen; Index++)
+            {
+                if (!IPAddress.TryParse(AcceptedAddresses[Index], out LoginServerConfig.Instance.ConvertedAcceptedServerAddresses[Index]))
+                {
+                    //Maybe its a hostname
+                    System.Net.IPAddress[] Addresses;
+                    try
+                    {
+                        Addresses = Dns.GetHostEntry(AcceptedAddresses[Index]).AddressList;
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        if (ignoreErrors)
+                        {
+                            Console.WriteLine("Value is not a valid IP Address or DNS Host: {0}", AcceptedAddresses[Index]);
+                            continue;
+                        }
+                        else
+                            throw new TortusFormatException("Value is not a valid IP Address or DNS Host", AcceptedAddresses[Index], "Any IP Address or DNS host");
+                    }
+
+                    if (Addresses.Length == 0)
+                    {
+                        if (ignoreErrors)
+                        {
+                            Console.WriteLine("DNS Host did not resolve to an IP address: {0}", AcceptedAddresses[Index]);
+                            continue;
+                        }
+                        else
+                            throw new TortusFormatException("DNS Host did not resolve to an IP address", AcceptedAddresses[Index], "Any IP Address or DNS host");
+                    }
+
+                    LoginServerConfig.Instance.ConvertedAcceptedServerAddresses[Index] = Addresses[0];
+                }
+
+                if (LoginServerConfig.Instance.ConvertedAcceptedServerAddresses[Index] == IPAddress.Any ||
+                    LoginServerConfig.Instance.ConvertedAcceptedServerAddresses[Index] == IPAddress.IPv6Any)
+                {
+                    LoginServerConfig.Instance.AcceptAnyAddress = true;
+                }
+
+
+            }
+
+
+            if (IPAddress.TryParse(LoginServerConfig.Instance.ClientListenAddress, out LoginServerConfig.Instance.ConvertedClientListenAddress))
+            {
+                throw new TortusFormatException("Value is not a valid IP Address or DNS Host", LoginServerConfig.Instance.ClientListenAddress, "Any IP Address or DNS host");
+            }
+
+            if (IPAddress.TryParse(LoginServerConfig.Instance.ServerListenAddress, out LoginServerConfig.Instance.ConvertedServerListenAddress))
+            {
+                throw new TortusFormatException("Value is not a valid IP Address or DNS Host", LoginServerConfig.Instance.ServerListenAddress, "Any IP Address or DNS host");
+            }
+
+        }
+    }
+
+
+
 }
