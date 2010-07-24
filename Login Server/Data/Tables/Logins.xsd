@@ -1,8 +1,9 @@
-﻿/*
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/18/2010
- * Time: 3:58 PM
+ * Date: 7/19/2010
+ * Time: 2:25 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -29,35 +30,27 @@
  * The views and conclusions contained in the software and documentation are those of the
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
- */
-using System;
-using System.Runtime.Remoting.Channels;
-using Shared.Connections;
-
-namespace LoginServer.Connections
-{
-	//Handles reading data from clients
-	partial class ClientConnection
-	{
-		void Read_Authintication()
-		{
-												
-		}
-		
-		void Read_ClientInfo()
-		{
-			//(byte major, byte minor, ushort revision)
-			byte major, minor;
-			ushort revision;
-			major = _sr.ReadByte();
-			minor = _sr.ReadByte();
-			revision = _sr.ReadUInt16();
-			if(revision != XML.LoginServerConfig.Instance.ClientRevision ||
-			   minor != XML.LoginServerConfig.Instance.CLientMinor ||
-			   major != XML.LoginServerConfig.Instance.ClientMajor)
-			{
-				Disconnect(MessageID.OutOfDate);
-			}
-		}
-	}
-}
+ *-->
+<xs:schema id="LoginsTable"
+	targetNamespace="http://dev.stormraidergames.com/TortusLogins.xsd"
+	elementFormDefault="qualified"
+	xmlns="http://dev.stormraidergames.com/TortusLogins.xsd"
+	xmlns:mstns="http://dev.stormraidergames.com/TortusLogins.xsd"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"		
+>
+	<xs:element name="Logins"> 
+		<xs:complexType> 
+			<xs:sequence> 
+				<xs:element name="ID" type="xs:int" msdata:AutoIncrement="true" /> 
+				<xs:element name="Login" type="xs:string" /> 
+				<xs:element name="Password" type="xs:string" /> 
+				<xs:element name="AccessLevel" type="xs:string" /> 
+			</xs:sequence> 
+		</xs:complexType> 
+			<xs:key name="ID" msdata:PrimaryKey="true"> 
+			<xs:selector xpath="." /> 
+			<xs:field xpath="mstns:ID" /> 
+		</xs:key> 
+	</xs:element> 
+</xs:schema>

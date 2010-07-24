@@ -9,12 +9,12 @@
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
  * 
- *    1. Redistributions of source code must retain the above copyright notice, this list of
- *       conditions and the following disclaimer.
+ *	1. Redistributions of source code must retain the above copyright notice, this list of
+ *	   conditions and the following disclaimer.
  * 
- *    2. Redistributions in binary form must reproduce the above copyright notice, this list
- *       of conditions and the following disclaimer in the documentation and/or other materials
- *       provided with the distribution.
+ *	2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *	   of conditions and the following disclaimer in the documentation and/or other materials
+ *	   provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY Matthew Cash ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -31,12 +31,42 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using Shared.Connections;
 
 namespace LoginServer.Connections
 {
 	//Handles writing to the client
 	partial class ClientConnection
 	{
-
-	}
+		
+		public void Disconnect(ushort reason)
+		{
+			//2 for ID, 2 for message ID
+			ushort length = 4;
+			_sw.Write(length);
+			_sw.Write(PacketID.ServerMessage);
+			_sw.Write(reason);
+			_sw.Flush();
+			_client.Close();					
+		}
+		
+		public void Write_TempAuthKey(string key)
+		{
+			ushort length = 2 + Key.Length;
+			_sw.Write(length);
+			_sw.Write(PacketID.Authintication);
+			_sw.Write(Key);
+			_sw.Flush();
+		}
+		
+		private void Write_LoginSucess(bool status)
+		{
+			//2 for ID, 1 for bool
+			ushort length = 3;
+		   _sw.Write(length);
+			_sw.Write(PacketID.LoginSucess);
+			_sw.Write(status);
+			_sw.Flush();
+		}
+	}							
 }

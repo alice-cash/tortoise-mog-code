@@ -9,12 +9,12 @@
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
  * 
- *    1. Redistributions of source code must retain the above copyright notice, this list of
- *       conditions and the following disclaimer.
+ *	1. Redistributions of source code must retain the above copyright notice, this list of
+ *	   conditions and the following disclaimer.
  * 
- *    2. Redistributions in binary form must reproduce the above copyright notice, this list
- *       of conditions and the following disclaimer in the documentation and/or other materials
- *       provided with the distribution.
+ *	2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *	   of conditions and the following disclaimer in the documentation and/or other materials
+ *	   provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY Matthew Cash ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -40,81 +40,71 @@ using Shared.Connections;
 
 namespace LoginServer.Connections
 {
-    partial class ClientConnection
-    {
-        private TcpClient _client;
-        private BinaryReader _sr;
-        private BinaryWriter _sw;
-        //private byte[] _data;
-        private int _length;
-        private DateTime _recived;
+	partial class ClientConnection
+	{
+		private TcpClient _client;
+		private BinaryReader _sr;
+		private BinaryWriter _sw;
+		//private byte[] _data;
+		private int _length;
+		private DateTime _recived;
 
-        public bool Connected
-        {
-            get { return _client.Connected; }
-        }
+		public bool Connected
+		{
+			get { return _client.Connected; }
+		}
 
-        public ClientConnection(TcpClient connection)
-        {
-            _client = connection;
-            _sr = new BinaryReader(_client.GetStream());
-            _sw = new BinaryWriter(_client.GetStream());
-       //     _data = new byte[0];
-        }
+		public ClientConnection(TcpClient connection)
+		{
+			_client = connection;
+			_sr = new BinaryReader(_client.GetStream());
+			_sw = new BinaryWriter(_client.GetStream());
+	   //	 _data = new byte[0];
+		}
 
-        public void Poll()
-        {
-        	if(_length > 0)
-        	{
-        		if(_client.Available < _length)
-           		{
-           			//if its been more than a second, call a sync error.
-           			if(_recived + TimeSpan.FromMilliseconds(1000) >= DateTime.Now)
-           			{
-           				Disconnect(MessageID.SyncError);
-           			}
-           			return;
-           		}
-        	
-        	}
-           if (_client.Available > 4)
-           {
-           		_length = _sr.ReadUInt16();
-           		if(_client.Available < _length)
-           		{
-           			//if theres not enough data, go on.
-           			_recived = DateTime.Now;
-           			return;
-           		}
-           		
-           		ushort pID = _sr.ReadUInt16();
-           		switch(pID)
-           		{
-           			case PacketID.Null:
-           				break;
-           			case PacketID.Authintication:
-           				
-           				break;
-           			case PacketID.ClientInfo:
-           				
-           				break;
-           		}
-           		
-           }
-           
-           _length = 0;
-        }
-        
-        //Client Writer
-        
-        public void Disconnect(ushort reason)
-        {
-        	//2 for ID, 2 for message ID
-        	ushort length = 4;
-        	_sw.Write(length);
-        	_sw.Write(PacketID.ServerMessage);
-        	_sw.Write(reason);
-        	_client.Close();
-        }
-    }
+		public void Poll()
+		{
+			if(_length > 0)
+			{
+				if(_client.Available < _length)
+		   		{
+		   			//if its been more than a second, call a sync error.
+		   			if(_recived + TimeSpan.FromMilliseconds(1000) >= DateTime.Now)
+		   			{
+		   				Disconnect(MessageID.SyncError);
+		   			}
+		   			return;
+		   		}
+			
+			}
+		   if (_client.Available > 4)
+		   {
+		   		_length = _sr.ReadUInt16();
+		   		if(_client.Available < _length)
+		   		{
+		   			//if theres not enough data, go on.
+		   			_recived = DateTime.Now;
+		   			return;
+		   		}
+		   		
+		   		ushort pID = _sr.ReadUInt16();
+		   		switch(pID)
+		   		{
+		   			case PacketID.Null:
+		   				break;
+		   			case PacketID.Authintication:
+		   				
+		   				break;
+		   			case PacketID.ClientInfo:
+		   				
+		   				break;
+		   		}
+		   		
+		   }
+		   
+		   _length = 0;
+		}
+		
+
+	}
 }
