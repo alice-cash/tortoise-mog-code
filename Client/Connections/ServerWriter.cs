@@ -47,10 +47,20 @@ namespace Client.Connections
 			//2 for PacketID, 1 for major, 1 for minor, 2 for revision
 			ushort length = 6;
 			_sw.Write(length);
-			_sw.Write(PacketID.ClientInfo);
+			_sw.Write((ushort)PacketID.ClientInfo);
 			_sw.Write(major);
 			_sw.Write(minor);
 			_sw.Write(revision);
+			_sw.Flush();
+		}
+		
+		public void Write_ServerMessage(MessageID reason)
+		{
+			//2 for ID, 2 for message ID
+			ushort length = 4;
+			_sw.Write(length);
+			_sw.Write((ushort)PacketID.ServerMessage);
+			_sw.Write((ushort)reason);
 			_sw.Flush();
 		}
 	}

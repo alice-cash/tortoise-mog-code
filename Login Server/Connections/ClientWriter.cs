@@ -33,29 +33,37 @@
 using System;
 using Shared.Connections;
 
+using SharedServerLib.Exceptions;
+
 namespace LoginServer.Connections
 {
 	//Handles writing to the client
 	partial class ClientConnection
 	{
 		
-		public void Disconnect(ushort reason)
+		
+		public void Write_ServerMessage(MessageID reason)
 		{
 			//2 for ID, 2 for message ID
 			ushort length = 4;
 			_sw.Write(length);
-			_sw.Write(PacketID.ServerMessage);
-			_sw.Write(reason);
+			_sw.Write(PacketID.ServerMessage.Value());
+			_sw.Write(reason.Value());
 			_sw.Flush();
-			_client.Close();					
 		}
 		
 		public void Write_TempAuthKey(string key)
 		{
-			ushort length = 2 + Key.Length;
+			//this should never occure, but if it does, its mostlikley due to a horrible,
+			//horrable bug, and it should bring the server down and burn their house down.
+			//This still needs to be here due to the explicid conversion and my coding rules for this project.
+			if(key.Length + 2 >= ushort.MaxValue)
+				throw new TortusGeneralException("Invalid key length!");
+			
+			ushort length = (ushort)(2 + key.Length);
 			_sw.Write(length);
-			_sw.Write(PacketID.Authintication);
-			_sw.Write(Key);
+			_sw.Write(PacketID.Authintication.Value());
+			_sw.Write(key);
 			_sw.Flush();
 		}
 		
@@ -63,8 +71,8 @@ namespace LoginServer.Connections
 		{
 			//2 for ID, 1 for bool
 			ushort length = 3;
-		   _sw.Write(length);
-			_sw.Write(PacketID.LoginSucess);
+		    _sw.Write(length);
+		    _sw.Write(PacketID.LoginSucess.Value());
 			_sw.Write(status);
 			_sw.Flush();
 		}

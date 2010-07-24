@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
+using Shared.Connections;
 
 namespace Client.Connections
 {
@@ -48,7 +49,13 @@ namespace Client.Connections
 		private BinaryReader _sr;
 		private BinaryWriter _sw;
 		
+		private int _length;
+		private DateTime _recived;
+
+
 		private string _authKey;
+		
+		public System.EventHandler<ServerMessageEventArgs> ServerMessageEvent; 
 
 		public ServerConnection(string dest, int port)
 		{
@@ -82,16 +89,23 @@ namespace Client.Connections
 		   			return;
 		   		}
 		   		
-		   		ushort pID = _sr.ReadUInt16();
+		   		ushort pTempID = _sr.ReadUInt16();
+		   		PacketID pID = PacketID.Null;
+		   		if(!pID.TryParse(pTempID))
+		   		{
+		   			Disconnect(MessageID.SyncError);
+		   			return;
+		   		}
+
 		   		switch(pID)
 		   		{
 		   			case PacketID.Null:
 		   				break;
-		   			case PacketID.Authintication:
-		   				
+		   			case PacketID.Authintication: Read_AuthKey();
 		   				break;
 		   			case PacketID.ClientInfo:
-		   				
+		   				break;
+		   			case PacketID.ServerMessage: Read_ServerMessage();
 		   				break;
 		   		}
 		   		
@@ -100,6 +114,10 @@ namespace Client.Connections
 		   _length = 0;
 		}
 		
+		public void Disconnect(MessageID reason)
+		{
+			Write_ServerMessage(reason);
+			_client.Close();					
 		}
 	}
 }

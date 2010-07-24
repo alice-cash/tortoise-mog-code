@@ -19,3 +19,6 @@ _someVarable
 
 All class varables should be private, with properties used to expose any varables as needed.
 
+
+Any explicid conversions MUST contain error checking before the conversion, even if the chances of that error actually happining is 0.
+The only excepton to this is when converting an Enum to its numrical type, ie (int)MyEnum.Value1

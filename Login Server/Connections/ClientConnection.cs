@@ -49,6 +49,8 @@ namespace LoginServer.Connections
 		private int _length;
 		private DateTime _recived;
 
+		private string _authKey;
+
 		public bool Connected
 		{
 			get { return _client.Connected; }
@@ -82,12 +84,18 @@ namespace LoginServer.Connections
 		   		_length = _sr.ReadUInt16();
 		   		if(_client.Available < _length)
 		   		{
-		   			//if theres not enough data, go on.
+		   			//if there isn't enough data, go on.
 		   			_recived = DateTime.Now;
 		   			return;
 		   		}
 		   		
-		   		ushort pID = _sr.ReadUInt16();
+		   		ushort pTempID = _sr.ReadUInt16();
+		   		PacketID pID = PacketID.Null;
+		   		if(!pID.TryParse(pTempID))
+		   		{
+		   			Disconnect(MessageID.SyncError);
+		   			return;
+		   		}
 		   		switch(pID)
 		   		{
 		   			case PacketID.Null:
@@ -105,6 +113,11 @@ namespace LoginServer.Connections
 		   _length = 0;
 		}
 		
+		public void Disconnect(MessageID reason)
+		{
+			Write_ServerMessage(reason);
+			_client.Close();					
+		}
 
 	}
 }

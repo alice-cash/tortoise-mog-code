@@ -42,6 +42,12 @@ namespace Client.Connections
 			_authKey = _sr.ReadString();
 		}
 		
+		void Read_ServerMessage()
+		{
+			ushort Reason;
+			//ServerMessageEvent
+		}
+		
 		
 		
 	}
