@@ -82,6 +82,7 @@
       <Link>Connections\PacketID.cs</Link>
     </Compile>
     <Compile Include="Connections\ServerConnection.cs" />
+    <Compile Include="Connections\ServerMessageEventArgs.cs" />
     <Compile Include="Connections\ServerReader.cs" />
     <Compile Include="Connections\ServerWriter.cs" />
     <Compile Include="Program.cs" />

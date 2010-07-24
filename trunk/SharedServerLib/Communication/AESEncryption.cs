@@ -7,13 +7,9 @@
  * Orignal source from http://stackoverflow.com/questions/165808/simple-2-way-encryption-for-c/212707#212707
  * by Mark Brittingham
  * 
- * Modifyed by Matthew
+ * Modifyed by Matthew Cash
  */
  
- /*
-  * Notice: 
-  * TODO: Possible Exceptions not documented.
-  */
  
 using System;
 using System.Data;

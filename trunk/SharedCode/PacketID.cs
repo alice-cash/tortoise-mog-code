@@ -38,7 +38,7 @@ using System.Text;
 
 namespace Shared.Connections
 {
-	enum PacketID: ushort
+	public enum PacketID: ushort
 	{
 		  //Login Server related
 		  Null = 0,
@@ -48,5 +48,20 @@ namespace Shared.Connections
 		
 		  //any server
 		  ServerMessage,
+	}
+	
+	public static class PacketIDHelper
+	{
+		public static bool TryParse(this PacketID pID, ushort value)
+		{
+			if(!Enum.IsDefined(typeof(PacketID), value))
+				return false;
+			pID = (PacketID)value;
+			return true;
+		}
+		public static ushort Value(this PacketID pID)
+		{
+			return (ushort)pID;
+		}
 	}
 }
