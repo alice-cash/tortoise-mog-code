@@ -1,20 +1,20 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 5/2/2010
- * Time: 2:56 AM
+ * Date: 7/20/2010
+ * Time: 5:21 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
  * 
- *	1. Redistributions of source code must retain the above copyright notice, this list of
- *	   conditions and the following disclaimer.
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
  * 
- *	2. Redistributions in binary form must reproduce the above copyright notice, this list
- *	   of conditions and the following disclaimer in the documentation and/or other materials
- *	   provided with the distribution.
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY Matthew Cash ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -30,24 +30,18 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
-using System;
-
-namespace SharedServerLib.Exceptions
+namespace Client.Connections
 {
-	/// <summary>
-	/// Description of TortusGeneralException.
-	/// </summary>
-	public class TortusGeneralException: Exception
+	//This part of the class deals with methods to read data from the server.
+	partial class ServerConnection
 	{
-		public TortusGeneralException():base("A generic Exception has occured in Tortus.")
+		
+		void Read_AuthKey()
 		{
+			//(string key)
+			_authKey = _sr.ReadString();
 		}
-		public TortusGeneralException(string message):base(message)
-		{
-		}
-		public TortusGeneralException(string message, Exception innerException):base(message,innerException)
-		{
-		}
+		
 		
 		
 	}
