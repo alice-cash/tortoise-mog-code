@@ -21,8 +21,8 @@
 	<ServerListenAddress>127.0.0.1</ServerListenAddress>
 	
 	<!-- This is the list of IP addresses and host masks the system accepts connections from for server connections.
-           
-		    It also accepts fully qualified domain names.
+		   
+			It also accepts fully qualified domain names.
  			0.0.0.0 is any IPv4 address. 
 			:: is any IPv4 and IPv6 address.
 			SomeGameServer.MyGameSite.com will use the first IP returned by this domain.
@@ -69,11 +69,11 @@
 	<MaxUsersPerThread>1000</MaxUsersPerThread>
 	
 	<!-- This is the Clients Major version number. -->
-	<MaxUsersPerThread>0</MaxUsersPerThread>
+	<ClientMajor>0</ClientMajor>
 	<!-- This is the Clients Minor version number. -->
-	<MaxUsersPerThread>1</MaxUsersPerThread>
+	<CLientMinor>1</CLientMinor>
 	<!-- This is the Clients Revision version number. -->
-	<MaxUsersPerThread>0</MaxUsersPerThread>
+	<ClientRevision>0</ClientRevision>
 
 	<!-- This is randomly generated when this file is created. This must be the same between all Servers. -->
 	<SyncKey>{KEY}</SyncKey>

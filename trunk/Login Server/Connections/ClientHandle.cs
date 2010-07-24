@@ -9,12 +9,12 @@
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
  * 
- *    1. Redistributions of source code must retain the above copyright notice, this list of
- *       conditions and the following disclaimer.
+ *	1. Redistributions of source code must retain the above copyright notice, this list of
+ *	   conditions and the following disclaimer.
  * 
- *    2. Redistributions in binary form must reproduce the above copyright notice, this list
- *       of conditions and the following disclaimer in the documentation and/or other materials
- *       provided with the distribution.
+ *	2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *	   of conditions and the following disclaimer in the documentation and/or other materials
+ *	   provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY Matthew Cash ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -42,64 +42,64 @@ namespace LoginServer.Connections
 	/// </summary>
 	public class ClientHandle
 	{
-        public static ClientHandle _instance;
-        public static ClientHandle Instance 
-        { get { return _instance; } }
+		public static ClientHandle _instance;
+		public static ClientHandle Instance 
+		{ get { return _instance; } }
 
-        private List<ClientConnection> _clients;
-        private Queue<TcpClient> _requests;
-        private bool _threadRunning;
+		private List<ClientConnection> _clients;
+		private Queue<TcpClient> _requests;
+		private bool _threadRunning;
 
 		private ClientHandle()
 		{
-            _clients = new List<ClientConnection>();
-            _requests = new Queue<TcpClient>();
-            _threadRunning = true;
+			_clients = new List<ClientConnection>();
+			_requests = new Queue<TcpClient>();
+			_threadRunning = true;
 
-            _instance = this;
+			_instance = this;
 		}
 
-        public static void CreateInstance()
-        {
-            if (Instance != null)
-                return;
-            _instance = new ClientHandle();
-        }
+		public static void CreateInstance()
+		{
+			if (Instance != null)
+				return;
+			_instance = new ClientHandle();
+		}
 
-        public void EnqueConnection(TcpClient Client)
-        {
-            lock (_requests)
-            {
-                _requests.Enqueue(Client);
-            }
+		public void EnqueConnection(TcpClient Client)
+		{
+			lock (_requests)
+			{
+				_requests.Enqueue(Client);
+			}
 
-        }
+		}
 
-        private void WorkThread()
-        {
-            while (_threadRunning == true)
-            {
-                lock (_requests)
-                    {
-                        if (_requests.Count > 0)
-                        {
-                            TcpClient Request = _requests.Dequeue();
-                            ClientConnection Conn = new ClientConnection(Request);
-                            _clients.Add(Conn);
-                        }
-                    }
+		private void WorkThread()
+		{
+			while (_threadRunning == true)
+			{
+				lock (_requests)
+					{
+						if (_requests.Count > 0)
+						{
+							TcpClient Request = _requests.Dequeue();
+							ClientConnection Conn = new ClientConnection(Request);
+							_clients.Add(Conn);
+						}
+					}
 
-                _clients.ForEach((ClientConnection sc) =>
-                {
-                    if (!sc.Connected) _clients.Remove(sc);
-                });
-                foreach (var c in _clients)
-                {
-                    c.Poll();
-                }
-            }
+				_clients.ForEach((ClientConnection sc) =>
+				{
+					if (!sc.Connected) _clients.Remove(sc);
+				});
+				foreach (var c in _clients)
+				{
+					c.Poll();
+				}
+			}
 
-        }
+		}
 
 	}
 }
