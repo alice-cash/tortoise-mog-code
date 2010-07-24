@@ -9,12 +9,12 @@
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
  * 
- *    1. Redistributions of source code must retain the above copyright notice, this list of
- *       conditions and the following disclaimer.
+ *	1. Redistributions of source code must retain the above copyright notice, this list of
+ *	   conditions and the following disclaimer.
  * 
- *    2. Redistributions in binary form must reproduce the above copyright notice, this list
- *       of conditions and the following disclaimer in the documentation and/or other materials
- *       provided with the distribution.
+ *	2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *	   of conditions and the following disclaimer in the documentation and/or other materials
+ *	   provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY Matthew Cash ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -38,14 +38,15 @@ using System.Text;
 
 namespace Shared.Connections
 {
-    class PacketID
-    {
-    	//Login Server related
-      public const ushort Null = 0x0000;
-      public const ushort ClientInfo = 0x0001;
-      public const ushort Authintication = 0x0002;
-      
-      //any server
-      public const ushort ServerMessage = 0x0003;
-    }
+	enum PacketID: ushort
+	{
+		  //Login Server related
+		  Null = 0,
+		  ClientInfo,
+		  Authintication,
+		  LoginSucess,
+		
+		  //any server
+		  ServerMessage,
+	}
 }
