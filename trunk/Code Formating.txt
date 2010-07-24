@@ -1,0 +1,21 @@
+Simple:
+All public classes and properties will have Capital letters for each word.
+ex:
+Class1
+SomeClass
+SomeVeryLongBadlyNamedClass
+
+All public classes and properties should be properly named. Names should be short and sweet, with a maximum of 3-4 words, and , 20 character limit.
+
+Method arguments and local varables should start with lowercase, with the rest of the words starting with uppercase
+sings
+someVar
+someReallyLongVar
+
+Private varables should start with a _, with the first word being lowercase.
+ex:
+_x
+_someVarable
+
+All class varables should be private, with properties used to expose any varables as needed.
+
