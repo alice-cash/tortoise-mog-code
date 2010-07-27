@@ -58,6 +58,7 @@ namespace LoginServer.Connections
 			{
 				Disconnect(MessageID.OutOfDate);
 			}
+			Write_TempAuthKey(_authKey);
 		}
 	}
 }
