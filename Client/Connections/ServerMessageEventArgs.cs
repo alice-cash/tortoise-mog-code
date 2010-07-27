@@ -31,14 +31,18 @@
  * or implied, of Matthew Cash.
  */
 using System;
-
+using Shared.Connections;
 namespace Client.Connections
 {
 	/// <summary>
 	/// Description of ServerMessageEventArgs.
 	/// </summary>
-	public class ServerMessageEventArgs: EventArgs
+	class ServerMessageEventArgs: EventArgs
 	{
-		public ushort ServerMessage {get;set;}
+		public MessageID ServerMessage {get;set;}
+		public ServerMessageEventArgs(MessageID mID)
+		{
+			ServerMessage = mID;
+		}
 	}
 }

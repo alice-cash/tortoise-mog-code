@@ -30,6 +30,10 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
+ 
+using System;
+using Shared.Connections;
+
 namespace Client.Connections
 {
 	//This part of the class deals with methods to read data from the server.
@@ -40,12 +44,25 @@ namespace Client.Connections
 		{
 			//(string key)
 			_authKey = _sr.ReadString();
+			_readyForData = true;
+			if(ReadyForDataEvent !=null)
+				ReadyForDataEvent(this, EventArgs.Empty);
 		}
 		
 		void Read_ServerMessage()
 		{
-			ushort Reason;
-			//ServerMessageEvent
+			//(MessageID reason)
+			//Check for a valid Enum Item.
+			ushort rTmp;
+			rTmp = _sr.ReadUInt16();
+			MessageID mID = MessageID.Null;
+	   		if(!mID.TryParse(rTmp))
+	   		{
+	   			Disconnect(MessageID.SyncError);
+	   			return;
+	   		}
+	   		if(ServerMessageEvent != null)
+	   			ServerMessageEvent(this, new ServerMessageEventArgs(mID));
 		}
 		
 		
