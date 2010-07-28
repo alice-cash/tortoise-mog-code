@@ -119,24 +119,18 @@ namespace Client.Connections
 		   		switch(pID)
 		   		{
 		   			case PacketID.Null:
-		   				#if DEBUG
-			   				debugData = new Dictionary<String, Object>();
-			   				debugData.Add("PacketID", PacketID.Null);
-			   				SyncError(debugData);
-						#else
-							SyncError();
-		   				#endif
+		   				debugData = new Dictionary<String, Object>();
+		   				debugData.Add("PacketID", PacketID.Null);
+		   				SyncError(debugData);
+
 		   				break;
 		   			case PacketID.Authintication: Read_AuthKey();
 		   				break;
 		   			case PacketID.ClientInfo:
-		   				#if DEBUG
-			   				debugData = new Dictionary<String, Object>();
-			   				debugData.Add("PacketID", PacketID.ClientInfo);
-			   				SyncError(debugData);
-						#else
-							SyncError();
-						#endif
+		   				debugData = new Dictionary<String, Object>();
+		   				debugData.Add("PacketID", PacketID.ClientInfo);
+		   				SyncError(debugData);
+
 		   				break;
 		   			case PacketID.ServerMessage: Read_ServerMessage();
 		   				break;
@@ -153,42 +147,19 @@ namespace Client.Connections
 			_client.Close();					
 		}
 		
-/*
-Now this is simple. If we are building a debug version, we
-want there to be 2 definitions. So the code looks like this:
 
-SyncError(CallID)
-  SyncError(EmptyData)
-SyncError(CallID, DebugInfo)
-  If Attached to Debugger
-    Breakpoint
-  Else
-    Write Debug info and Buffer to Debug out
-    
-Otherwise if its a Release build, we just want this:
-SyncError(CallID)
-    Write Buffer to Debug out
-    
-This is because we obiously don't want debuging code in a release product. It can slow things down,
-and in a Production enviroment, chances are the SyncError is due to The end user having an inproper
-client.
-*/
 		/// <summary>
 		/// Calls a Sync Error, Usually when the reciving datastream contains data the program isn't expecting.
 		/// </summary>
-		/// <param name="callID">Should be a Unique ID that you can use to trace back to the line that called it.</param>
 		public void SyncError()
 		{
-#if DEBUG
 			SyncError(new Dictionary<String, Object>());
 		}
 		
 		public void SyncError(Dictionary<String, Object> data)
 		{
-#endif
 			StackTrace stackTrace = new StackTrace();
-//stackTrace.GetFrame(1).GetMethod().Name)
-#if DEBUG
+		
 			if(System.Diagnostics.Debugger.IsAttached)
 				System.Diagnostics.Debugger.Break();
 			else
@@ -196,17 +167,14 @@ client.
 				System.Diagnostics.Debug.WriteLine(String.Format("SyncError!"));
 				foreach(var kvp in data)
 					System.Diagnostics.Debug.WriteLine(String.Format("{0} = {1}", kvp.Key, kvp.Value));
-#endif
-			
-			System.Diagnostics.Debug.WriteLine(String.Format("SyncError!"));
-			System.Diagnostics.Debug.WriteLine("Stack:");
-			System.Diagnostics.Debug.WriteLine(stackTrace.ToString());
-#if DEBUG
+				
+				System.Diagnostics.Debug.WriteLine("Stack:");
+				System.Diagnostics.Debug.WriteLine(stackTrace.ToString());
 			}
-#endif
 
 			Disconnect(MessageID.SyncError);
 		}
+		
 		
 	}
 }

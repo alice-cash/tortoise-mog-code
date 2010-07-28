@@ -30,7 +30,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
- 
+
 using System;
 using Shared.Connections;
 
@@ -56,13 +56,13 @@ namespace Client.Connections
 			ushort rTmp;
 			rTmp = _sr.ReadUInt16();
 			MessageID mID = MessageID.Null;
-	   		if(!mID.TryParse(rTmp))
-	   		{
-	   			Disconnect(MessageID.SyncError);
-	   			return;
-	   		}
-	   		if(ServerMessageEvent != null)
-	   			ServerMessageEvent(this, new ServerMessageEventArgs(mID));
+			if(!mID.TryParse(rTmp))
+			{
+				Disconnect(MessageID.SyncError);
+				return;
+			}
+			if(ServerMessageEvent != null)
+				ServerMessageEvent(this, new ServerMessageEventArgs(mID));
 		}
 		
 		

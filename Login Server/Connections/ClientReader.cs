@@ -41,7 +41,7 @@ namespace LoginServer.Connections
 	{
 		void Read_Authintication()
 		{
-												
+			
 		}
 		
 		void Read_ClientInfo()
