@@ -104,7 +104,6 @@
     </Compile>
     <Compile Include="Connections\ClientConnection.cs" />
     <Compile Include="Connections\ClientHandle.cs" />
-    <Compile Include="Connections\ClientListen.cs" />
     <Compile Include="Connections\ClientReader.cs" />
     <Compile Include="Connections\ClientWriter.cs" />
     <Compile Include="Connections\ServerConnection.cs" />

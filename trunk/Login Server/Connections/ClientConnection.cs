@@ -62,7 +62,7 @@ namespace LoginServer.Connections
 			_client = connection;
 			_sr = new BinaryReader(_client.GetStream());
 			_sw = new BinaryWriter(_client.GetStream());
-	   //	 _data = new byte[0];
+			//	 _data = new byte[0];
 		}
 
 		public void Poll()
@@ -72,107 +72,78 @@ namespace LoginServer.Connections
 			{
 				//if we still don't have it.
 				if(_client.Available < _length)
-		   		{
-		   			//if its been more than a second, call a sync error.
-		   			if(_recived + TimeSpan.FromMilliseconds(1000) >= DateTime.Now)
-		   			{
-		   				Disconnect(MessageID.SyncError);
-		   			}
-		   			return;
-		   		}
-			
+				{
+					//if its been more than a second, call a sync error.
+					if(_recived + TimeSpan.FromMilliseconds(1000) >= DateTime.Now)
+					{
+						Disconnect(MessageID.SyncError);
+					}
+					return;
+				}
+				
 			}
 			//if enough data is avalable to read the ushort
-		   if (_client.Available > 2)
-		   {
-		   		_length = _sr.ReadUInt16();
-		   		if(_client.Available < _length)
-		   		{
-		   			//if there isn't enough data, go on.
-		   			_recived = DateTime.Now;
-		   			return;
-		   		}
-		   		
-				//Make sure its a valid Enum Number		   		
-		   		ushort pTempID = _sr.ReadUInt16();
-		   		PacketID pID = PacketID.Null;
-		   		if(!pID.TryParse(pTempID))
-		   		{
-		   			Disconnect(MessageID.SyncError);
-		   			return;
-		   		}
+			if (_client.Available > 2)
+			{
+				_length = _sr.ReadUInt16();
+				if(_client.Available < _length)
+				{
+					//if there isn't enough data, go on.
+					_recived = DateTime.Now;
+					return;
+				}
+				
+				//Make sure its a valid Enum Number
+				ushort pTempID = _sr.ReadUInt16();
+				PacketID pID = PacketID.Null;
+				if(!pID.TryParse(pTempID))
+				{
+					Disconnect(MessageID.SyncError);
+					return;
+				}
 
-		   		//Switch through all of the items, even if we throw a SyncError.
-		   		//Otherwise each method should call a Read_{DescritiveInfo}()
-		   		#if DEBUG
-		   		Dictionary<String, Object> debugData;
-		   		#endif
-		   		switch(pID)
-		   		{
-		   			case PacketID.Null:
-		   				#if DEBUG
-			   				debugData = new Dictionary<String, Object>();
-			   				debugData.Add("PacketID", PacketID.Null);
-			   				SyncError(debugData);
-						#else
-							SyncError();
-		   				#endif
-		   				break;
-		   			case PacketID.Authintication:
-		   				
-		   				break;
-		   			case PacketID.ClientInfo:
-		   				
-		   				break;
-		   		}
-		   		
-		   }
-		   
-		   _length = 0;
+				//Switch through all of the items, even if we throw a SyncError.
+				//Otherwise each method should call a Read_{DescritiveInfo}()
+				Dictionary<String, Object> debugData;
+				switch(pID)
+				{
+					case PacketID.Null:
+						debugData = new Dictionary<String, Object>();
+						debugData.Add("PacketID", PacketID.Null);
+						SyncError(debugData);
+						break;
+					case PacketID.Authintication:
+						
+						break;
+					case PacketID.ClientInfo:
+						
+						break;
+				}
+				
+			}
+			
+			_length = 0;
 		}
 		
 		public void Disconnect(MessageID reason)
 		{
 			Write_ServerMessage(reason);
-			_client.Close();					
+			_client.Close();
 		}
 
-		/*
-Now this is simple. If we are building a debug version, we
-want there to be 2 definitions. So the code looks like this:
 
-SyncError(CallID)
-  SyncError(EmptyData)
-SyncError(CallID, DebugInfo)
-  If Attached to Debugger
-    Breakpoint
-  Else
-    Write Debug info and Buffer to Debug out
-    
-Otherwise if its a Release build, we just want this:
-SyncError(CallID)
-    Write Buffer to Debug out
-    
-This is because we obiously don't want debuging code in a release product. It can slow things down,
-and in a Production enviroment, chances are the SyncError is due to The end user having an inproper
-client.
-*/
 		/// <summary>
 		/// Calls a Sync Error, Usually when the reciving datastream contains data the program isn't expecting.
 		/// </summary>
-		/// <param name="callID">Should be a Unique ID that you can use to trace back to the line that called it.</param>
 		public void SyncError()
 		{
-#if DEBUG
 			SyncError(new Dictionary<String, Object>());
 		}
 		
 		public void SyncError(Dictionary<String, Object> data)
 		{
-#endif
 			StackTrace stackTrace = new StackTrace();
-//stackTrace.GetFrame(1).GetMethod().Name)
-#if DEBUG
+			
 			if(System.Diagnostics.Debugger.IsAttached)
 				System.Diagnostics.Debugger.Break();
 			else
@@ -180,14 +151,10 @@ client.
 				System.Diagnostics.Debug.WriteLine(String.Format("SyncError!"));
 				foreach(var kvp in data)
 					System.Diagnostics.Debug.WriteLine(String.Format("{0} = {1}", kvp.Key, kvp.Value));
-#endif
-			
-			System.Diagnostics.Debug.WriteLine(String.Format("SyncError!"));
-			System.Diagnostics.Debug.WriteLine("Stack:");
-			System.Diagnostics.Debug.WriteLine(stackTrace.ToString());
-#if DEBUG
+				
+				System.Diagnostics.Debug.WriteLine("Stack:");
+				System.Diagnostics.Debug.WriteLine(stackTrace.ToString());
 			}
-#endif
 
 			Disconnect(MessageID.SyncError);
 		}

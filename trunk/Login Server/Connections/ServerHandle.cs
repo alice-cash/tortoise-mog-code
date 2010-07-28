@@ -41,83 +41,104 @@ using LoginServer.XML;
 
 namespace LoginServer.Connections
 {
-    /// <summary>
-    /// Description of ServerHandle.
-    /// </summary>
-    public class ServerHandle
-    {
-        private static ServerHandle _instance;
-        public static ServerHandle Instance
-        {
-            get { return _instance; }
-        }
+	/// <summary>
+	/// Description of ServerHandle.
+	/// </summary>
+	public class ServerHandle
+	{
+		private static ServerHandle _instance;
+		public static ServerHandle Instance
+		{
+			get { return _instance; }
+		}
 
-        private List<ServerConnection> _clients;
-        private Queue<TcpClient> _requests;
-        private bool _threadRunning;
+		private List<ServerConnection> _clients;
+		private Queue<TcpClient> _requests;
+		private bool _threadRunning;
+		
+		private Thread _listenThread;
+		private bool _threadRunning;
+		private TcpListener _listiner;
+		private TcpListener _secondaryListiner;
+		private bool _secondaryListinerActive;
+		
+		private ServerHandle()
+		{
+			_clients = new List<ServerConnection>();
+			_requests = new Queue<TcpClient>();
 
-        private ServerHandle()
-        {
-            _clients = new List<ServerConnection>();
-            _requests = new Queue<TcpClient>();
-            _threadRunning = true;
+			_listenThread = new Thread(WorkThread);
+			_listenThread.Start();
+			_secondaryListinerActive = false;
+			
+			_instance = this;
+		}
 
-            _instance = this;
-        }
+		public static void CreateInstance()
+		{
+			if (Instance != null)
+				return;
+			_instance = new ServerHandle();
+		}
 
-        public static void CreateInstance()
-        {
-            if (Instance != null)
-                return;
-            _instance = new ServerHandle();
-        }
 
-        public void EnqueConnection(TcpClient Client)
-        {
-            lock (_requests)
-            {
-                _requests.Enqueue(Client);
-            }
+		private void WorkThread()
+		{
+			//If the Listen address is IPv6Any, then we possibly need to create a second listiner for IPv4
+			if (LoginServerConfig.Instance. == IPAddress.IPv6Any)
+			{
+				_secondaryListinerActive = true;
+				_secondaryListiner = new TcpListener(IPAddress.Any, LoginServerConfig.Instance.ServerListenPort);
+				_secondaryListiner.Start();
+			}
+			_listiner = new TcpListener(LoginServerConfig.Instance.ConvertedClientListenAddress, LoginServerConfig.Instance.ServerListenPort);
+			_listiner.Start();
+			
+			_threadRunning = true;
+			while (_threadRunning)
+			{
+				if (_listiner.Pending() || (_secondaryListinerActive && _secondaryListiner.Pending()))
+				{
+					//If the main listiner didn't trigger this, then it has to have been the secondary one.
+					TcpClient Request = _listiner.Pending() ? _listiner.AcceptTcpClient() : _secondaryListiner.AcceptTcpClient();
+					ServerConnection Conn = new ServerConnection(Request);
 
-        }
-
-        private void WorkThread()
-        {
-            while (_threadRunning == true)
-            {
-                lock (_requests)
-                {
-                    if (_requests.Count > 0)
-                    {
-                        TcpClient Request = _requests.Dequeue();
-                        ServerConnection Conn = new ServerConnection(Request);
-
-                        //Check that its an accepted IP
-                        if (!LoginServerConfig.Instance.AcceptAnyAddress)
-                        {
-                            foreach (var address in LoginServerConfig.Instance.ConvertedAcceptedServerAddresses)
-                            {
-                                if (((IPEndPoint)Request.Client.RemoteEndPoint).Address.Equals(address))
-                                {
-                                    _clients.Add(Conn);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            _clients.Add(Conn);
-                        }
-                    }
-                }
-                _clients.ForEach((ServerConnection sc) =>
-                {
-                    if (!sc.Connected) _clients.Remove(sc);
-                });
-                foreach (var c in _clients)
-                {
-                    c.Poll();
-                }
-            }
-        }
-    }
+					//Check that its an accepted IP
+					if (!LoginServerConfig.Instance.AcceptAnyAddress)
+					{
+						foreach (var address in LoginServerConfig.Instance.ConvertedAcceptedServerAddresses)
+						{
+							if (((IPEndPoint)Request.Client.RemoteEndPoint).Address.Equals(address))
+							{
+								_clients.Add(Conn);
+							}
+						}
+					}
+					else
+					{
+						_clients.Add(Conn);
+					}
+				}
+				
+				_clients.ForEach((ServerConnection sc) =>
+				                 {
+				                 	if (!sc.Connected)
+				                 	{
+				                 		sc.Disconnected();
+				                 		_clients.Remove(sc);
+				                 	}
+				                 });
+				foreach (var c in _clients)
+				{
+					c.Poll();
+				}
+			}
+		}
+		
+		private void AcceptConnection(TcpClient client)
+		{
+			ServerConnection Conn = new ServerConnection(client);
+			_clients.Add(Conn);
+		}
+	}
 }

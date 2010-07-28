@@ -56,8 +56,10 @@ namespace LoginServer.Connections
 
         private ServerListen()
         {
-            _secondaryListinerActive = false;
-            _threadRunning = true;
+        	_listenThread = new Thread(Listener);
+        	_listenThread.Start();
+        	_secondaryListinerActive = false;
+        	_threadRunning = true;
 
             ServerHandle.CreateInstance();
         }

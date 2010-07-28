@@ -43,18 +43,27 @@ namespace LoginServer.Connections
 	public class ClientHandle
 	{
 		public static ClientHandle _instance;
-		public static ClientHandle Instance 
+		public static ClientHandle Instance
 		{ get { return _instance; } }
 
 		private List<ClientConnection> _clients;
-		private Queue<TcpClient> _requests;
-		private bool _threadRunning;
 
+		
+		private Thread _listenThread;
+		private bool _threadRunning;
+		private TcpListener _listiner;
+		private TcpListener _secondaryListiner;
+		private bool _secondaryListinerActive;
+		
 		private ClientHandle()
 		{
 			_clients = new List<ClientConnection>();
 			_requests = new Queue<TcpClient>();
 			_threadRunning = true;
+			
+			_listenThread = new Thread(WorkThread);
+			_listenThread.Start();
+			_secondaryListinerActive = false;
 
 			_instance = this;
 		}
@@ -66,39 +75,51 @@ namespace LoginServer.Connections
 			_instance = new ClientHandle();
 		}
 
-		public void EnqueConnection(TcpClient Client)
-		{
-			lock (_requests)
-			{
-				_requests.Enqueue(Client);
-			}
-
-		}
 
 		private void WorkThread()
 		{
-			while (_threadRunning == true)
+			//If the Listen address is IPv6Any, then we possibly need to create a second listiner for IPv4
+			if (LoginServerConfig.Instance. == IPAddress.IPv6Any)
 			{
-				lock (_requests)
-					{
-						if (_requests.Count > 0)
-						{
-							TcpClient Request = _requests.Dequeue();
-							ClientConnection Conn = new ClientConnection(Request);
-							_clients.Add(Conn);
-						}
-					}
+				_secondaryListinerActive = true;
+				_secondaryListiner = new TcpListener(IPAddress.Any, LoginServerConfig.Instance.ServerListenPort);
+				_secondaryListiner.Start();
+			}
+			_listiner = new TcpListener(LoginServerConfig.Instance.ConvertedClientListenAddress, LoginServerConfig.Instance.ServerListenPort);
+			_listiner.Start();
+
+			_threadRunning = true;
+			while (_threadRunning)
+			{
+				if (_listiner.Pending())
+				{
+					AcceptConnection(_listiner.AcceptTcpClient());
+				}
+
+				if (_secondaryListinerActive && _secondaryListiner.Pending())
+				{
+					AcceptConnection(_secondaryListiner.AcceptTcpClient());
+				}
 
 				_clients.ForEach((ClientConnection sc) =>
-				{
-					if (!sc.Connected) _clients.Remove(sc);
-				});
+				                 {
+				                 	if (!sc.Connected)
+				                 	{
+				                 		sc.Disconnected();
+				                 		_clients.Remove(sc);
+				                 	}				                 });
 				foreach (var c in _clients)
 				{
 					c.Poll();
 				}
 			}
 
+		}
+		
+		private void AcceptConnection(TcpClient client)
+		{
+			ClientConnection Conn = new ClientConnection(client);
+			_clients.Add(Conn);
 		}
 
 	}
