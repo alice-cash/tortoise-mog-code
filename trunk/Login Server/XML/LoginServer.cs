@@ -187,8 +187,8 @@ namespace LoginServer.XML
 		/// <summary>
 		/// This creates a default Config and saves it.
 		/// </summary>
-		/// <exception cref="SharedServerLib.Exceptions.TortusMissingResourceException">The embeded resource cannot be loaded.</exception>
-		/// <exception cref="SharedServerLib.Exceptions.TortusFileException">The configeration cannot be saved.</exception>
+		/// <exception cref="SharedServerLib.Exceptions.TortoiseMissingResourceException">The embeded resource cannot be loaded.</exception>
+		/// <exception cref="SharedServerLib.Exceptions.TortoiseFileException">The configeration cannot be saved.</exception>
 		public static void CreateDefault()
 		{
 
@@ -205,7 +205,7 @@ namespace LoginServer.XML
 			}
 			catch (ArgumentNullException)
 			{
-				throw new TortusMissingResourceException("The resource could not be loaded.", DefaultConfigPath);
+				throw new TortoiseMissingResourceException("The resource could not be loaded.", DefaultConfigPath);
 			}
 
 			DefaultFile = SR.ReadToEnd();
@@ -225,20 +225,20 @@ namespace LoginServer.XML
 			}
 			catch (UnauthorizedAccessException ex)
 			{
-				throw new TortusFileException(string.Format("The application does not have permission to save the file ./LoginConfig.xml"), "./LoginConfig.xml", ex);
+				throw new TortoiseFileException(string.Format("The application does not have permission to save the file ./LoginConfig.xml"), "./LoginConfig.xml", ex);
 			}
 			catch (SecurityException ex)
 			{
-				throw new TortusFileException(string.Format("The application does not have permission to save the file ./LoginConfig.xml"), "./LoginConfig.xml", ex);
+				throw new TortoiseFileException(string.Format("The application does not have permission to save the file ./LoginConfig.xml"), "./LoginConfig.xml", ex);
 			}
 		}
 
 		/// <summary>
 		/// This Loads the configeration file into the static feild LoginServer.XML.LoginServer.Instance.
 		/// </summary>
-		/// <exception cref="SharedServerLib.Exceptions.TortusMissingResourceException">The embeded resource cannot be loaded.</exception>
-		/// <exception cref="SharedServerLib.Exceptions.TortusFileException">The configeration cannot be loaded or initally created.</exception>
-		/// <exception cref="SharedServerLib.Exceptions.TortusFormatException">An IP or Hostname is invalid.</exception>
+		/// <exception cref="SharedServerLib.Exceptions.TortoiseMissingResourceException">The embeded resource cannot be loaded.</exception>
+		/// <exception cref="SharedServerLib.Exceptions.TortoiseFileException">The configeration cannot be loaded or initally created.</exception>
+		/// <exception cref="SharedServerLib.Exceptions.TortoiseFormatException">An IP or Hostname is invalid.</exception>
 		/// <exception cref="System.InvalidOperationException"> An error occurred during deserialization. The original exception is available using the <see cref="System.innerException">innerException</see>  property. </exception>
 		public static void LoadConfig()
 		{
@@ -247,9 +247,9 @@ namespace LoginServer.XML
 		/// <summary>
 		/// This Loads the configeration file into the static feild LoginServer.XML.LoginServer.Instance.
 		/// </summary>
-		/// <exception cref="SharedServerLib.Exceptions.TortusMissingResourceException">The embeded resource cannot be loaded.</exception>
-		/// <exception cref="SharedServerLib.Exceptions.TortusFileException">The configeration cannot be loaded or initally created.</exception>
-		/// <exception cref="SharedServerLib.Exceptions.TortusFormatException">An IP or Hostname is invalid.</exception>
+		/// <exception cref="SharedServerLib.Exceptions.TortoiseMissingResourceException">The embeded resource cannot be loaded.</exception>
+		/// <exception cref="SharedServerLib.Exceptions.TortoiseFileException">The configeration cannot be loaded or initally created.</exception>
+		/// <exception cref="SharedServerLib.Exceptions.TortoiseFormatException">An IP or Hostname is invalid.</exception>
 		/// <exception cref="System.InvalidOperationException"> An error occurred during deserialization. The original exception is available using the <see cref="System.innerException">innerException</see>  property. </exception>
 		public static void LoadConfig(bool ignoreErrors)
 		{
@@ -286,7 +286,7 @@ namespace LoginServer.XML
 							continue;
 						}
 						else
-							throw new TortusFormatException("Value is not a valid IP Address or DNS Host", AcceptedAddresses[Index], "Any IP Address or DNS host");
+							throw new TortoiseFormatException("Value is not a valid IP Address or DNS Host", AcceptedAddresses[Index], "Any IP Address or DNS host");
 					}
 
 					if (Addresses.Length == 0)
@@ -297,7 +297,7 @@ namespace LoginServer.XML
 							continue;
 						}
 						else
-							throw new TortusFormatException("DNS Host did not resolve to an IP address", AcceptedAddresses[Index], "Any IP Address or DNS host");
+							throw new TortoiseFormatException("DNS Host did not resolve to an IP address", AcceptedAddresses[Index], "Any IP Address or DNS host");
 					}
 
 					LoginServerConfig.Instance.ConvertedAcceptedServerAddresses[Index] = Addresses[0];
@@ -315,12 +315,12 @@ namespace LoginServer.XML
 
 			if (IPAddress.TryParse(LoginServerConfig.Instance.ClientListenAddress, out LoginServerConfig.Instance.ConvertedClientListenAddress))
 			{
-				throw new TortusFormatException("Value is not a valid IP Address or DNS Host", LoginServerConfig.Instance.ClientListenAddress, "Any IP Address or DNS host");
+				throw new TortoiseFormatException("Value is not a valid IP Address or DNS Host", LoginServerConfig.Instance.ClientListenAddress, "Any IP Address or DNS host");
 			}
 
 			if (IPAddress.TryParse(LoginServerConfig.Instance.ServerListenAddress, out LoginServerConfig.Instance.ConvertedServerListenAddress))
 			{
-				throw new TortusFormatException("Value is not a valid IP Address or DNS Host", LoginServerConfig.Instance.ServerListenAddress, "Any IP Address or DNS host");
+				throw new TortoiseFormatException("Value is not a valid IP Address or DNS Host", LoginServerConfig.Instance.ServerListenAddress, "Any IP Address or DNS host");
 			}
 
 		}

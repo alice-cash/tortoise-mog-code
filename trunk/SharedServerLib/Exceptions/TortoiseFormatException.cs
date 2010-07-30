@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/29/2010
- * Time: 10:45 PM
+ * Date: 5/2/2010
+ * Time: 3:03 AM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -32,42 +32,17 @@
  */
 using System;
 
-namespace Client.Rendering
+namespace SharedServerLib.Exceptions
 {
 	/// <summary>
-	/// Description of Screen.
+	/// Description of TortoiseFormatException.
 	/// </summary>
-	public abstract class Screen: IDisposable
+	public class TortoiseFormatException : TortoiseGeneralException
 	{
-
-		public virtual void init()
+		public TortoiseFormatException(string message, Object Value, string RequiredFormat):base(message)
 		{
-
+			Data.Add("Value", Value);
+			Data.Add("RequiredFormat", RequiredFormat);
 		}
-
-		public virtual void load()
-		{
-
-		}
-
-		public virtual void unload()
-		{
-
-		}
-
-		public virtual void Dispose()
-		{
-
-		}
-
-		public virtual void Tick()
-		{
-
-		}
-
-		public virtual void Render()
-		{
-			
-		}		
 	}
 }

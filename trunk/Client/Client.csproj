@@ -46,11 +46,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AgateLib">
-      <HintPath>RenderingLibs\AgateLib.dll</HintPath>
+    <Reference Include="AgateDrawing">
+      <HintPath>..\..\..\AgateLib\Binaries\Debug\AgateDrawing.dll</HintPath>
     </Reference>
-    <Reference Include="AgateSDL">
-      <HintPath>RenderingLibs\AgateSDL.dll</HintPath>
+    <Reference Include="AgateLib">
+      <HintPath>..\..\..\AgateLib\Binaries\Debug\AgateLib.dll</HintPath>
+    </Reference>
+    <Reference Include="AgateOTK">
+      <HintPath>..\..\..\AgateLib\Binaries\Debug\AgateOTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -60,6 +63,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedCode\Connection.cs">
+      <Link>Connections\Connection.cs</Link>
+    </Compile>
     <Compile Include="..\SharedCode\MessageID.cs">
       <Link>Connections\MessageID.cs</Link>
     </Compile>
@@ -72,7 +78,9 @@
     <Compile Include="Connections\ServerWriter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rendering\MainMenuScreen.cs" />
     <Compile Include="Rendering\Screen.cs" />
+    <Compile Include="Rendering\Window.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Rendering\" />

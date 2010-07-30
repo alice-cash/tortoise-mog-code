@@ -2,7 +2,7 @@
  * Created by SharpDevelop.
  * User: Matthew
  * Date: 7/29/2010
- * Time: 10:45 PM
+ * Time: 11:03 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -31,43 +31,30 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using System.Text;
 
-namespace Client.Rendering
+namespace LoginServer.Logic
 {
 	/// <summary>
-	/// Description of Screen.
+	/// Description of RandomString.
 	/// </summary>
-	public abstract class Screen: IDisposable
+	class RandomString
 	{
-
-		public virtual void init()
+		private static Random _random = new Random();
+		
+		public static string GetRandomString(int Length)
 		{
-
-		}
-
-		public virtual void load()
-		{
-
-		}
-
-		public virtual void unload()
-		{
-
-		}
-
-		public virtual void Dispose()
-		{
-
-		}
-
-		public virtual void Tick()
-		{
-
-		}
-
-		public virtual void Render()
-		{
+			StringBuilder sb = new StringBuilder(Length);
 			
-		}		
+			for(int i = 0; i < Length; i++)
+				sb.Append(GetChar());
+			return sb.ToString();
+		}
+		
+		private static char GetChar()
+		{
+			string validChars = "123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-=_+()[]{};\"'\\|!@#$%^&*";
+			return validChars[_random.Next(validChars.Length)];
+		}
 	}
 }
