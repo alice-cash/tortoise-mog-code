@@ -58,7 +58,7 @@ namespace LoginServer.Connections
 			//horrable bug, and it should bring the server down and burn their house down.
 			//This still needs to be here due to the explicid conversion and my coding rules for this project.
 			if(key.Length + 2 >= ushort.MaxValue)
-				throw new TortusGeneralException("Invalid key length!");
+				throw new TortoiseGeneralException("Invalid key length!");
 			
 			ushort length = (ushort)(2 + key.Length);
 			_sw.Write(length);

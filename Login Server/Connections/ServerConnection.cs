@@ -33,26 +33,50 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using Shared.Connections;
 
 namespace LoginServer.Connections
 {
 	/// <summary>
 	/// Description of ServerConnection.
 	/// </summary>
-	public class ServerConnection
+	class ServerConnection : Connection
 	{
-		private TcpClient _client;
-        public bool Connected
-        {
-            get { return _client.Connected; }
-        }
-		public ServerConnection(TcpClient connection)
-		{
-            _client = connection;
-		}
-        public void Poll()
-        {
 
-        }
+		public ServerConnection(TcpClient connection) : base(connection)
+		{
+
+		}
+		internal override void HandleInput(ushort packetID)
+		{
+			//Make sure its a valid Enum Number
+			PacketID pID = PacketID.Null;
+			if(!pID.TryParse(packetID))
+			{
+				SyncError();
+				return;
+			}
+
+			//Switch through all of the items, even if we throw a SyncError.
+			//Otherwise each method should call a Read_{DescritiveInfo}()
+			Dictionary<String, Object> debugData;
+			switch(pID)
+			{
+				case PacketID.Null:
+					debugData = new Dictionary<String, Object>();
+					debugData.Add("PacketID", PacketID.Null);
+					SyncError(debugData);
+					break;
+				case PacketID.Authintication:
+					
+					break;
+				case PacketID.ClientInfo:
+					
+					break;
+			}
+		}
+		
+		
+
 	}
 }

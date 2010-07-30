@@ -56,10 +56,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Communication\AESEncryption.cs" />
-    <Compile Include="Exceptions\TortusFileException.cs" />
-    <Compile Include="Exceptions\TortusFormatException.cs" />
-    <Compile Include="Exceptions\TortusGeneralException.cs" />
-    <Compile Include="Exceptions\TortusMissingResourceException .cs" />
+    <Compile Include="Exceptions\TortoiseFileException.cs" />
+    <Compile Include="Exceptions\TortoiseFormatException.cs" />
+    <Compile Include="Exceptions\TortoiseGeneralException.cs" />
+    <Compile Include="Exceptions\TortoiseMissingResourceException .cs" />
     <Compile Include="Misc\ByteStringConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

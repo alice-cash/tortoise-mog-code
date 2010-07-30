@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 5/2/2010
- * Time: 3:03 AM
+ * Date: 7/26/2010
+ * Time: 9:36 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -32,17 +32,18 @@
  */
 using System;
 
-namespace SharedServerLib.Exceptions
+
+namespace Client.Rendering
 {
 	/// <summary>
-	/// Description of TortusFormatException.
+	/// Description of Screen.
 	/// </summary>
-	public class TortusFormatException : TortusGeneralException
+	public class Window
 	{
-		public TortusFormatException(string message, Object Value, string RequiredFormat):base(message)
+		public Screen CurrentScreen{get; set;}
+		public Window()
 		{
-			Data.Add("Value", Value);
-			Data.Add("RequiredFormat", RequiredFormat);
+
 		}
 	}
 }

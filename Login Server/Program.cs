@@ -76,12 +76,12 @@ namespace LoginServer
 			//Load up the configeration file
 			try{
 				XML.LoginServerConfig.LoadConfig();
-			} catch(TortusMissingResourceException ex)
+			} catch(TortoiseMissingResourceException ex)
 			{
 				Console.WriteLine("The server could not load the embeded resource. Please check following embeded resource: {0}", ex.Data["ResourceName"]);
 				return;
 			}
-			catch (TortusFileException ex)
+			catch (TortoiseFileException ex)
 			{
 				Console.WriteLine("The server could not load or create the configeration file. More information: {0}", ex.InnerException.ToString());
 				return;
@@ -103,9 +103,9 @@ namespace LoginServer
 			}
 			
 			//Start the various Listiners.
-			LoginServer.Connections.ServerListen.CreateInstance();
+			LoginServer.Connections.ServerHandle.CreateInstance();
 
-			LoginServer.Connections.ClientListen.CreateInstance();
+			LoginServer.Connections.ClientHandle.CreateInstance();
 			#if DEBUG
 			Console.WriteLine("Press a key...");
 			Console.ReadKey(true);

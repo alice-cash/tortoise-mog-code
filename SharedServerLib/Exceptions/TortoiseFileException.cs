@@ -1,20 +1,20 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/29/2010
- * Time: 10:45 PM
+ * Date: 5/2/2010
+ * Time: 2:56 AM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
  * 
- *    1. Redistributions of source code must retain the above copyright notice, this list of
- *       conditions and the following disclaimer.
+ *	1. Redistributions of source code must retain the above copyright notice, this list of
+ *	   conditions and the following disclaimer.
  * 
- *    2. Redistributions in binary form must reproduce the above copyright notice, this list
- *       of conditions and the following disclaimer in the documentation and/or other materials
- *       provided with the distribution.
+ *	2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *	   of conditions and the following disclaimer in the documentation and/or other materials
+ *	   provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY Matthew Cash ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -32,42 +32,18 @@
  */
 using System;
 
-namespace Client.Rendering
+namespace SharedServerLib.Exceptions
 {
 	/// <summary>
-	/// Description of Screen.
+	/// Description of TortoiseGeneralException.
 	/// </summary>
-	public abstract class Screen: IDisposable
+	public class TortoiseFileException : Exception
 	{
-
-		public virtual void init()
+		public TortoiseFileException(string message, string FileName, Exception InnerException):base(message, InnerException)
 		{
-
+			Data.Add("Filename", FileName);
 		}
-
-		public virtual void load()
-		{
-
-		}
-
-		public virtual void unload()
-		{
-
-		}
-
-		public virtual void Dispose()
-		{
-
-		}
-
-		public virtual void Tick()
-		{
-
-		}
-
-		public virtual void Render()
-		{
-			
-		}		
+		
+		
 	}
 }

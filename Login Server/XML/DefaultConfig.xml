@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <LoginServer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<!-- This is the name of your server, for internal use. -->
-	<ServerName>Tortus Login Server</ServerName>
+	<ServerName>Tortoise Login Server</ServerName>
 	
 	<!-- This is the port the Server listens on for client connections. -->
 	<ClientListenPort>9974</ClientListenPort>
@@ -36,8 +36,8 @@
 		<string>MyGameServer03.MyGameSite.com</string>
 		-->
 		
-		<!-- Go to http://stormraidergames.com/TortusPoll for more info. -->
-		<!-- <string>tortuspoll.stormraidergames.com</string> -->
+		<!-- Go to http://stormraidergames.com/TortoisePoll for more info. -->
+		<!-- <string>Tortoisepoll.stormraidergames.com</string> -->
 	</ServerListenAcceptedAddresses>
 	
 	<!-- This is the port that Mysql listens on. Leave alone if you are not sure. -->
@@ -47,10 +47,10 @@
 	<MysqlAddress>127.0.0.1</MysqlAddress>
 	
 	<!-- This is the Database for user account information. Leave alone if you are not sure. -->
-	<MysqlAccountDatabse>TortusAccounts</MysqlAccountDatabse>
+	<MysqlAccountDatabse>TortoiseAccounts</MysqlAccountDatabse>
 	
 	<!-- This is the Database for server information. Leave alone if you are not sure. -->
-	<MysqlServerDatabse>TortusServers</MysqlServerDatabse>
+	<MysqlServerDatabse>TortoiseServers</MysqlServerDatabse>
 	
 	<!-- This is the Database user. It is NOT recomended to use your root mysql account. -->
 	<MysqlUser>{EDIT ME}</MysqlUser>

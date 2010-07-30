@@ -59,10 +59,10 @@ namespace SharedServerLib.Misc
 			}
 			catch(System.FormatException ex)
 			{
-				throw new TortusFormatException("Invalid entity in input.", Input, "A string of numbers between 0 and 255, seperated by a comma");
+				throw new TortoiseFormatException("Invalid entity in input.", Input, "A string of numbers between 0 and 255, seperated by a comma");
 			}catch(System.OverflowException ex)
 			{
-				throw new TortusFormatException("Invalid entity in input.", Input, "A string of numbers between 0 and 255, seperated by a comma");				
+				throw new TortoiseFormatException("Invalid entity in input.", Input, "A string of numbers between 0 and 255, seperated by a comma");				
 			}
 			return Output;
 		}

@@ -1,0 +1,3 @@
+This project relies on these Projects.
+Releases will include a copy of them, but for development, you need to download these sepertly:
+AgateLib SVN Revision 1239 or Higher - https://sourceforge.net/projects/agate/

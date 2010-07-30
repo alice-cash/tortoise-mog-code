@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 5/2/2010
- * Time: 2:56 AM
+ * Date: 7/29/2010
+ * Time: 11:25 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -31,17 +31,23 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using AgateLib;
+using AgateLib.DisplayLib;
 
-namespace SharedServerLib.Exceptions
+namespace Client.Rendering
 {
 	/// <summary>
-	/// Description of TortusGeneralException.
+	/// Description of MainMenuScreen.
 	/// </summary>
-	public class TortusMissingResourceException : Exception
+	public class MainMenuScreen : Screen
 	{
-		public TortusMissingResourceException(string message, string ResourceName):base(message)
+		public MainMenuScreen()
 		{
-			Data.Add("ResourceName", ResourceName);
+		}
+		
+		public override void Render()
+		{
+
 		}
 	}
 }

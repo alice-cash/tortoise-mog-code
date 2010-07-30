@@ -35,17 +35,17 @@ using System;
 namespace SharedServerLib.Exceptions
 {
 	/// <summary>
-	/// Description of TortusGeneralException.
+	/// Description of TortoiseGeneralException.
 	/// </summary>
-	public class TortusGeneralException: Exception
+	public class TortoiseGeneralException: Exception
 	{
-		public TortusGeneralException():base("A generic Exception has occured in Tortus.")
+		public TortoiseGeneralException():base("A generic Exception has occured in Tortoise.")
 		{
 		}
-		public TortusGeneralException(string message):base(message)
+		public TortoiseGeneralException(string message):base(message)
 		{
 		}
-		public TortusGeneralException(string message, Exception innerException):base(message,innerException)
+		public TortoiseGeneralException(string message, Exception innerException):base(message,innerException)
 		{
 		}
 		

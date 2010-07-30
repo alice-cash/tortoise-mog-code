@@ -44,17 +44,8 @@ namespace Client.Connections
 	/// <summary>
 	/// 
 	/// </summary>
-	partial class ServerConnection
+	partial class ServerConnection : Connection
 	{
-		private TcpClient _client;
-		private BinaryReader _sr;
-		private BinaryWriter _sw;
-		
-		private int _length;
-		private DateTime _recived;
-
-
-		private string _authKey = "";
 		
 		private bool _readyForData;
 		public bool ReadyForData
@@ -62,119 +53,64 @@ namespace Client.Connections
 			get{return _readyForData;}
 		}
 		
-		public System.EventHandler<ServerMessageEventArgs> ServerMessageEvent; 
-		public System.EventHandler ReadyForDataEvent; 
+		
+		public System.EventHandler<ServerMessageEventArgs> ServerMessageEvent;
+		public System.EventHandler ReadyForDataEvent;
 
-		public ServerConnection(string dest, int port)
+		public ServerConnection(string dest, int port):base(dest, port)
 		{
-			_client = new TcpClient();
-			_client.Connect(dest, port);
-			_sr = new BinaryReader(_client.GetStream());
-			_sw = new BinaryWriter(_client.GetStream());
-		}
-		public void Poll()
-		{
-			//If we are waiting for data.
-			if(_length > 0)
-			{
-				//if we still don't have it.
-				if(_client.Available < _length)
-		   		{
-		   			//if its been more than a second, call a sync error.
-		   			if(_recived + TimeSpan.FromMilliseconds(1000) >= DateTime.Now)
-		   			{
-		   				Disconnect(MessageID.SyncError);
-		   			}
-		   			return;
-		   		}
 			
+		}
+
+		
+		internal override void HandleInput(ushort packetID)
+		{
+			PacketID pID = PacketID.Null;
+			if(!pID.TryParse(packetID))
+			{
+				SyncError();
+				return;
 			}
-			//if enough data is avalable to read the ushort
-		   if (_client.Available > 2)
-		   {
-		   		_length = _sr.ReadUInt16();
-		   		if(_client.Available < _length)
-		   		{
-		   			//if theres not enough data, go on.
-		   			_recived = DateTime.Now;
-		   			return;
-		   		}
 
-				//Make sure its a valid Enum Number		   		
-		   		ushort pTempID = _sr.ReadUInt16();
-		   		PacketID pID = PacketID.Null;
-		   		if(!pID.TryParse(pTempID))
-		   		{
-		   			Disconnect(MessageID.SyncError);
-		   			return;
-		   		}
+			//Switch through all of the items, even if we throw a SyncError.
+			//Otherwise each ID should call a Read_{DescritiveInfo}()
+			//The reason for the empty SyncError() for a release is we don't care about
+			//reasons. We can assume the end developer has
+			Dictionary<String, Object> debugData;
+			switch(pID)
+			{
+				case PacketID.Null:
+					debugData = new Dictionary<String, Object>();
+					debugData.Add("PacketID", PacketID.Null);
+					SyncError(debugData);
 
-		   		//Switch through all of the items, even if we throw a SyncError.
-		   		//Otherwise each ID should call a Read_{DescritiveInfo}()
-		   		//The reason for the empty SyncError() for a release is we don't care about
-		   		//reasons. We can assume the end developer has 
-		   		#if DEBUG
-		   		Dictionary<String, Object> debugData;
-		   		#endif
-		   		switch(pID)
-		   		{
-		   			case PacketID.Null:
-		   				debugData = new Dictionary<String, Object>();
-		   				debugData.Add("PacketID", PacketID.Null);
-		   				SyncError(debugData);
+					break;
+					case PacketID.Authintication: Read_AuthKey();
+					break;
+				case PacketID.ClientInfo:
+					debugData = new Dictionary<String, Object>();
+					debugData.Add("PacketID", PacketID.ClientInfo);
+					SyncError(debugData);
 
-		   				break;
-		   			case PacketID.Authintication: Read_AuthKey();
-		   				break;
-		   			case PacketID.ClientInfo:
-		   				debugData = new Dictionary<String, Object>();
-		   				debugData.Add("PacketID", PacketID.ClientInfo);
-		   				SyncError(debugData);
-
-		   				break;
-		   			case PacketID.ServerMessage: Read_ServerMessage();
-		   				break;
-		   		}
-		   		
-		   }
-		   
-		   _length = 0;
+					break;
+					case PacketID.ServerMessage: Read_ServerMessage();
+					break;
+			}
 		}
 		
+		/// <summary>
+		/// Disconnects the client with the specified reason.
+		/// </summary>
 		public void Disconnect(MessageID reason)
 		{
 			Write_ServerMessage(reason);
-			_client.Close();					
+			Disconnect();
 		}
 		
-
-		/// <summary>
-		/// Calls a Sync Error, Usually when the reciving datastream contains data the program isn't expecting.
-		/// </summary>
-		public void SyncError()
+		public override void SyncError(Dictionary<string, object> data)
 		{
-			SyncError(new Dictionary<String, Object>());
+			Write_ServerMessage(MessageID.SyncError);
+			base.SyncError(data);
 		}
-		
-		public void SyncError(Dictionary<String, Object> data)
-		{
-			StackTrace stackTrace = new StackTrace();
-		
-			if(System.Diagnostics.Debugger.IsAttached)
-				System.Diagnostics.Debugger.Break();
-			else
-			{
-				System.Diagnostics.Debug.WriteLine(String.Format("SyncError!"));
-				foreach(var kvp in data)
-					System.Diagnostics.Debug.WriteLine(String.Format("{0} = {1}", kvp.Key, kvp.Value));
-				
-				System.Diagnostics.Debug.WriteLine("Stack:");
-				System.Diagnostics.Debug.WriteLine(stackTrace.ToString());
-			}
-
-			Disconnect(MessageID.SyncError);
-		}
-		
-		
 	}
 }

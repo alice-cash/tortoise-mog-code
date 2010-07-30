@@ -96,6 +96,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedCode\Connection.cs">
+      <Link>Connections\Connection.cs</Link>
+    </Compile>
     <Compile Include="..\SharedCode\MessageID.cs">
       <Link>Connections\MessageID.cs</Link>
     </Compile>
@@ -108,7 +111,7 @@
     <Compile Include="Connections\ClientWriter.cs" />
     <Compile Include="Connections\ServerConnection.cs" />
     <Compile Include="Connections\ServerHandle.cs" />
-    <Compile Include="Connections\ServerListen.cs" />
+    <Compile Include="Logic\RandomString.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="XML\LoginServer.cs" />
     <EmbeddedResource Include="XML\DefaultConfig.xml" />

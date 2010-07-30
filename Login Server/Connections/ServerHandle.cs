@@ -35,7 +35,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Linq;
-
+using System.Threading;
 
 using LoginServer.XML;
 
@@ -54,7 +54,6 @@ namespace LoginServer.Connections
 
 		private List<ServerConnection> _clients;
 		private Queue<TcpClient> _requests;
-		private bool _threadRunning;
 		
 		private Thread _listenThread;
 		private bool _threadRunning;
@@ -85,13 +84,13 @@ namespace LoginServer.Connections
 		private void WorkThread()
 		{
 			//If the Listen address is IPv6Any, then we possibly need to create a second listiner for IPv4
-			if (LoginServerConfig.Instance. == IPAddress.IPv6Any)
+			if (LoginServerConfig.Instance.ConvertedServerListenAddress == IPAddress.IPv6Any)
 			{
 				_secondaryListinerActive = true;
 				_secondaryListiner = new TcpListener(IPAddress.Any, LoginServerConfig.Instance.ServerListenPort);
 				_secondaryListiner.Start();
 			}
-			_listiner = new TcpListener(LoginServerConfig.Instance.ConvertedClientListenAddress, LoginServerConfig.Instance.ServerListenPort);
+			_listiner = new TcpListener(LoginServerConfig.Instance.ConvertedServerListenAddress, LoginServerConfig.Instance.ServerListenPort);
 			_listiner.Start();
 			
 			_threadRunning = true;
@@ -124,7 +123,6 @@ namespace LoginServer.Connections
 				                 {
 				                 	if (!sc.Connected)
 				                 	{
-				                 		sc.Disconnected();
 				                 		_clients.Remove(sc);
 				                 	}
 				                 });
@@ -139,6 +137,13 @@ namespace LoginServer.Connections
 		{
 			ServerConnection Conn = new ServerConnection(client);
 			_clients.Add(Conn);
+			Conn.DisconnectedEvent += delegate(object sender, EventArgs e)
+			{
+				//If its not a sender item, then it will be null
+				//and a null should "NOT" be in the clients list
+				if(_clients.Contains(sender as ServerConnection))
+					_clients.Remove(sender as ServerConnection);
+			};
 		}
 	}
 }

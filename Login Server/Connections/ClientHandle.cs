@@ -34,6 +34,9 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
+
+using LoginServer.XML;
 
 namespace LoginServer.Connections
 {
@@ -58,7 +61,6 @@ namespace LoginServer.Connections
 		private ClientHandle()
 		{
 			_clients = new List<ClientConnection>();
-			_requests = new Queue<TcpClient>();
 			_threadRunning = true;
 			
 			_listenThread = new Thread(WorkThread);
@@ -79,7 +81,7 @@ namespace LoginServer.Connections
 		private void WorkThread()
 		{
 			//If the Listen address is IPv6Any, then we possibly need to create a second listiner for IPv4
-			if (LoginServerConfig.Instance. == IPAddress.IPv6Any)
+			if (LoginServerConfig.Instance.ConvertedClientListenAddress == IPAddress.IPv6Any)
 			{
 				_secondaryListinerActive = true;
 				_secondaryListiner = new TcpListener(IPAddress.Any, LoginServerConfig.Instance.ServerListenPort);
@@ -101,13 +103,6 @@ namespace LoginServer.Connections
 					AcceptConnection(_secondaryListiner.AcceptTcpClient());
 				}
 
-				_clients.ForEach((ClientConnection sc) =>
-				                 {
-				                 	if (!sc.Connected)
-				                 	{
-				                 		sc.Disconnected();
-				                 		_clients.Remove(sc);
-				                 	}				                 });
 				foreach (var c in _clients)
 				{
 					c.Poll();
@@ -120,6 +115,13 @@ namespace LoginServer.Connections
 		{
 			ClientConnection Conn = new ClientConnection(client);
 			_clients.Add(Conn);
+			Conn.DisconnectedEvent += delegate(object sender, EventArgs e)
+			{
+				//If its not a sender item, then it will be null
+				//and a null should "NOT" be in the clients list
+				if(_clients.Contains(sender as ClientConnection))
+					_clients.Remove(sender as ClientConnection);
+			};
 		}
 
 	}
