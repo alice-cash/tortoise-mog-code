@@ -37,7 +37,7 @@ using SharedServerLib.Exceptions;
 using System.Threading;
 using Mono.Unix;
 #endif
-namespace LoginServer
+namespace Tortoise.LoginServer
 {
 	class Program
 	{
