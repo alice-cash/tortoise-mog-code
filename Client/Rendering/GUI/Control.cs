@@ -31,21 +31,22 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using System.Collections.Generic;
 using AgateLib;
 using AgateLib.DisplayLib;
 using AgateLib.Geometry;
 using AgateLib.InputLib;
-
 using Tortoise.Client.Extension.AgateLib.Geometry;
+using Thread = System.Threading.Thread;
 
 namespace Tortoise.Client.Rendering.GUI
 {
 	/// <summary>
 	/// Description of Control.
 	/// </summary>
-	public class Control
+	public abstract class Control
 	{
-		#region Private Varables
+		#region protected internal Varables
 		protected internal Rectangle _area = new Rectangle();
 		protected internal Color _backgroundColor = Color.White;
 		protected internal bool _visible = true;
@@ -61,10 +62,14 @@ namespace Tortoise.Client.Rendering.GUI
 		protected internal bool _inited = false;
 		protected internal bool _loaded = false;
 		
-	   protected internal Container _parent;
+		protected internal Container _parent;
 		
 		protected internal Surface _preRenderd;
 		protected internal bool _redrawPreRenderd = false;
+		
+		protected internal bool _enforceThreadSafeCalls = false;
+		protected internal int _safeThreadID;
+		private Queue<InvokeItem> _invokeList;
 		#endregion
 		
 		#region Event Handlers
@@ -130,6 +135,7 @@ namespace Tortoise.Client.Rendering.GUI
 			get { return _backgroundColor; }
 			set
 			{
+				EnforceThreadSafty();
 				if (_backgroundColor != value)
 				{
 					_backgroundColor = value;
@@ -143,19 +149,31 @@ namespace Tortoise.Client.Rendering.GUI
 		public bool Loaded
 		{
 			get { return _loaded; }
-			set { _loaded = value; }
+			set
+			{
+				EnforceThreadSafty();
+				_loaded = value;
+			}
 		}
 
 		public bool Visible
 		{
 			get { return _visible; }
-			set { _visible = value; }
+			set
+			{
+				EnforceThreadSafty();
+				_visible = value;
+			}
 		}
 
 		public Container Parent
 		{
 			get { return _parent; }
-			protected internal set { _parent = value; }
+			protected internal set
+			{
+				EnforceThreadSafty();
+				_parent = value;
+			}
 		}
 
 		public Rectangle Area
@@ -163,6 +181,7 @@ namespace Tortoise.Client.Rendering.GUI
 			get { return _area; }
 			set
 			{
+				EnforceThreadSafty();
 				Rectangle OldRec = _area;
 
 				if (_area.X != value.X || _area.Y != value.Y)
@@ -186,6 +205,7 @@ namespace Tortoise.Client.Rendering.GUI
 			get { return _area.Location; }
 			set
 			{
+				EnforceThreadSafty();
 				if (_area.X != value.X || _area.Y != value.Y)
 				{
 					Point OldLocation = _area.Location;
@@ -201,6 +221,7 @@ namespace Tortoise.Client.Rendering.GUI
 			get { return _area.Size; }
 			set
 			{
+				EnforceThreadSafty();
 				if (_area.Width != value.Width || _area.Height != value.Height)
 				{
 
@@ -218,6 +239,7 @@ namespace Tortoise.Client.Rendering.GUI
 			get { return _area.X; }
 			set
 			{
+				EnforceThreadSafty();
 				_area.X = value;
 				_chancedLocation = true;
 			}
@@ -228,6 +250,7 @@ namespace Tortoise.Client.Rendering.GUI
 			get { return _area.Y; }
 			set
 			{
+				EnforceThreadSafty();
 				_area.Y = value;
 				_chancedLocation = true;
 			}
@@ -238,6 +261,7 @@ namespace Tortoise.Client.Rendering.GUI
 			get { return _area.Width; }
 			set
 			{
+				EnforceThreadSafty();
 				if (_area.Width != value)
 				{
 					Size OldSize = Size;
@@ -253,6 +277,7 @@ namespace Tortoise.Client.Rendering.GUI
 			get { return _area.Height; }
 			set
 			{
+				EnforceThreadSafty();
 				if (_area.Height != value)
 				{
 					Size OldSize = Size;
@@ -309,6 +334,8 @@ namespace Tortoise.Client.Rendering.GUI
 		{
 			_area = area;
 			Name = name;
+			_safeThreadID = GetManagedThreadId();
+			_invokeList = new Queue<InvokeItem>();
 		}
 		#endregion
 
@@ -349,11 +376,22 @@ namespace Tortoise.Client.Rendering.GUI
 
 		public virtual void Tick(TickEventArgs e)
 		{
+			EnforceThreadSafty();
 			if (_chancedBackgroundColor || _preRenderd == null)
 			{
 				Redraw_PreRenderd();
 				_redrawPreRenderd = false;
 				_chancedBackgroundColor = false;
+			}
+			lock(_invokeList)
+			{
+				InvokeItem item;
+				while(_invokeList.Count > 0)
+				{
+					item = _invokeList.Dequeue();
+					item.Action(item.UserData);
+				}
+				
 			}
 		}
 		
@@ -363,6 +401,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// </summary>
 		public virtual void Render()
 		{
+			EnforceThreadSafty();
 			if (!_visible)
 				return;
 			//If its not loaded, LOAD IT!!!!
@@ -399,6 +438,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// </summary>
 		internal virtual bool OnMouseButtonDown(MouseEventArgs e)
 		{
+			EnforceThreadSafty();
 			return doMouseDown(e);
 		}
 		/// <summary>
@@ -406,6 +446,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// </summary>
 		internal virtual bool OnMouseButtonUp(MouseEventArgs e)
 		{
+			EnforceThreadSafty();
 			return doMouseUp(e);
 		}
 		/// <summary>
@@ -413,6 +454,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// </summary>
 		internal virtual bool OnMouseMove(MouseEventArgs e)
 		{
+			EnforceThreadSafty();
 			return doMouseMove(e);
 		}
 		/// <summary>
@@ -420,6 +462,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// </summary>
 		internal virtual bool OnKeyboardDown(MouseEventArgs e)
 		{
+			EnforceThreadSafty();
 			//Keybord events should never be triggerd in the base control event.
 			return false; //doKeybordDown(e);
 		}
@@ -428,10 +471,45 @@ namespace Tortoise.Client.Rendering.GUI
 		/// </summary>
 		internal virtual bool OnKeyboardUp(MouseEventArgs e)
 		{
+			EnforceThreadSafty();
 			//Keybord events should never be triggerd in the base control event.
 			return false; //doKeybordUp(e);
 		}
 		#endregion
 		
+		#region Public Methods
+		public void InvokeMethod(InvokeDelegate methodToInvoke, object userData)
+		{
+			if(CheckThreadSafty())
+			{
+				//if its true we just run it.
+				methodToInvoke.Invoke(userData);
+				return;
+			}
+			//Othherwise we lock it and add it.
+			lock(_invokeList)
+			{
+				_invokeList.Enqueue(new InvokeItem(methodToInvoke, userData));
+			}
+		}
+		#endregion
+		
+		#region Internal Protected Methods
+		internal protected void EnforceThreadSafty()
+		{
+			if(!CheckThreadSafty()) throw new InvalidOperationException(string.Format("Crossthread Access to '{0}' is not permited.",Name));
+		}
+		internal protected bool CheckThreadSafty()
+		{
+			//If enforce threadsafty is on, we return based on if the thread is the same as the parent,
+			//otherwise we just return true because we want whatevers using this to suceed.
+			return _enforceThreadSafeCalls ? _safeThreadID == GetManagedThreadId(): true;
+		}
+		
+		internal protected int GetManagedThreadId()
+		{
+			return Thread.CurrentThread.ManagedThreadId;
+		}
+		#endregion
 	}
 }
