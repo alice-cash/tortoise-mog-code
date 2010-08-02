@@ -46,9 +46,6 @@ namespace Tortoise.Client.Rendering.GUI
     {
         protected internal ControlContainer _Items;
 
-        protected internal Surface PreRenderdControls;
-        protected internal Rectangle[] LastSet;
-
         public ControlContainer Controls
         {
             get { return _Items; }
@@ -92,7 +89,6 @@ namespace Tortoise.Client.Rendering.GUI
         {
             base.Init();
             _Items = new ControlContainer();
-            LastSet = new Rectangle[0];
 
         }
 
@@ -113,7 +109,7 @@ namespace Tortoise.Client.Rendering.GUI
                     Item.Load();
         }
 
-        public override void Tick(TickEventArgs e)
+        protected internal override void Tick(TickEventArgs e)
         {
             foreach (var Item in Controls)
             {
@@ -127,7 +123,7 @@ namespace Tortoise.Client.Rendering.GUI
         /// <summary>
         /// Renders the control to the screen.
         /// </summary>
-        public override void Render()
+        protected internal override void Render()
         {
             base.Render();
 

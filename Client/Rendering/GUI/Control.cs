@@ -64,7 +64,7 @@ namespace Tortoise.Client.Rendering.GUI
 		
 		protected internal Container _parent;
 		
-		protected internal Surface _preRenderd;
+		protected internal FrameBuffer _preRenderd;
 		protected internal bool _redrawPreRenderd = false;
 		
 		protected internal bool _enforceThreadSafeCalls = false;
@@ -80,6 +80,8 @@ namespace Tortoise.Client.Rendering.GUI
 		public EventHandler<MouseEventArgs> KeybordUp;
 		public EventHandler<ResizeEventArgs> Resized;
 		public EventHandler<MovedEventArgs> Moved;
+		
+		public System.EventHandler TickEvent;
 
 		protected internal bool doMouseDown(MouseEventArgs e)
 		{
@@ -374,7 +376,7 @@ namespace Tortoise.Client.Rendering.GUI
 				Unload();
 		}
 
-		public virtual void Tick(TickEventArgs e)
+		internal protected virtual void Tick(TickEventArgs e)
 		{
 			EnforceThreadSafty();
 			if (_chancedBackgroundColor || _preRenderd == null)
@@ -393,13 +395,15 @@ namespace Tortoise.Client.Rendering.GUI
 				}
 				
 			}
+			if(TickEvent != null)
+				TickEvent(this, EventArgs.Empty);
 		}
 		
 		
 		/// <summary>
 		/// Renders the control to the screen.
 		/// </summary>
-		public virtual void Render()
+		internal protected virtual void Render()
 		{
 			EnforceThreadSafty();
 			if (!_visible)
@@ -408,7 +412,7 @@ namespace Tortoise.Client.Rendering.GUI
 			if (!Loaded)
 				Load();
 			
-			_preRenderd.Draw(RealLocation);
+			_preRenderd.RenderTarget.Draw(RealLocation);
 		}
 
 
@@ -423,12 +427,12 @@ namespace Tortoise.Client.Rendering.GUI
 				_preRenderd = null;
 			}
 			
-			_preRenderd = new Surface(Size);
+			_preRenderd = new FrameBuffer(Size);
 			Display.RenderTarget = _preRenderd;
 			Display.BeginFrame();
 			Display.Clear(_backgroundColor);
 			Display.EndFrame();
-			Display.RenderTarget = Display.CurrentWindow;
+			Display.RenderTarget = Window.MainWindow.FrameBuffer;
 
 		}
 		
@@ -491,6 +495,11 @@ namespace Tortoise.Client.Rendering.GUI
 			{
 				_invokeList.Enqueue(new InvokeItem(methodToInvoke, userData));
 			}
+		}
+		
+		public bool InvokeRequired()
+		{
+			return CheckThreadSafty();
 		}
 		#endregion
 		
