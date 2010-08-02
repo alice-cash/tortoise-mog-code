@@ -49,6 +49,7 @@ namespace Tortoise.Client.Connections
 	{
 		
 		private bool _readyForData;
+
 		public bool ReadyForData
 		{
 			get{return _readyForData;}
