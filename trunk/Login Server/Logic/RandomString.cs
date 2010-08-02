@@ -33,7 +33,7 @@
 using System;
 using System.Text;
 
-namespace LoginServer.Logic
+namespace Tortoise.LoginServer.Logic
 {
 	/// <summary>
 	/// Description of RandomString.
