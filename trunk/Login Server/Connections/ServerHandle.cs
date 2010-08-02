@@ -37,9 +37,9 @@ using System.Net.Sockets;
 using System.Linq;
 using System.Threading;
 
-using LoginServer.XML;
+using Tortoise.LoginServer.XML;
 
-namespace LoginServer.Connections
+namespace Tortoise.LoginServer.Connections
 {
 	/// <summary>
 	/// Description of ServerHandle.

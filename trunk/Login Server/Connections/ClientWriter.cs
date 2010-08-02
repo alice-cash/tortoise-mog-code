@@ -35,7 +35,7 @@ using Shared.Connections;
 
 using SharedServerLib.Exceptions;
 
-namespace LoginServer.Connections
+namespace Tortoise.LoginServer.Connections
 {
 	//Handles writing to the client
 	partial class ClientConnection

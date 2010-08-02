@@ -34,14 +34,14 @@ using System;
 using System.Runtime.Remoting.Channels;
 using Shared.Connections;
 
-namespace LoginServer.Connections
+namespace Tortoise.LoginServer.Connections
 {
 	//Handles reading data from clients
 	partial class ClientConnection
 	{
 		void Read_Authintication()
 		{
-			
+		
 		}
 		
 		void Read_ClientInfo()
