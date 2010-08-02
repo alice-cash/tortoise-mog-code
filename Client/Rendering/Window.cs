@@ -31,9 +31,13 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using AgateLib;
+using AgateLib.DisplayLib;
+using AgateLib.Geometry;
 
+using Tortoise.Client.Collection;
 
-namespace Client.Rendering
+namespace Tortoise.Client.Rendering
 {
 	/// <summary>
 	/// Description of Screen.
@@ -41,9 +45,72 @@ namespace Client.Rendering
 	public class Window
 	{
 		public Screen CurrentScreen{get; set;}
+		public DisplayWindow MainWindow{get; private set;}
 		public Window()
 		{
+		}
+		
+		public void Run()
+		{
+			AgateSetup AS = new AgateSetup();
+			AS.Initialize(true, false, false);
+			if (AS.WasCanceled)
+				return;
 
+			MainWindow = DisplayWindow.CreateWindowed ("Tortoise MOG", 800, 600);
+			
+			CurrentScreen = new MainMenuScreen();
+			CurrentScreen.Init();
+			CurrentScreen.Load();
+			
+			
+			TickEventArgs tickEventData = new TickEventArgs();
+			Timing.StopWatch frameTimer = new Timing.StopWatch(true);
+			LimitedList<int> last30FrameTimes = new LimitedList<int>(30,0);
+			while (MainWindow.IsClosed == false)
+			{
+				
+				CurrentScreen.Tick(tickEventData);
+				
+				
+				if(Display.RenderTarget != MainWindow)
+					Display.RenderTarget = MainWindow;
+				Display.BeginFrame();
+				Display.Clear(Color.Black);
+				
+				CurrentScreen.Render();
+				
+				Display.EndFrame();
+				
+				MainWindow.Title = tickEventData.GetFPS.ToString() + " fps - " + (tickEventData.LastFrameTime / 1000).ToString() + " ms";
+				
+				Core.KeepAlive();
+				
+				tickEventData.LastFrameTime = (int)frameTimer.TotalMilliseconds * 1000;
+				//this resets the timers time, but doesn't stop it.
+				frameTimer.Reset();
+				last30FrameTimes.Add(tickEventData.LastFrameTime);
+				tickEventData.GetFPS = CalculateFPS(last30FrameTimes);
+			}
+		}
+		
+		/// <summary>
+		/// Calculates the average frame rate for the past 30 frames.
+		/// </summary>
+		/// <param name="frameTimes"></param>
+		/// <returns></returns>
+		private int CalculateFPS(LimitedList<int> frameTimes)
+		{
+			int count = 0, total = 0;
+			foreach(var v in frameTimes)
+			{
+				if(v == 0) continue;
+				count++;
+				total += v;
+			}
+			if(count == 0) return 0;
+			
+			return 1000000 / (total / count);
 		}
 	}
 }

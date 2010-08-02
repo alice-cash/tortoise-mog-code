@@ -7,7 +7,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Client</RootNamespace>
+    <RootNamespace>Tortoise.Client</RootNamespace>
     <AssemblyName>Client</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -46,14 +46,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AgateDrawing">
-      <HintPath>..\..\..\AgateLib\Binaries\Debug\AgateDrawing.dll</HintPath>
-    </Reference>
     <Reference Include="AgateLib">
-      <HintPath>..\..\..\AgateLib\Binaries\Debug\AgateLib.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Users\Matthew\Downloads\Agate031\Binaries\Release\AgateLib\AgateLib.dll</HintPath>
     </Reference>
-    <Reference Include="AgateOTK">
-      <HintPath>..\..\..\AgateLib\Binaries\Debug\AgateOTK.dll</HintPath>
+    <Reference Include="C5">
+      <HintPath>..\..\..\..\..\..\Users\Matthew\Downloads\C5.bin\C5.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -72,18 +69,36 @@
     <Compile Include="..\SharedCode\PacketID.cs">
       <Link>Connections\PacketID.cs</Link>
     </Compile>
+    <Compile Include="Collection\LimitedList.cs" />
     <Compile Include="Connections\ServerConnection.cs" />
     <Compile Include="Connections\ServerMessageEventArgs.cs" />
     <Compile Include="Connections\ServerReader.cs" />
     <Compile Include="Connections\ServerWriter.cs" />
+    <Compile Include="Extension\AgateLib\Geometry\Point.cs" />
+    <Compile Include="Extension\System\Random.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rendering\GUI\Container.cs" />
+    <Compile Include="Rendering\GUI\Control.cs" />
+    <Compile Include="Rendering\GUI\ControlContainer.cs" />
+    <Compile Include="Rendering\GUI\ControlSorter.cs" />
+    <Compile Include="Rendering\GUI\MouseEventArgs.cs" />
+    <Compile Include="Rendering\GUI\MovedEventArgs.cs" />
+    <Compile Include="Rendering\GUI\ResizeEventArgs.cs" />
+    <Compile Include="Rendering\IRender.cs" />
     <Compile Include="Rendering\MainMenuScreen.cs" />
     <Compile Include="Rendering\Screen.cs" />
+    <Compile Include="Rendering\TickEventArgs.cs" />
     <Compile Include="Rendering\Window.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Extension" />
+    <Folder Include="Extension\AgateLib" />
+    <Folder Include="Extension\AgateLib\Geometry" />
+    <Folder Include="Extension\System" />
+    <Folder Include="Collection" />
     <Folder Include="Rendering\" />
+    <Folder Include="Rendering\GUI" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

@@ -37,7 +37,7 @@ using System.Linq;
 using System.Text;
 using Shared.Connections;
 
-namespace Client.Connections
+namespace Tortoise.Client.Connections
 {
 	//This part of the class deals with methods to write data to the server.
 	partial class ServerConnection

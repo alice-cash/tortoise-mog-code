@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/29/2010
- * Time: 11:25 PM
+ * Date: 8/1/2010
+ * Time: 4:17 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -31,70 +31,31 @@
  * or implied, of Matthew Cash.
  */
 using System;
-using AgateLib;
+using AgateLib.InputLib;
 using AgateLib.Geometry;
-using AgateLib.DisplayLib;
-using AgateLib.Resources;
 
-using Tortoise.Client.Rendering.GUI;
-
-
-namespace Tortoise.Client.Rendering
+namespace Tortoise.Client.Rendering.GUI
 {
 	/// <summary>
-	/// Description of MainMenuScreen.
+	/// Description of MouseEventArgs.
 	/// </summary>
-	public class MainMenuScreen : Screen
+	public class MouseEventArgs : EventArgs
 	{
-		AgateResourceCollection _resourceCollection;
-		Container _renderItems;
+		private Mouse.MouseButtons _buttons;
+		private Point _mousePosition;
+		private int _wheelDelta;
 		
-		public MainMenuScreen()
-		{
-			_resourceCollection = new AgateResourceCollection();
-			_renderItems  = new Container("_parent", 0,0,Display.CurrentWindow.Width, Display.CurrentWindow.Height);
-			_renderItems._backgroundColor = Color.Wheat;
-			//_resourceCollection.Add(new AgateLib.Resources.
-			
+		public Mouse.MouseButtons MouseButtons {get{return _buttons;}}
+		public Point MousePosition {get{return _mousePosition;}}
+		public int WheelDelta {get{return _wheelDelta;}}
 
-		}
-		
-		public override void Dispose()
+		public MouseEventArgs(InputEventArgs _AGATELIBargs)
 		{
-			_renderItems.Dispose();
+			_buttons = _AGATELIBargs.MouseButtons;
+			_mousePosition = _AGATELIBargs.MousePosition;
+			_wheelDelta = _AGATELIBargs.WheelDelta;
 		}
-		
-		public override void Init()
-		{
-			_renderItems.Init();
-			
-			Control b1 = new Control("_b1", new Point(0,0), new Size(5,5));
-			Control b2 = new Control("_b2", new Point(10,10), new Size(10,5));
-			_renderItems.Controls.Add(10, b1);
-			_renderItems.Controls.Add(10, b2);
 
-			_renderItems["_b1"].BackgroundColor = Color.Red;
-			_renderItems["_b2"].BackgroundColor = Color.Blue;
-		}
-		
-		public override void Load()
-		{
-			_renderItems.Load();
-		}
-		
-		public override void Unload()
-		{
-			_renderItems.Unload();
-		}
-		
-		public override void Render()
-		{
-			_renderItems.Render();
-		}
-		
-		public override void Tick(TickEventArgs e)
-		{
-			_renderItems.Tick(e);
-		}
+
 	}
 }

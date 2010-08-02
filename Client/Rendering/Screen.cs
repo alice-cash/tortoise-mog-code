@@ -32,42 +32,24 @@
  */
 using System;
 
-namespace Client.Rendering
+namespace Tortoise.Client.Rendering
 {
 	/// <summary>
 	/// Description of Screen.
 	/// </summary>
-	public abstract class Screen: IDisposable
+	public abstract class Screen: IRender
 	{
 
-		public virtual void init()
-		{
+		public abstract void Init();
+		
+		public abstract void Load();
 
-		}
+		public abstract void Unload();
 
-		public virtual void load()
-		{
+		public abstract void Dispose();
 
-		}
+		public abstract void Tick(TickEventArgs e);
 
-		public virtual void unload()
-		{
-
-		}
-
-		public virtual void Dispose()
-		{
-
-		}
-
-		public virtual void Tick()
-		{
-
-		}
-
-		public virtual void Render()
-		{
-			
-		}		
+		public abstract void Render();	
 	}
 }

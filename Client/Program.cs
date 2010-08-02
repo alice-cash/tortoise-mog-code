@@ -31,21 +31,22 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using Tortoise.Client.Rendering;
 
-namespace Client
+namespace Tortoise.Client
 {
 	class Program
 	{
+		static Window MainWindow = null;
 		public static void Main(string[] args)
 		{
-			Console.WriteLine("Hello World!");
-			
-			// TODO: Implement Functionality Here
-			
-			Console.Write("Press any key to continue . . . ");
-			Console.ReadKey(true);
+			//This would be the place to add stuff to do before opining the window
 			
 			
+		
+			MainWindow = new Window();
+			//This blocks untill the window is closed.
+			MainWindow.Run();
 		}
 	}
 }
