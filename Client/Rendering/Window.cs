@@ -44,20 +44,30 @@ namespace Tortoise.Client.Rendering
 	/// </summary>
 	public class Window
 	{
+		public static DisplayWindow MainWindow{get; private set;}
+		public static Window Instance {get; private set;}
+		
 		public Screen CurrentScreen{get; set;}
-		public DisplayWindow MainWindow{get; private set;}
 		public Window()
 		{
+			Instance = this;
 		}
 		
 		public void Run()
 		{
 			AgateSetup AS = new AgateSetup();
-			AS.Initialize(true, false, false);
+
+			
+			AS.Initialize(true, false, true);
 			if (AS.WasCanceled)
 				return;
 
 			MainWindow = DisplayWindow.CreateWindowed ("Tortoise MOG", 800, 600);
+			AgateLib.Gui.GuiRoot GR = new AgateLib.Gui.GuiRoot();
+			
+			AgateLib.Gui.Label L = new AgateLib.Gui.Label("SDFASDF");
+			
+			GR.Children.Add(L);
 			
 			CurrentScreen = new MainMenuScreen();
 			CurrentScreen.Init();
@@ -67,19 +77,33 @@ namespace Tortoise.Client.Rendering
 			TickEventArgs tickEventData = new TickEventArgs();
 			Timing.StopWatch frameTimer = new Timing.StopWatch(true);
 			LimitedList<int> last30FrameTimes = new LimitedList<int>(30,0);
+			
+			
+
 			while (MainWindow.IsClosed == false)
 			{
 				
 				CurrentScreen.Tick(tickEventData);
 				
+				FrameBuffer FB1 = new FrameBuffer(400,400);
+				FontSurface _fontSurface = FontSurface.AgateSans14;
+				Display.RenderTarget = FB1;
+				Display.BeginFrame();
+				_fontSurface.Color = Color.Black;
+				_fontSurface.DrawText(10,10, "ASDASDFSDFASDFASDFSADFASDF");
+				Display.EndFrame();
+				Display.RenderTarget = Window.MainWindow.FrameBuffer;
 				
-				if(Display.RenderTarget != MainWindow)
-					Display.RenderTarget = MainWindow;
+				if(Display.RenderTarget != MainWindow.FrameBuffer)
+					Display.RenderTarget = MainWindow.FrameBuffer;
 				Display.BeginFrame();
 				Display.Clear(Color.Black);
 				
 				CurrentScreen.Render();
-				
+				FB1.RenderTarget.Draw(100,100);
+				_fontSurface.Color = Color.Green;
+				_fontSurface.DrawText(10,10, "ASDASDFSDFASDFASDFSADFASDF");
+
 				Display.EndFrame();
 				
 				MainWindow.Title = tickEventData.GetFPS.ToString() + " fps - " + (tickEventData.LastFrameTime / 1000).ToString() + " ms";
@@ -91,6 +115,7 @@ namespace Tortoise.Client.Rendering
 				frameTimer.Reset();
 				last30FrameTimes.Add(tickEventData.LastFrameTime);
 				tickEventData.GetFPS = CalculateFPS(last30FrameTimes);
+				
 			}
 		}
 		

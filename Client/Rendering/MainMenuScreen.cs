@@ -54,9 +54,6 @@ namespace Tortoise.Client.Rendering
 			_resourceCollection = new AgateResourceCollection();
 			_renderItems  = new Container("_parent", 0,0,Display.CurrentWindow.Width, Display.CurrentWindow.Height);
 			_renderItems._backgroundColor = Color.Wheat;
-			//_resourceCollection.Add(new AgateLib.Resources.
-			
-
 		}
 		
 		public override void Dispose()
@@ -68,8 +65,8 @@ namespace Tortoise.Client.Rendering
 		{
 			_renderItems.Init();
 			
-			Control b1 = new Control("_b1", new Point(0,0), new Size(5,5));
-			Control b2 = new Control("_b2", new Point(10,10), new Size(10,5));
+			Label b1 = new Label("_b1", "HELLO WORLD", new Point(0,0), new Size(200,40));
+			Label b2 = new Label("_b2", "OVER HERE!", new Point(100,10), new Size(200,40));
 			_renderItems.Controls.Add(10, b1);
 			_renderItems.Controls.Add(10, b2);
 
