@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/29/2010
- * Time: 11:25 PM
+ * Date: 8/1/2010
+ * Time: 6:08 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -31,70 +31,37 @@
  * or implied, of Matthew Cash.
  */
 using System;
-using AgateLib;
-using AgateLib.Geometry;
-using AgateLib.DisplayLib;
-using AgateLib.Resources;
-
-using Tortoise.Client.Rendering.GUI;
-
 
 namespace Tortoise.Client.Rendering
 {
 	/// <summary>
-	/// Description of MainMenuScreen.
+	/// Description of IRender.
 	/// </summary>
-	public class MainMenuScreen : Screen
-	{
-		AgateResourceCollection _resourceCollection;
-		Container _renderItems;
-		
-		public MainMenuScreen()
+	public interface IRender : IDisposable
 		{
-			_resourceCollection = new AgateResourceCollection();
-			_renderItems  = new Container("_parent", 0,0,Display.CurrentWindow.Width, Display.CurrentWindow.Height);
-			_renderItems._backgroundColor = Color.Wheat;
-			//_resourceCollection.Add(new AgateLib.Resources.
-			
-
-		}
-		
-		public override void Dispose()
-		{
-			_renderItems.Dispose();
-		}
-		
-		public override void Init()
-		{
-			_renderItems.Init();
-			
-			Control b1 = new Control("_b1", new Point(0,0), new Size(5,5));
-			Control b2 = new Control("_b2", new Point(10,10), new Size(10,5));
-			_renderItems.Controls.Add(10, b1);
-			_renderItems.Controls.Add(10, b2);
-
-			_renderItems["_b1"].BackgroundColor = Color.Red;
-			_renderItems["_b2"].BackgroundColor = Color.Blue;
-		}
-		
-		public override void Load()
-		{
-			_renderItems.Load();
-		}
-		
-		public override void Unload()
-		{
-			_renderItems.Unload();
-		}
-		
-		public override void Render()
-		{
-			_renderItems.Render();
-		}
-		
-		public override void Tick(TickEventArgs e)
-		{
-			_renderItems.Tick(e);
+			/// <summary>
+			/// Initilise the Item, set values, etc
+			/// </summary>
+			void Init();
+			/// <summary>
+			/// Load any textures, prepare for rendering
+			/// </summary>
+			void Load();
+			/// <summary>
+			/// Unload any textres, prepare for idle
+			/// </summary>
+			void Unload();
+			/// <summary>
+			/// Disposes of the control
+			/// </summary>
+			void Dispose();
+			/// <summary>
+			/// Ran before Render, can use to check and prepare before each rendering
+			/// </summary>
+			void Tick(TickEventArgs e);
+			/// <summary>
+		    /// Renders the object to the screen.
+			/// </summary>
+			void Render();
 		}
 	}
-}

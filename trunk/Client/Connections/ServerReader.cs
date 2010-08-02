@@ -32,9 +32,10 @@
  */
 
 using System;
+using Client.Connections;
 using Shared.Connections;
 
-namespace Client.Connections
+namespace Tortoise.Client.Connections
 {
 	//This part of the class deals with methods to read data from the server.
 	partial class ServerConnection

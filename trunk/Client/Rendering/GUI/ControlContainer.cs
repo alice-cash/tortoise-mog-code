@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/29/2010
- * Time: 11:25 PM
+ * Date: 8/1/2010
+ * Time: 4:46 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -31,70 +31,44 @@
  * or implied, of Matthew Cash.
  */
 using System;
-using AgateLib;
-using AgateLib.Geometry;
-using AgateLib.DisplayLib;
-using AgateLib.Resources;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Tortoise.Client.Extension.System;
 
-using Tortoise.Client.Rendering.GUI;
-
-
-namespace Tortoise.Client.Rendering
+namespace Tortoise.Client.Rendering.GUI
 {
-	/// <summary>
-	/// Description of MainMenuScreen.
-	/// </summary>
-	public class MainMenuScreen : Screen
-	{
-		AgateResourceCollection _resourceCollection;
-		Container _renderItems;
-		
-		public MainMenuScreen()
-		{
-			_resourceCollection = new AgateResourceCollection();
-			_renderItems  = new Container("_parent", 0,0,Display.CurrentWindow.Width, Display.CurrentWindow.Height);
-			_renderItems._backgroundColor = Color.Wheat;
-			//_resourceCollection.Add(new AgateLib.Resources.
-			
+    public class ControlContainer : SortedList<float, Control>
+    {
+        Random _random;
+        public ControlContainer()
+            : base(new ControlSorter())
+        {
+            _random = new Random();
+        }
 
-		}
-		
-		public override void Dispose()
-		{
-			_renderItems.Dispose();
-		}
-		
-		public override void Init()
-		{
-			_renderItems.Init();
-			
-			Control b1 = new Control("_b1", new Point(0,0), new Size(5,5));
-			Control b2 = new Control("_b2", new Point(10,10), new Size(10,5));
-			_renderItems.Controls.Add(10, b1);
-			_renderItems.Controls.Add(10, b2);
+        public void Add(int depth, Control control)
+        {
+            float fdepth;
+            //Very simple random depth.
+            //Its bad if 2 controls share the same depth
+            //since we cannot garintee which will be on top
+            //This should almost always only run once, though 
+            //we still want to handle the 0.00000125% chance
+            //of getting a duplicate number should 1 exsist 
+            //already in that particular depth
+            while (ContainsKey(fdepth = _random.NextFloat() + depth)) ;
+            Add(fdepth, control);
+        }
 
-			_renderItems["_b1"].BackgroundColor = Color.Red;
-			_renderItems["_b2"].BackgroundColor = Color.Blue;
-		}
-		
-		public override void Load()
-		{
-			_renderItems.Load();
-		}
-		
-		public override void Unload()
-		{
-			_renderItems.Unload();
-		}
-		
-		public override void Render()
-		{
-			_renderItems.Render();
-		}
-		
-		public override void Tick(TickEventArgs e)
-		{
-			_renderItems.Tick(e);
-		}
-	}
+        public Control this[string name]
+        {
+            get
+            {
+                foreach (Control item in this.Values)
+                    if (item.Name == name) return item;
+                return null;
+            }
+        }
+    }
 }

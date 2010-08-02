@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/29/2010
- * Time: 11:25 PM
+ * Date: 8/1/2010
+ * Time: 4:54 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -31,70 +31,25 @@
  * or implied, of Matthew Cash.
  */
 using System;
-using AgateLib;
-using AgateLib.Geometry;
-using AgateLib.DisplayLib;
-using AgateLib.Resources;
+using System.Collections.Generic;
 
-using Tortoise.Client.Rendering.GUI;
-
-
-namespace Tortoise.Client.Rendering
+namespace Tortoise.Client.Rendering.GUI
 {
-	/// <summary>
-	/// Description of MainMenuScreen.
-	/// </summary>
-	public class MainMenuScreen : Screen
-	{
-		AgateResourceCollection _resourceCollection;
-		Container _renderItems;
-		
-		public MainMenuScreen()
-		{
-			_resourceCollection = new AgateResourceCollection();
-			_renderItems  = new Container("_parent", 0,0,Display.CurrentWindow.Width, Display.CurrentWindow.Height);
-			_renderItems._backgroundColor = Color.Wheat;
-			//_resourceCollection.Add(new AgateLib.Resources.
-			
+    class ControlSorter : IComparer<float>
+    {
 
-		}
-		
-		public override void Dispose()
-		{
-			_renderItems.Dispose();
-		}
-		
-		public override void Init()
-		{
-			_renderItems.Init();
-			
-			Control b1 = new Control("_b1", new Point(0,0), new Size(5,5));
-			Control b2 = new Control("_b2", new Point(10,10), new Size(10,5));
-			_renderItems.Controls.Add(10, b1);
-			_renderItems.Controls.Add(10, b2);
+        #region IComparer<float> Members
 
-			_renderItems["_b1"].BackgroundColor = Color.Red;
-			_renderItems["_b2"].BackgroundColor = Color.Blue;
-		}
-		
-		public override void Load()
-		{
-			_renderItems.Load();
-		}
-		
-		public override void Unload()
-		{
-			_renderItems.Unload();
-		}
-		
-		public override void Render()
-		{
-			_renderItems.Render();
-		}
-		
-		public override void Tick(TickEventArgs e)
-		{
-			_renderItems.Tick(e);
-		}
-	}
+        public int Compare(float x, float y)
+        {
+            if (x == y)
+                return 0;
+            if (x > y)
+                return -1;
+            else
+                return 1;
+        }
+
+        #endregion
+    }
 }

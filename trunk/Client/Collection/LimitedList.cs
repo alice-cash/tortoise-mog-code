@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/29/2010
- * Time: 11:25 PM
+ * Date: 8/1/2010
+ * Time: 7:51 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -31,70 +31,34 @@
  * or implied, of Matthew Cash.
  */
 using System;
-using AgateLib;
-using AgateLib.Geometry;
-using AgateLib.DisplayLib;
-using AgateLib.Resources;
+using C5;
 
-using Tortoise.Client.Rendering.GUI;
-
-
-namespace Tortoise.Client.Rendering
+namespace Tortoise.Client.Collection
 {
 	/// <summary>
-	/// Description of MainMenuScreen.
+	/// This stores a limited number of items, Dequeuing them automaticly once the limit has been met.
 	/// </summary>
-	public class MainMenuScreen : Screen
+	public class LimitedList<T> : ArrayBase<T>
 	{
-		AgateResourceCollection _resourceCollection;
-		Container _renderItems;
-		
-		public MainMenuScreen()
+		private int _limit;
+		public int Limit{get{return _limit;}}
+		public LimitedList(int limit, T fillWith): base(limit - 1, EqualityComparer<T>.Default)
 		{
-			_resourceCollection = new AgateResourceCollection();
-			_renderItems  = new Container("_parent", 0,0,Display.CurrentWindow.Width, Display.CurrentWindow.Height);
-			_renderItems._backgroundColor = Color.Wheat;
-			//_resourceCollection.Add(new AgateLib.Resources.
-			
-
+			_limit = limit;
+			for(int i = 0; i < limit; i++)
+				base.array[i] = fillWith;
+			base.size = limit;
 		}
 		
-		public override void Dispose()
+		public void Add(T item)
 		{
-			_renderItems.Dispose();
-		}
-		
-		public override void Init()
-		{
-			_renderItems.Init();
-			
-			Control b1 = new Control("_b1", new Point(0,0), new Size(5,5));
-			Control b2 = new Control("_b2", new Point(10,10), new Size(10,5));
-			_renderItems.Controls.Add(10, b1);
-			_renderItems.Controls.Add(10, b2);
-
-			_renderItems["_b1"].BackgroundColor = Color.Red;
-			_renderItems["_b2"].BackgroundColor = Color.Blue;
-		}
-		
-		public override void Load()
-		{
-			_renderItems.Load();
-		}
-		
-		public override void Unload()
-		{
-			_renderItems.Unload();
-		}
-		
-		public override void Render()
-		{
-			_renderItems.Render();
-		}
-		
-		public override void Tick(TickEventArgs e)
-		{
-			_renderItems.Tick(e);
+			if (this.isReadOnlyBase)
+			{
+				throw new ReadOnlyCollectionException();
+			}
+			//Shift it down one, cutting off the last item
+			Array.Copy(base.array, 0, base.array, 1, _limit - 1);
+			base.array[0] = item;
 		}
 	}
 }

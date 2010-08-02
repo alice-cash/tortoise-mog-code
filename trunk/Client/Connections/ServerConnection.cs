@@ -36,10 +36,11 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
+using Client.Connections;
 using Shared.Connections;
 using System.Diagnostics;
 
-namespace Client.Connections
+namespace Tortoise.Client.Connections
 {
 	/// <summary>
 	/// 
