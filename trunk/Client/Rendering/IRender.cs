@@ -52,10 +52,6 @@ namespace Tortoise.Client.Rendering
 			/// </summary>
 			void Unload();
 			/// <summary>
-			/// Disposes of the control
-			/// </summary>
-			void Dispose();
-			/// <summary>
 			/// Ran before Render, can use to check and prepare before each rendering
 			/// </summary>
 			void Tick(TickEventArgs e);
