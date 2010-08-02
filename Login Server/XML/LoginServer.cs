@@ -41,7 +41,7 @@ using SharedServerLib.Communication;
 using SharedServerLib.Exceptions;
 using SharedServerLib.Misc;
 
-namespace LoginServer.XML
+namespace Tortoise.LoginServer.XML
 {
 	/// <summary>
 	/// Configeration Database for Login Server
