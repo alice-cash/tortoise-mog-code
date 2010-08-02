@@ -35,7 +35,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using Shared.Connections;
 
-namespace LoginServer.Connections
+namespace Tortoise.LoginServer.Connections
 {
 	/// <summary>
 	/// Description of ServerConnection.

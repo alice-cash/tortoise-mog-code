@@ -38,7 +38,7 @@ using System.IO;
 
 using Shared.Connections;
 
-namespace LoginServer.Connections
+namespace Tortoise.LoginServer.Connections
 {
 	partial class ClientConnection: Connection
 	{
@@ -53,6 +53,7 @@ namespace LoginServer.Connections
 		{
 			//Make sure its a valid Enum Number
 			PacketID pID = PacketID.Null;
+						
 			if(!pID.TryParse(packetID))
 			{
 				SyncError();
