@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/29/2010
- * Time: 10:45 PM
+ * Date: 8/3/2010
+ * Time: 7:26 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -31,23 +31,30 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using System.Runtime.Serialization;
 
-namespace Tortoise.Client.Rendering
+namespace Tortoise.Client.Exceptions
 {
 	/// <summary>
-	/// Description of Screen.
+	/// Desctiption of ConsoleException.
 	/// </summary>
-	public interface IScreen: IRender
+	public class ConsoleException : Exception, ISerializable
 	{
-		void OnMouseDown(MouseEventArgs e);
-		
-		void OnMouseUp(MouseEventArgs e);
+		public ConsoleException()
+		{
+		}
 
-		void  OnMouseMove(MouseEventArgs e);
+	 	public ConsoleException(string message) : base(message)
+		{
+		}
 
-		void  OnKeyboardDown(MouseEventArgs e);
+		public ConsoleException(string message, Exception innerException) : base(message, innerException)
+		{
+		}
 
-		void  OnKeyboardUp(MouseEventArgs e);
-
+		// This constructor is needed for serialization.
+		protected ConsoleException(SerializationInfo info, StreamingContext context) : base(info, context)
+		{
+		}
 	}
 }

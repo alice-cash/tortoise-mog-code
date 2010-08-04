@@ -42,170 +42,196 @@ using AgateLib.Geometry;
 
 namespace Tortoise.Client.Rendering.GUI
 {
-    public class Container : Control
-    {
-        protected internal ControlContainer _Items;
+	public class Container : Control
+	{
+		protected internal ControlContainer _Items;
+		private bool _inFocusChange = false;
 
-        public ControlContainer Controls
-        {
-            get { return _Items; }
-            set { _Items = value; }
-        }
+		public ControlContainer Controls
+		{
+			get { return _Items; }
+			set { _Items = value; }
+		}
+		
+		/*
+		public Control this[string name]
+		{
+			get{
+				return _Items[name];
+			}
+		}
+		
+		public Control this[int index]
+		{
+			get{
+				return _Items[index];
+			}
+		}
+		*/
 
-        public Container(string name, int x, int y, int width, int height)
+		public Container(string name, int x, int y, int width, int height)
 			: this(name, new Rectangle(x, y, width, height))
-        {
+		{
 
-        }
-        public Container(string name, Point location, Size size)
- 			: this(name, new Rectangle(location, size))
-       {
+		}
+		public Container(string name, Point location, Size size)
+			: this(name, new Rectangle(location, size))
+		{
 
-        }
-        public Container(string name, Rectangle area)
-            : base(name, area)
-        {
-        	Controls = new ControlContainer();
-        }
+		}
+		public Container(string name, Rectangle area)
+			: base(name, area)
+		{
+			Controls = new ControlContainer();
+		}
 
-        
-        public Control this[string name]
-        {
-        	get{
-        		return _Items[name];
-        	}
-        }
-        
-                
-        public Control this[int index]
-        {
-        	get{
-        		return _Items[index];
-        	}
-        }
-        
 
-        public override void Init()
-        {
-            base.Init();
-            _Items = new ControlContainer();
+		public override void Init()
+		{
+			base.Init();
+			_Items = new ControlContainer();
 
-        }
+		}
 
-        public override void Load()
-        {
-            base.Load();
-            foreach (Control Item in _Items.Values)
-                if (!Item.Loaded)
-                    Item.Load();
-        }
+		public override void Load()
+		{
+			base.Load();
+			foreach (Control Item in _Items.Values)
+				if (!Item.Loaded)
+					Item.Load();
+		}
 
-        public override void Unload()
-        {
-            base.Unload();
-            Loaded = false;
-            foreach (Control Item in _Items.Values)
-                if (Item.Loaded)
-                    Item.Load();
-        }
+		public override void Unload()
+		{
+			base.Unload();
+			Loaded = false;
+			foreach (Control Item in _Items.Values)
+				if (Item.Loaded)
+					Item.Load();
+		}
 
-        protected internal override void Tick(TickEventArgs e)
-        {
-            foreach (var Item in Controls)
-            {
-                if (Item.Value.Parent != this)
-                    Item.Value.Parent = this;
-                Item.Value.Tick(e);
-            }
-            base.Tick(e);
-        }
+		protected internal override void Tick(TickEventArgs e)
+		{
+			foreach (var Item in Controls)
+			{
+				if (Item.Value.Parent != this)
+				{
+					Item.Value.Parent = this;
+					//We need to make sure all other controls within this one 
+					//notify us when they gain focus, so we can tell them and our
+					//parent control to remove it from anything else.
+					Item.Value.FocusChanged += delegate(object sender, EventArgs se)
+					{
+						
+						if(!_inFocusChange && Item.Value.HasFocus)
+						{
+							_inFocusChange = true;
+							foreach(var c in _Items)
+							{
+								if(c.Value == Item.Value) continue;
+								c.Value.HasFocus = false;
+								
+							}
+							_inFocusChange = false;
+						}
+						if(FocusChanged != null)
+							FocusChanged(this, EventArgs.Empty);
+					};
 
-        /// <summary>
-        /// Renders the control to the screen.
-        /// </summary>
-        protected internal override void Render()
-        {
-            base.Render();
+				}
+				Item.Value.Tick(e);
+			}
+			base.Tick(e);
+		}
+		
 
-            foreach (Control Item in _Items.Values)
-            {
-                Item.Render();
-            }
-        }
 
-        /// <summary>
-        /// A MouseButton Event, returns true if the event is used, and false if it isn't.
-        /// </summary>
-        internal override bool OnMouseButtonDown(MouseEventArgs e)
-        {
-            bool go = false;
-            foreach (Control Item in _Items.Values.Reverse())
-            {
-                go = Item.OnMouseButtonDown(e);
-                if (go)
-                    break;
-            }
-            return go ? true : doMouseDown(e);
-        }
-        /// <summary>
-        /// A MouseButton Event, returns true if the event is used, and false if it isn't.
-        /// </summary>
-        internal override bool OnMouseButtonUp(MouseEventArgs e)
-        {
+		/// <summary>
+		/// Renders the control to the screen.
+		/// </summary>
+		protected internal override void Render()
+		{
+			base.Render();
 
-            bool go = false;
-            foreach (Control Item in _Items.Values.Reverse())
-            {
-                go = Item.OnMouseButtonUp(e);
-                if (go)
-                    break;
-            }
-            return go ? true : doMouseUp(e);
-        }
-        /// <summary>
-        /// A MouseMove Event, returns true if the event is used, and false if it isn't.
-        /// </summary>
-        internal override bool OnMouseMove(MouseEventArgs e)
-        {
-            bool go = false;
-            foreach (Control Item in _Items.Values.Reverse())
-            {
-                go = Item.OnMouseMove(e);
-                if (go)
-                    break;
-            }
-            return go ? true : doMouseMove(e);
-        }
-        /// <summary>
-        /// A Keyboard Event, returns true if the event is used, and false if it isn't.
-        /// </summary>
-        internal override bool OnKeyboardDown(MouseEventArgs e)
-        {
-            bool go = false;
-            foreach (Control Item in _Items.Values.Reverse())
-            {
-                go = Item.OnKeyboardDown(e);
-                if (go)
-                    break;
-            }
-            //Keybord events should never be triggerd in the base container event.
-            return go;
-        }
-        /// <summary>
-        /// A Keyboard Event, returns true if the event is used, and false if it isn't.
-        /// </summary>
-        internal override bool OnKeyboardUp(MouseEventArgs e)
-        {
-            bool go = false;
-            foreach (Control Item in _Items.Values.Reverse())
-            {
-                go = Item.OnKeyboardUp(e);
-                if (go)
-                    break;
-            }
-            //Keybord events should never be triggerd in the base container event.
-            return go;
-        }
-    }
+			foreach (Control Item in _Items.Values)
+			{
+				Item.Render();
+			}
+		}
+
+		/// <summary>
+		/// A MouseButton Event, returns true if the event is used, and false if it isn't.
+		/// </summary>
+		internal override bool OnMouseDown(MouseEventArgs e)
+		{
+			bool go = false;
+			foreach (Control Item in _Items.Values.Reverse())
+			{
+				go = Item.OnMouseDown(e);
+				if (go)
+					break;
+			}
+			return go ? true : doMouseDown(e);
+		}
+		/// <summary>
+		/// A MouseButton Event, returns true if the event is used, and false if it isn't.
+		/// </summary>
+		internal override bool OnMouseUp(MouseEventArgs e)
+		{
+
+			bool go = false;
+			foreach (Control Item in _Items.Values.Reverse())
+			{
+				go = Item.OnMouseUp(e);
+				if (go)
+					break;
+			}
+			return go ? true : doMouseUp(e);
+		}
+		/// <summary>
+		/// A MouseMove Event, returns true if the event is used, and false if it isn't.
+		/// </summary>
+		internal override bool OnMouseMove(MouseEventArgs e)
+		{
+			bool go = false;
+			foreach (Control Item in _Items.Values.Reverse())
+			{
+				go = Item.OnMouseMove(e);
+				if (go)
+					break;
+			}
+			return go ? true : doMouseMove(e);
+		}
+		/// <summary>
+		/// A Keyboard Event, returns true if the event is used, and false if it isn't.
+		/// </summary>
+		internal override bool OnKeyboardDown(MouseEventArgs e)
+		{
+			bool go = false;
+			foreach (Control Item in _Items.Values.Reverse())
+			{
+				go = Item.OnKeyboardDown(e);
+				if (go)
+					break;
+			}
+			//Keybord events should never be triggerd in the base container event.
+			return go;
+		}
+		/// <summary>
+		/// A Keyboard Event, returns true if the event is used, and false if it isn't.
+		/// </summary>
+		internal override bool OnKeyboardUp(MouseEventArgs e)
+		{
+			bool go = false;
+			foreach (Control Item in _Items.Values.Reverse())
+			{
+				go = Item.OnKeyboardUp(e);
+				if (go)
+					break;
+			}
+			//Keybord events should never be triggerd in the base container event.
+			return go;
+		}
+	}
 
 }

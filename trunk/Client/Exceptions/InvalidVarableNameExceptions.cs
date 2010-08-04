@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/29/2010
- * Time: 10:45 PM
+ * Date: 8/3/2010
+ * Time: 6:21 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -32,22 +32,23 @@
  */
 using System;
 
-namespace Tortoise.Client.Rendering
+namespace Tortoise.Client.Exceptions
 {
 	/// <summary>
-	/// Description of Screen.
+	/// Desctiption of ExceptonInvalidVarableName.
 	/// </summary>
-	public interface IScreen: IRender
+	public class InvalidVarableNameExceptions : Exception
 	{
-		void OnMouseDown(MouseEventArgs e);
-		
-		void OnMouseUp(MouseEventArgs e);
+		public InvalidVarableNameExceptions()
+		{
+		}
 
-		void  OnMouseMove(MouseEventArgs e);
+	 	public InvalidVarableNameExceptions(string message) : base(message)
+		{
+		}
 
-		void  OnKeyboardDown(MouseEventArgs e);
-
-		void  OnKeyboardUp(MouseEventArgs e);
-
+		public InvalidVarableNameExceptions(string message, Exception innerException) : base(message, innerException)
+		{
+		}
 	}
 }

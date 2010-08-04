@@ -69,6 +69,9 @@ namespace Tortoise.Client.Rendering.GUI
 		
 		protected internal bool _enforceThreadSafeCalls = false;
 		protected internal int _safeThreadID;
+		
+		protected internal bool _hasFocus;
+		
 		private Queue<InvokeItem> _invokeList;
 		#endregion
 		
@@ -80,6 +83,7 @@ namespace Tortoise.Client.Rendering.GUI
 		public EventHandler<MouseEventArgs> KeybordUp;
 		public EventHandler<ResizeEventArgs> Resized;
 		public EventHandler<MovedEventArgs> Moved;
+		public EventHandler FocusChanged;
 		
 		public System.EventHandler TickEvent;
 
@@ -131,6 +135,19 @@ namespace Tortoise.Client.Rendering.GUI
 		
 		#region Properties
 		public string Name { get; protected internal set; }
+		
+		public bool HasFocus
+		{
+			get{return _hasFocus;}
+			set
+			{
+				EnforceThreadSafty();
+				bool hasChanged = _hasFocus == value;
+				_hasFocus = value;
+				if(hasChanged && FocusChanged != null)
+					FocusChanged(this, EventArgs.Empty);
+			}
+		}
 
 		public Color BackgroundColor
 		{
@@ -440,17 +457,19 @@ namespace Tortoise.Client.Rendering.GUI
 		/// <summary>
 		/// A MouseButton Event, returns true if the event is used, and false if it isn't.
 		/// </summary>
-		internal virtual bool OnMouseButtonDown(MouseEventArgs e)
+		internal virtual bool OnMouseDown(MouseEventArgs e)
 		{
 			EnforceThreadSafty();
+			if(!IsPointOver(e.MousePosition)) return false;
 			return doMouseDown(e);
 		}
 		/// <summary>
 		/// A MouseButton Event, returns true if the event is used, and false if it isn't.
 		/// </summary>
-		internal virtual bool OnMouseButtonUp(MouseEventArgs e)
+		internal virtual bool OnMouseUp(MouseEventArgs e)
 		{
 			EnforceThreadSafty();
+			if(!IsPointOver(e.MousePosition)) return false;
 			return doMouseUp(e);
 		}
 		/// <summary>
@@ -459,6 +478,7 @@ namespace Tortoise.Client.Rendering.GUI
 		internal virtual bool OnMouseMove(MouseEventArgs e)
 		{
 			EnforceThreadSafty();
+			if(!IsPointOver(e.MousePosition)) return false;
 			return doMouseMove(e);
 		}
 		/// <summary>
@@ -504,6 +524,10 @@ namespace Tortoise.Client.Rendering.GUI
 		#endregion
 		
 		#region Internal Protected Methods
+		internal protected bool IsPointOver(Point pos)
+		{
+			return Area.Contains(pos);
+		}
 		internal protected void EnforceThreadSafty()
 		{
 			if(!CheckThreadSafty()) throw new InvalidOperationException(string.Format("Crossthread Access to '{0}' is not permited.",Name));
