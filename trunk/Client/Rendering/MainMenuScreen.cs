@@ -66,13 +66,14 @@ namespace Tortoise.Client.Rendering
 			_renderItems.Init();
 			
 			Label b1 = new Label("_b1", "HELLO WORLD", new Point(0,0), new Size(200,40));
-			Label b2 = new Label("_b2", "OVER HERE!", new Point(100,40), new Size(200,40));
+			TextBox b2 = new TextBox("_b2", new Point(100,40), new Size(200,40));
 			b1.TextAlignement = TextAlignement.Center;
+			b2.Text = "HELLO WORLD";
 			_renderItems.Controls.Add(10, b1);
 			_renderItems.Controls.Add(10, b2);
 
 			_renderItems.Controls["_b1"].BackgroundColor = Color.Red;
-			_renderItems.Controls["_b2"].BackgroundColor = Color.Blue;
+			_renderItems.Controls["_b2"].BackgroundColor = Color.Transparent;
 		}
 		
 		public override void Load()

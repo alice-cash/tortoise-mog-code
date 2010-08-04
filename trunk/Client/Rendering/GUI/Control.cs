@@ -142,7 +142,7 @@ namespace Tortoise.Client.Rendering.GUI
 			set
 			{
 				EnforceThreadSafty();
-				bool hasChanged = _hasFocus == value;
+				bool hasChanged = _hasFocus != value;
 				_hasFocus = value;
 				if(hasChanged && FocusChanged != null)
 					FocusChanged(this, EventArgs.Empty);
@@ -447,7 +447,8 @@ namespace Tortoise.Client.Rendering.GUI
 			_preRenderd = new FrameBuffer(Size);
 			Display.RenderTarget = _preRenderd;
 			Display.BeginFrame();
-			Display.Clear(_backgroundColor);
+			if(_backgroundColor != Color.Transparent)
+				Display.Clear(_backgroundColor);
 			Display.EndFrame();
 			Display.RenderTarget = Window.MainWindow.FrameBuffer;
 
