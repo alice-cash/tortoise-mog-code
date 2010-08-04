@@ -34,6 +34,7 @@ using System;
 using AgateLib;
 using AgateLib.DisplayLib;
 using AgateLib.Geometry;
+using AgateLib.InputLib;
 
 using Tortoise.Client.Collection;
 
@@ -47,7 +48,7 @@ namespace Tortoise.Client.Rendering
 		public static DisplayWindow MainWindow{get; private set;}
 		public static Window Instance {get; private set;}
 		
-		public Screen CurrentScreen{get; set;}
+		public IScreen CurrentScreen{get; set;}
 		public Window()
 		{
 			Instance = this;
@@ -63,11 +64,6 @@ namespace Tortoise.Client.Rendering
 				return;
 
 			MainWindow = DisplayWindow.CreateWindowed ("Tortoise MOG", 800, 600);
-			AgateLib.Gui.GuiRoot GR = new AgateLib.Gui.GuiRoot();
-			
-			AgateLib.Gui.Label L = new AgateLib.Gui.Label("SDFASDF");
-			
-			GR.Children.Add(L);
 			
 			CurrentScreen = new MainMenuScreen();
 			CurrentScreen.Init();
@@ -75,8 +71,25 @@ namespace Tortoise.Client.Rendering
 			
 			
 			TickEventArgs tickEventData = new TickEventArgs();
+		
+			Mouse.MouseDown += delegate(InputEventArgs e)
+			{
+				CurrentScreen.OnMouseDown(new MouseEventArgs(e));
+			};
+
+			Mouse.MouseUp += delegate(InputEventArgs e)
+			{
+				CurrentScreen.OnMouseUp(new MouseEventArgs(e));
+			};
+
+			Mouse.MouseMove += delegate(InputEventArgs e)
+			{
+				CurrentScreen.OnMouseMove(new MouseEventArgs(e));
+			};
+			
 			Timing.StopWatch frameTimer = new Timing.StopWatch(true);
-			LimitedList<int> last30FrameTimes = new LimitedList<int>(30,0);
+			Timing.StopWatch TotalTimer = new Timing.StopWatch(true);
+			LimitedList<double> lastFrameTimes = new LimitedList<double>(30,0);
 			
 			
 
@@ -85,57 +98,51 @@ namespace Tortoise.Client.Rendering
 				
 				CurrentScreen.Tick(tickEventData);
 				
-				FrameBuffer FB1 = new FrameBuffer(400,400);
-				FontSurface _fontSurface = FontSurface.AgateSans14;
-				Display.RenderTarget = FB1;
-				Display.BeginFrame();
-				_fontSurface.Color = Color.Black;
-				_fontSurface.DrawText(10,10, "ASDASDFSDFASDFASDFSADFASDF");
-				Display.EndFrame();
-				Display.RenderTarget = Window.MainWindow.FrameBuffer;
-				
 				if(Display.RenderTarget != MainWindow.FrameBuffer)
 					Display.RenderTarget = MainWindow.FrameBuffer;
 				Display.BeginFrame();
 				Display.Clear(Color.Black);
 				
 				CurrentScreen.Render();
-				FB1.RenderTarget.Draw(100,100);
-				_fontSurface.Color = Color.Green;
-				_fontSurface.DrawText(10,10, "ASDASDFSDFASDFASDFSADFASDF");
 
 				Display.EndFrame();
 				
-				MainWindow.Title = tickEventData.GetFPS.ToString() + " fps - " + (tickEventData.LastFrameTime / 1000).ToString() + " ms";
+				
+				MainWindow.Title = Math.Round(tickEventData.FPS,2).ToString() + " fps - " +  Math.Round(tickEventData.LastFrameTime, 2).ToString() + " ms";
 				
 				Core.KeepAlive();
 				
-				tickEventData.LastFrameTime = (int)frameTimer.TotalMilliseconds * 1000;
+				tickEventData.LastFrameTime = frameTimer.TotalMilliseconds;
 				//this resets the timers time, but doesn't stop it.
 				frameTimer.Reset();
-				last30FrameTimes.Add(tickEventData.LastFrameTime);
-				tickEventData.GetFPS = CalculateFPS(last30FrameTimes);
+				lastFrameTimes.Add(tickEventData.LastFrameTime);
+				tickEventData.AverageFrameTime = CalculateAverage(lastFrameTimes);
+				tickEventData.FPS = 1000 / tickEventData.AverageFrameTime;
+				tickEventData.TotalSeconds = TotalTimer.TotalSeconds;
+				tickEventData.TotalMilliseconds = TotalTimer.TotalMilliseconds;
 				
 			}
 		}
 		
 		/// <summary>
-		/// Calculates the average frame rate for the past 30 frames.
+		/// Calculates the average number in a LimitedList<double>. If allowZero is false, 0 will be replaced with 1
 		/// </summary>
 		/// <param name="frameTimes"></param>
 		/// <returns></returns>
-		private int CalculateFPS(LimitedList<int> frameTimes)
+		private double CalculateAverage(LimitedList<double> items, bool allowZero = false)
 		{
-			int count = 0, total = 0;
-			foreach(var v in frameTimes)
+			double count = 0, total = 0, result = 0;
+			foreach(var v in items)
 			{
 				if(v == 0) continue;
 				count++;
 				total += v;
 			}
-			if(count == 0) return 0;
 			
-			return 1000000 / (total / count);
+			if(count == 0) return allowZero ? 0 : 1;
+			
+			result = total / count;
+			return !allowZero && result == 0 ? 1 : result;
 		}
 	}
 }

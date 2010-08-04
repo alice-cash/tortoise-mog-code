@@ -44,34 +44,35 @@ namespace Tortoise.Client.Rendering
 	/// <summary>
 	/// Description of MainMenuScreen.
 	/// </summary>
-	public class MainMenuScreen : Screen
+	public class MainMenuScreen : Control, IScreen
 	{
 		AgateResourceCollection _resourceCollection;
 		Container _renderItems;
 		
-		public MainMenuScreen()
+		public MainMenuScreen():base("_Screen",Point.Empty,Size.Empty)
 		{
 			_resourceCollection = new AgateResourceCollection();
 			_renderItems  = new Container("_parent", 0,0,Display.CurrentWindow.Width, Display.CurrentWindow.Height);
 			_renderItems._backgroundColor = Color.Wheat;
 		}
 		
-		public override void Dispose()
+		public  void Dispose()
 		{
 			_renderItems.Dispose();
 		}
 		
-		public override void Init()
+		public  void Init()
 		{
 			_renderItems.Init();
 			
 			Label b1 = new Label("_b1", "HELLO WORLD", new Point(0,0), new Size(200,40));
-			Label b2 = new Label("_b2", "OVER HERE!", new Point(100,10), new Size(200,40));
+			Label b2 = new Label("_b2", "OVER HERE!", new Point(100,40), new Size(200,40));
+			b1.TextAlignement = TextAlignement.Center;
 			_renderItems.Controls.Add(10, b1);
 			_renderItems.Controls.Add(10, b2);
 
-			_renderItems["_b1"].BackgroundColor = Color.Red;
-			_renderItems["_b2"].BackgroundColor = Color.Blue;
+			_renderItems.Controls["_b1"].BackgroundColor = Color.Red;
+			_renderItems.Controls["_b2"].BackgroundColor = Color.Blue;
 		}
 		
 		public override void Load()
@@ -84,14 +85,40 @@ namespace Tortoise.Client.Rendering
 			_renderItems.Unload();
 		}
 		
-		public override void Render()
+		public new void Render()
 		{
 			_renderItems.Render();
 		}
 		
-		public override void Tick(TickEventArgs e)
+		public new void Tick(TickEventArgs e)
 		{
+			
 			_renderItems.Tick(e);
+		}
+		
+		public  void OnMouseUp(MouseEventArgs e)
+		{
+			_renderItems.OnMouseUp(e);
+		}
+		
+		public  void OnMouseMove(MouseEventArgs e)
+		{
+			_renderItems.OnMouseMove(e);
+		}
+		
+		public  void OnMouseDown(MouseEventArgs e)
+		{
+			_renderItems.OnMouseDown(e);
+		}
+		
+		public  void OnKeyboardUp(MouseEventArgs e)
+		{
+			_renderItems.OnKeyboardUp(e);
+		}
+		
+		public  void OnKeyboardDown(MouseEventArgs e)
+		{
+			_renderItems.OnKeyboardDown(e);
 		}
 	}
 }

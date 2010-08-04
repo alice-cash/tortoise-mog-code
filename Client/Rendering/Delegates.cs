@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 8/1/2010
- * Time: 4:17 PM
+ * Date: 8/2/2010
+ * Time: 1:01 AM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -32,30 +32,10 @@
  */
 using System;
 using AgateLib.InputLib;
-using AgateLib.Geometry;
 
-namespace Tortoise.Client.Rendering.GUI
+namespace Tortoise.Client.Rendering
 {
-	/// <summary>
-	/// Description of MouseEventArgs.
-	/// </summary>
-	public class MouseEventArgs : EventArgs
-	{
-		private Mouse.MouseButtons _buttons;
-		private Point _mousePosition;
-		private int _wheelDelta;
-		
-		public Mouse.MouseButtons MouseButtons {get{return _buttons;}}
-		public Point MousePosition {get{return _mousePosition;}}
-		public int WheelDelta {get{return _wheelDelta;}}
+	public delegate void InvokeDelegate(object userData);
+	public delegate void DInputArgs(object sender, InputEventArgs e);
 
-		public MouseEventArgs(InputEventArgs _AGATELIBargs)
-		{
-			_buttons = _AGATELIBargs.MouseButtons;
-			_mousePosition = _AGATELIBargs.MousePosition;
-			_wheelDelta = _AGATELIBargs.WheelDelta;
-		}
-
-
-	}
 }

@@ -33,6 +33,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using AgateLib.DisplayLib;
+using AgateLib.DisplayLib.ImplementationBase;
 using AgateLib.Geometry;
 using AgateLib.Resources;
 
@@ -90,23 +91,9 @@ namespace Tortoise.Client.Rendering.GUI
 			Text = text;
 			_fontSurface = FontSurface.AgateSans10;
 		}
-		
-		protected internal override void Tick(TickEventArgs e)
-		{
-			base.Tick(e);
-			
-			
-		} 
-		
-		protected internal override void Render()
-		{
-			base.Render();
-		}
-		
+				
 		protected internal override void Redraw_PreRenderd()
-		{
-			base.Redraw_PreRenderd();
-			
+		{		
 			if (_preRenderd != null)
 			{
 				_preRenderd.Dispose();
@@ -114,14 +101,16 @@ namespace Tortoise.Client.Rendering.GUI
 			}
 			
 			
-			
 			_preRenderd = new FrameBuffer(Size);
 			Display.RenderTarget = _preRenderd;
 			Display.BeginFrame();
+
 			Display.Clear(_backgroundColor);
 			_fontSurface.Color = Color.Black;
 			_fontSurface.DrawText(TextDestination(), _text);
+		
 			Display.EndFrame();
+			Display.FlushDrawBuffer();
 			Display.RenderTarget = Window.MainWindow.FrameBuffer;
 		}
 		

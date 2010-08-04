@@ -42,9 +42,17 @@ namespace Tortoise.Client.Rendering
 		/// <summary>
 		/// The ammount of time it took the previous frame to tick and render.
 		/// </summary>
-		public int LastFrameTime{get;set;}
+		public double LastFrameTime{get;set;}
 		
-		public int GetFPS{get;set;}
+		public double FPS{get;set;}
+		
+		public double AverageFPS{get;set;}
+		
+		public double AverageFrameTime{get;set;}
+		
+		public double TotalMilliseconds{get;set;}
+		
+		public double TotalSeconds{get;set;}
 		
 		public TickEventArgs()
 		{
