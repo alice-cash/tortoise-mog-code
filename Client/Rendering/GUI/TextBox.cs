@@ -100,10 +100,24 @@ namespace Tortoise.Client.Rendering.GUI
 			
 		}
 		
-		public TextBox()
+
+		public TextBox(string name, int x, int y, int width, int height)
+			: this(name, new Rectangle(x, y, width, height))
 		{
+
+		}
+		public TextBox(string name, Point location, Size size)
+			: this(name, new Rectangle(location, size))
+		{
+
+		}
+		public TextBox(string name, Rectangle area)
+			: base(name, area)
+		{
+			_fontSurface = FontSurface.AgateSans10;
 			_flasherTimer = new Timing.StopWatch();
 		}
+		
 		
 		protected internal override void Tick(TickEventArgs e)
 		{
@@ -119,7 +133,7 @@ namespace Tortoise.Client.Rendering.GUI
 
 			_textSize = _fontSurface.MeasureString(_visibleText);
 			
-						
+			
 			if (HasFocus)
 			{
 				if (_flasherTimer.TotalMilliseconds > 500)
@@ -148,6 +162,19 @@ namespace Tortoise.Client.Rendering.GUI
 
 
             }*/
+			base.Tick(e);
+		}
+		
+		internal override bool OnMouseUp(MouseEventArgs e)
+		{
+			EnforceThreadSafty();
+			if(IsPointOver(e.MousePosition))
+			{
+				this.HasFocus = true;
+				doMouseDown(e);
+				return true;
+			}
+			return false;
 		}
 		
 		internal override bool OnKeyboardDown(MouseEventArgs e)
@@ -171,9 +198,9 @@ namespace Tortoise.Client.Rendering.GUI
 			if(!_visible)
 				return;
 			base.Render();
-
-			if (_showMarker)
-				_fontSurface.DrawText(_markerPosition,GetDrawPosition().Y, "|");			
+			//TODO: Fix
+			if (_showMarker && HasFocus)
+				_fontSurface.DrawText(_markerPosition,GetDrawPosition().Y, "|");
 		}
 		
 		protected internal override void Redraw_PreRenderd()
@@ -183,14 +210,32 @@ namespace Tortoise.Client.Rendering.GUI
 				_preRenderd.Dispose();
 				_preRenderd = null;
 			}
-		
+			
 			_preRenderd = new FrameBuffer(Size);
 			Display.RenderTarget = _preRenderd;
 			Display.BeginFrame();
 
-			Display.Clear(_backgroundColor);
+			if(_backgroundColor != Color.Transparent)
+				Display.Clear(_backgroundColor);
 			_fontSurface.Color = Color.Black;
 			_fontSurface.DrawText(GetDrawPosition(), _visibleText);
+			
+			Point[] linePoints = new Point[5];
+			linePoints[0] = new Point(0, 0);
+			linePoints[1] = new Point(0, Height - 2);
+			linePoints[2] = new Point(Width - 2, Height - 2);
+			linePoints[3] = new Point(Width - 2, 0);
+			linePoints[0] = new Point(0, 0);
+			
+			Display.DrawLines(linePoints, Color.Gray);
+			
+			linePoints[0] = new Point(1, 1);
+			linePoints[1] = new Point(1, Height - 1);
+			linePoints[2] = new Point(Width - 1, Height - 1);
+			linePoints[3] = new Point(Width - 1, 1);
+			linePoints[0] = new Point(1, 1);
+
+			Display.DrawLines(linePoints, Color.Black);
 			
 			Display.EndFrame();
 			Display.FlushDrawBuffer();

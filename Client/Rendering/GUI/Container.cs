@@ -67,7 +67,7 @@ namespace Tortoise.Client.Rendering.GUI
 				return _Items[index];
 			}
 		}
-		*/
+		 */
 
 		public Container(string name, int x, int y, int width, int height)
 			: this(name, new Rectangle(x, y, width, height))
@@ -117,31 +117,34 @@ namespace Tortoise.Client.Rendering.GUI
 				if (Item.Value.Parent != this)
 				{
 					Item.Value.Parent = this;
-					//We need to make sure all other controls within this one 
-					//notify us when they gain focus, so we can tell them and our
-					//parent control to remove it from anything else.
-					Item.Value.FocusChanged += delegate(object sender, EventArgs se)
-					{
-						
-						if(!_inFocusChange && Item.Value.HasFocus)
-						{
-							_inFocusChange = true;
-							foreach(var c in _Items)
-							{
-								if(c.Value == Item.Value) continue;
-								c.Value.HasFocus = false;
-								
-							}
-							_inFocusChange = false;
-						}
-						if(FocusChanged != null)
-							FocusChanged(this, EventArgs.Empty);
-					};
 
+					Item.Value.FocusChanged += new EventHandler(Item_Value_FocusChanged);
 				}
 				Item.Value.Tick(e);
 			}
 			base.Tick(e);
+		}
+
+		void Item_Value_FocusChanged(object sender, EventArgs e)
+		{
+			//We need to make sure all other controls within this one
+			//notify us when they gain focus, so we can tell them and our
+			//parent control to remove it from anything else.
+			Control item = sender as Control;
+			if(item == null) return;
+			
+			if(!_inFocusChange && item.HasFocus)
+			{
+				_inFocusChange = true;
+				foreach(var c in _Items)
+				{
+					if(c.Value == item) continue;
+					c.Value.HasFocus = false;
+				}
+				_inFocusChange = false;
+			}
+			if(FocusChanged != null)
+				FocusChanged(this, EventArgs.Empty);
 		}
 		
 
