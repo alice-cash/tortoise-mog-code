@@ -52,11 +52,12 @@ namespace Tortoise.Client.Rendering.GUI
 		protected internal bool _visible = true;
 
 		//Mark items that have changed so they can be updated next time their renderd.
+		/*
 		protected internal bool _changed = false;
 		protected internal bool _chancedLocation = false;
 		protected internal bool _chancedSize = false;
 		protected internal bool _chancedBackgroundColor = false;
-
+		 */
 		//protected internal ControlContainer _parent = null;
 
 		protected internal bool _inited = false;
@@ -105,7 +106,7 @@ namespace Tortoise.Client.Rendering.GUI
 				MouseMove(this, e);
 			return MouseMove != null;
 		}
-		protected internal bool doKeybordDown(MouseEventArgs e)
+		protected internal bool doKeybordDown(KeyEventArgs e)
 		{
 			//Keybord events should never be triggerd in the base control event.
 			return false;
@@ -113,7 +114,7 @@ namespace Tortoise.Client.Rendering.GUI
 			//    KeybordDown(this, e);
 			//return KeybordDown != null;
 		}
-		protected internal bool doKeybordUp(MouseEventArgs e)
+		protected internal bool doKeybordUp(KeyEventArgs e)
 		{
 			//Keybord events should never be triggerd in the base control event.
 			return false;
@@ -158,7 +159,7 @@ namespace Tortoise.Client.Rendering.GUI
 				if (_backgroundColor != value)
 				{
 					_backgroundColor = value;
-					_chancedBackgroundColor = true;
+					//_chancedBackgroundColor = true;
 					_redrawPreRenderd = true;
 				}
 
@@ -168,11 +169,6 @@ namespace Tortoise.Client.Rendering.GUI
 		public bool Loaded
 		{
 			get { return _loaded; }
-			set
-			{
-				EnforceThreadSafty();
-				_loaded = value;
-			}
 		}
 
 		public bool Visible
@@ -203,18 +199,16 @@ namespace Tortoise.Client.Rendering.GUI
 				EnforceThreadSafty();
 				Rectangle OldRec = _area;
 
-				if (_area.X != value.X || _area.Y != value.Y)
-					_chancedLocation = true;
-				if (_area.Width != value.Width || _area.Height != value.Height)
-					_chancedSize = true;
-
-				if (_chancedSize || _chancedLocation)
+				if (_area.X != value.X || _area.Y != value.Y || _area.Width != value.Width || _area.Height != value.Height)
+				{
 					_area = value;
+					_redrawPreRenderd = true;
+				}
 
-				if (_chancedSize)
+				if (_area.X != value.X || _area.Y != value.Y )
 					doResize(new ResizeEventArgs(OldRec.Size, _area.Size));
 
-				if (_chancedLocation)
+				if (_area.Width != value.Width || _area.Height != value.Height)
 					doMove(new MovedEventArgs(OldRec.Location, _area.Location));
 			}
 		}
@@ -230,7 +224,6 @@ namespace Tortoise.Client.Rendering.GUI
 					Point OldLocation = _area.Location;
 					_area.Location = value;
 					doMove(new MovedEventArgs(OldLocation, Location));
-					_chancedLocation = true;
 				}
 			}
 		}
@@ -247,8 +240,7 @@ namespace Tortoise.Client.Rendering.GUI
 					Size OldSize = Size;
 					_area.Size = value;
 					doResize(new ResizeEventArgs(OldSize, Size));
-					_chancedSize = true;
-
+					_redrawPreRenderd = true;
 				}
 			}
 		}
@@ -260,7 +252,6 @@ namespace Tortoise.Client.Rendering.GUI
 			{
 				EnforceThreadSafty();
 				_area.X = value;
-				_chancedLocation = true;
 			}
 		}
 
@@ -271,7 +262,6 @@ namespace Tortoise.Client.Rendering.GUI
 			{
 				EnforceThreadSafty();
 				_area.Y = value;
-				_chancedLocation = true;
 			}
 		}
 
@@ -286,7 +276,7 @@ namespace Tortoise.Client.Rendering.GUI
 					Size OldSize = Size;
 					_area.Width = value;
 					doResize(new ResizeEventArgs(OldSize, Size));
-					_chancedSize = true;
+					_redrawPreRenderd = true;
 				}
 			}
 		}
@@ -302,7 +292,7 @@ namespace Tortoise.Client.Rendering.GUI
 					Size OldSize = Size;
 					_area.Height = value;
 					doResize(new ResizeEventArgs(OldSize, Size));
-					_chancedSize = true;
+					_redrawPreRenderd = true;
 				}
 			}
 		}
@@ -368,18 +358,18 @@ namespace Tortoise.Client.Rendering.GUI
 		{
 			if(!_inited)
 				Init();
-			Loaded = true;
-			_changed = true;
-			_chancedLocation = true;
-			_chancedSize = true;
-			_chancedBackgroundColor = true;
+			_loaded = true;
+			//_changed = true;
+			//_chancedLocation = true;
+			//_chancedSize = true;
+			//_chancedBackgroundColor = true;
 			_preRenderd = null;
 			_redrawPreRenderd = true;
 		}
 
 		public virtual void Unload()
 		{
-			Loaded = false;
+			_loaded = false;
 			if (_preRenderd != null)
 			{
 				_preRenderd.Dispose();
@@ -396,11 +386,10 @@ namespace Tortoise.Client.Rendering.GUI
 		internal protected virtual void Tick(TickEventArgs e)
 		{
 			EnforceThreadSafty();
-			if (_chancedBackgroundColor || _preRenderd == null)
+			if (_redrawPreRenderd || _preRenderd == null)
 			{
 				Redraw_PreRenderd();
 				_redrawPreRenderd = false;
-				_chancedBackgroundColor = false;
 			}
 			lock(_invokeList)
 			{
@@ -485,7 +474,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// <summary>
 		/// A Keyboard Event, returns true if the event is used, and false if it isn't.
 		/// </summary>
-		internal virtual bool OnKeyboardDown(MouseEventArgs e)
+		internal virtual bool OnKeyboardDown(KeyEventArgs e)
 		{
 			EnforceThreadSafty();
 			//Keybord events should never be triggerd in the base control event.
@@ -494,7 +483,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// <summary>
 		/// A Keyboard Event, returns true if the event is used, and false if it isn't.
 		/// </summary>
-		internal virtual bool OnKeyboardUp(MouseEventArgs e)
+		internal virtual bool OnKeyboardUp(KeyEventArgs e)
 		{
 			EnforceThreadSafty();
 			//Keybord events should never be triggerd in the base control event.

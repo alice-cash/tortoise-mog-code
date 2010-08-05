@@ -50,7 +50,7 @@
       <HintPath>..\..\..\AgateLib\Binaries\Debug\AgateLib.dll</HintPath>
     </Reference>
     <Reference Include="C5">
-      <HintPath>..\..\..\C5.bin\C5.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Users\Matthew\Downloads\C5.bin\C5.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -84,6 +84,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\Delegates.cs" />
+    <Compile Include="Rendering\GUI\KeyPressed.cs" />
     <Compile Include="Rendering\GUI\Label.cs" />
     <Compile Include="Rendering\GUI\Container.cs" />
     <Compile Include="Rendering\GUI\Control.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="Rendering\GUI\TextAlignement.cs" />
     <Compile Include="Rendering\GUI\TextBox.cs" />
     <Compile Include="Rendering\IRender.cs" />
+    <Compile Include="Rendering\KeyEventArgs.cs" />
     <Compile Include="Rendering\MainMenuScreen.cs" />
     <Compile Include="Rendering\MouseEventArgs.cs" />
     <Compile Include="Rendering\Screen.cs" />
@@ -120,6 +122,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <StartAction>Project</StartAction>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <RegisterForComInterop>False</RegisterForComInterop>

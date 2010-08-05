@@ -104,7 +104,7 @@ namespace Tortoise.Client.Rendering.GUI
 		public override void Unload()
 		{
 			base.Unload();
-			Loaded = false;
+			_loaded = false;
 			foreach (Control Item in _Items.Values)
 				if (Item.Loaded)
 					Item.Load();
@@ -208,7 +208,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// <summary>
 		/// A Keyboard Event, returns true if the event is used, and false if it isn't.
 		/// </summary>
-		internal override bool OnKeyboardDown(MouseEventArgs e)
+		internal override bool OnKeyboardDown(KeyEventArgs e)
 		{
 			bool go = false;
 			foreach (Control Item in _Items.Values.Reverse())
@@ -223,7 +223,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// <summary>
 		/// A Keyboard Event, returns true if the event is used, and false if it isn't.
 		/// </summary>
-		internal override bool OnKeyboardUp(MouseEventArgs e)
+		internal override bool OnKeyboardUp(KeyEventArgs e)
 		{
 			bool go = false;
 			foreach (Control Item in _Items.Values.Reverse())
