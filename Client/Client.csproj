@@ -50,7 +50,7 @@
       <HintPath>..\..\..\AgateLib\Binaries\Debug\AgateLib.dll</HintPath>
     </Reference>
     <Reference Include="C5">
-      <HintPath>..\..\..\..\..\..\Users\Matthew\Downloads\C5.bin\C5.dll</HintPath>
+      <HintPath>..\..\..\C5.bin\C5.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

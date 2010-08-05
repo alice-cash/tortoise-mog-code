@@ -37,6 +37,8 @@ using AgateLib;
 using AgateLib.DisplayLib;
 using AgateLib.Geometry;
 
+using Tortoise.Client.Extension.AgateLib.Geometry;
+
 namespace Tortoise.Client.Rendering.GUI
 {
 	/// <summary>
@@ -198,9 +200,14 @@ namespace Tortoise.Client.Rendering.GUI
 			if(!_visible)
 				return;
 			base.Render();
-			//TODO: Fix
+
 			if (_showMarker && HasFocus)
-				_fontSurface.DrawText(_markerPosition,GetDrawPosition().Y, "|");
+			{
+				Point drawPos = GetDrawPosition();
+				drawPos.X += _markerPosition;
+				drawPos = drawPos.Add(RealLocation);
+				_fontSurface.DrawText(drawPos, "|");
+			}
 		}
 		
 		protected internal override void Redraw_PreRenderd()
