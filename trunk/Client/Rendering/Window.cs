@@ -56,22 +56,37 @@ namespace Tortoise.Client.Rendering
 		
 		public void Run()
 		{
-			AgateSetup AS = new AgateSetup();
-
+			//This is the main entry for the program.
+			//We create the window here
+			//and then loop to draw each frame.
 			
-			AS.Initialize(true, false, true);
+			//Set up the Agate backend system, and send it the command line arguments
+			AgateSetup AS = new AgateSetup(Environment.GetCommandLineArgs());
+			
+			//Display, Sound, Input
+			AS.Initialize(true, true, true);
+			//If they run the "--choose" command, and cancel their selection
+			//then we just quit.
 			if (AS.WasCanceled)
 				return;
-
-			MainWindow = DisplayWindow.CreateWindowed ("Tortoise MOG", 800, 600);
 			
+			// Resizing is broken in the current agatelib revision.
+			MainWindow = DisplayWindow.CreateWindowed ("Tortoise MOG", 800, 600, false);
+			
+			MainWindow.Resize += delegate(object sender, EventArgs e) 
+			{
+				CurrentScreen.OnResize();
+			};
+			
+			//This selects our first screen, and Loads it.
 			CurrentScreen = new MainMenuScreen();
 			CurrentScreen.Init();
 			CurrentScreen.Load();
 			
 			
-			TickEventArgs tickEventData = new TickEventArgs();
-		
+			//This catches and sends Input events to the current screen.
+			//We filter mouse and keybord events into 2 logical classes
+			//as we should not check for mouse values in keyboard event
 			Mouse.MouseDown += delegate(InputEventArgs e)
 			{
 				CurrentScreen.OnMouseDown(new MouseEventArgs(e));
@@ -87,6 +102,20 @@ namespace Tortoise.Client.Rendering
 				CurrentScreen.OnMouseMove(new MouseEventArgs(e));
 			};
 			
+			Keyboard.KeyDown += delegate(InputEventArgs e)
+			{
+				CurrentScreen.OnKeyboardDown(new KeyEventArgs(e));
+			};
+			
+			Keyboard.KeyUp += delegate(InputEventArgs e)
+			{
+				CurrentScreen.OnKeyboardUp(new KeyEventArgs(e));
+			};
+			
+			
+			
+			
+			TickEventArgs tickEventData = new TickEventArgs();
 			Timing.StopWatch frameTimer = new Timing.StopWatch(true);
 			Timing.StopWatch TotalTimer = new Timing.StopWatch(true);
 			LimitedList<double> lastFrameTimes = new LimitedList<double>(30,0);
@@ -94,7 +123,7 @@ namespace Tortoise.Client.Rendering
 			
 
 			while (MainWindow.IsClosed == false)
-			{	
+			{
 				CurrentScreen.Tick(tickEventData);
 				
 				if(Display.RenderTarget != MainWindow.FrameBuffer)

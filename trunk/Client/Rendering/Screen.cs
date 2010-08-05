@@ -45,9 +45,10 @@ namespace Tortoise.Client.Rendering
 
 		void  OnMouseMove(MouseEventArgs e);
 
-		void  OnKeyboardDown(MouseEventArgs e);
+		void  OnKeyboardDown(KeyEventArgs e);
 
-		void  OnKeyboardUp(MouseEventArgs e);
-
+		void  OnKeyboardUp(KeyEventArgs e);
+		
+		void OnResize();
 	}
 }

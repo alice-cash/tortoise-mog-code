@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 8/1/2010
- * Time: 4:17 PM
+ * Date: 8/4/2010
+ * Time: 10:37 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -37,25 +37,15 @@ using AgateLib.Geometry;
 namespace Tortoise.Client.Rendering
 {
 	/// <summary>
-	/// Description of MouseEventArgs.
+	/// Desctiption of KeyEventArgs.
 	/// </summary>
-	public class MouseEventArgs : EventArgs
+	public class KeyEventArgs : EventArgs
 	{
-		private Mouse.MouseButtons _buttons;
-		private Point _mousePosition;
-		private int _wheelDelta;
-		
-		public Mouse.MouseButtons MouseButtons {get{return _buttons;}}
-		public Point MousePosition {get{return _mousePosition;}}
-		public int WheelDelta {get{return _wheelDelta;}}
-
-		public MouseEventArgs(InputEventArgs agatelibArgs)
+		public KeyCode KeyCode{get;private set;}
+		public KeyEventArgs(InputEventArgs agatelibArgs)
 		{
-			_buttons = agatelibArgs.MouseButtons;
-			_mousePosition = agatelibArgs.MousePosition;
-			_wheelDelta = agatelibArgs.WheelDelta;
+			KeyCode = agatelibArgs.KeyCode;
 		}
-
 
 	}
 }

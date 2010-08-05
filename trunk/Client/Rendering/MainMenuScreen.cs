@@ -112,14 +112,19 @@ namespace Tortoise.Client.Rendering
 			_renderItems.OnMouseDown(e);
 		}
 		
-		public  void OnKeyboardUp(MouseEventArgs e)
+		public  void OnKeyboardUp(KeyEventArgs e)
 		{
 			_renderItems.OnKeyboardUp(e);
 		}
 		
-		public  void OnKeyboardDown(MouseEventArgs e)
+		public  void OnKeyboardDown(KeyEventArgs e)
 		{
 			_renderItems.OnKeyboardDown(e);
+		}
+		
+		public void OnResize()
+		{
+			_renderItems.Size = Window.MainWindow.Size;
 		}
 	}
 }
