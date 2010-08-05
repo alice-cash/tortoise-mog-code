@@ -94,8 +94,7 @@ namespace Tortoise.Client.Rendering
 			
 
 			while (MainWindow.IsClosed == false)
-			{
-				
+			{	
 				CurrentScreen.Tick(tickEventData);
 				
 				if(Display.RenderTarget != MainWindow.FrameBuffer)
@@ -108,7 +107,7 @@ namespace Tortoise.Client.Rendering
 				Display.EndFrame();
 				
 				
-				MainWindow.Title = Math.Round(tickEventData.FPS,2).ToString() + " fps - " +  Math.Round(tickEventData.LastFrameTime, 2).ToString() + " ms";
+				MainWindow.Title = tickEventData.FPS.ToString("f2") + " fps - " +  tickEventData.AverageFrameTime.ToString("f2") + " ms";
 				
 				Core.KeepAlive();
 				
@@ -120,7 +119,6 @@ namespace Tortoise.Client.Rendering
 				tickEventData.FPS = 1000 / tickEventData.AverageFrameTime;
 				tickEventData.TotalSeconds = TotalTimer.TotalSeconds;
 				tickEventData.TotalMilliseconds = TotalTimer.TotalMilliseconds;
-				
 			}
 		}
 		
