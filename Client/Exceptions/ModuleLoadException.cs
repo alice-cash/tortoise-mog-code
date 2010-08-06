@@ -1,20 +1,20 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 5/2/2010
- * Time: 1:58 AM
+ * Date: 8/6/2010
+ * Time: 12:02 AM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
  * 
- *	1. Redistributions of source code must retain the above copyright notice, this list of
- *	   conditions and the following disclaimer.
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
  * 
- *	2. Redistributions in binary form must reproduce the above copyright notice, this list
- *	   of conditions and the following disclaimer in the documentation and/or other materials
- *	   provided with the distribution.
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY Matthew Cash ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -31,23 +31,30 @@
  * or implied, of Matthew Cash.
  */
 using System;
-using Tortoise.Client.Rendering;
-using Tortoise.Client.Module;
+using System.Runtime.Serialization;
 
-namespace Tortoise.Client
+namespace Tortoise.Client.Exceptions
 {
-	class Program
+	/// <summary>
+	/// Desctiption of ModuleLoadException.
+	/// </summary>
+	public class ModuleLoadException : Exception, ISerializable
 	{
-		public const int ScreenHeight = 800, ScreenWidth = 600;
-		static Window MainWindow = null;
-		public static void Main(string[] args)
+		public ModuleLoadException()
 		{
-			ModuleInfo.LoadModules();
-			
-			
-			MainWindow = new Window();
-			//This blocks untill the window is closed.
-			MainWindow.Run();
+		}
+
+	 	public ModuleLoadException(string message) : base(message)
+		{
+		}
+
+		public ModuleLoadException(string message, Exception innerException) : base(message, innerException)
+		{
+		}
+
+		// This constructor is needed for serialization.
+		protected ModuleLoadException(SerializationInfo info, StreamingContext context) : base(info, context)
+		{
 		}
 	}
 }

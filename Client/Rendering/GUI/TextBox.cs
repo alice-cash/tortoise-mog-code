@@ -65,7 +65,10 @@ namespace Tortoise.Client.Rendering.GUI
 		//private Timing.StopWatch _repeaterTimer;
 		private bool _showMarker;
 		
+		protected internal bool _allowNewLines = false;		
+		
 		public event System.EventHandler<KeyPressed> CancelCharacterInput;
+		
 		
 		public bool UsePasswordCharacter
 		{
@@ -128,6 +131,8 @@ namespace Tortoise.Client.Rendering.GUI
 		{
 			_fontSurface = FontSurface.AgateSans10;
 			_flasherTimer = new Timing.StopWatch();
+			
+			
 		}
 		
 		
@@ -155,9 +160,9 @@ namespace Tortoise.Client.Rendering.GUI
 					_showMarker = !_showMarker;
 				}
 				//this ajusts the position since its off slightly.
-				double ajustment = 1.12;
-				_markerPosition = _fontSurface.MeasureString(_visibleText.Substring(0, _cursorPosition)).Width;
-				_markerPosition = (int)(_markerPosition/ajustment);
+				//double ajustment = 1.12;
+				_markerPosition = _fontSurface.MeasureString(_visibleText.Substring(0, _cursorPosition)).Width - _visibleText.Substring(0, _cursorPosition).Length;
+				//_markerPosition = (int)(_markerPosition/ajustment);
 			}
 			/*
 			 * This is code pulled from a random project i have. Its not gonna get used, but its here
@@ -250,8 +255,12 @@ namespace Tortoise.Client.Rendering.GUI
 						_cursorPosition += 1;
 					break;
 				default:
+					
 					//TODO: Messy, make more readable.
 					string newChars = Keyboard.GetKeyString(key, new KeyModifiers(Keyboard.Keys[KeyCode.Alt], Keyboard.Keys[KeyCode.Control], Keyboard.Keys[KeyCode.Shift]));
+					
+					if(newChars.Contains("\n") && !_allowNewLines)
+						return;
 					
 					if(newChars == "") return;
 					

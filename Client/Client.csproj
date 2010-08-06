@@ -77,13 +77,18 @@
     <Compile Include="Console.cs" />
     <Compile Include="Exceptions\ConsoleException.cs" />
     <Compile Include="Exceptions\InvalidVarableNameExceptions.cs" />
+    <Compile Include="Exceptions\ModuleLoadException.cs" />
     <Compile Include="Extension\AgateLib\Geometry\Point.cs" />
     <Compile Include="Extension\System\Random.cs" />
     <Compile Include="localization\Default.cs" />
     <Compile Include="localization\LanguageStrings.cs" />
+    <Compile Include="Module\MainMenu.cs" />
+    <Compile Include="Module\Module.cs" />
+    <Compile Include="Module\ModuleLoader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\Delegates.cs" />
+    <Compile Include="Rendering\GUI\Button.cs" />
     <Compile Include="Rendering\GUI\KeyPressed.cs" />
     <Compile Include="Rendering\GUI\Label.cs" />
     <Compile Include="Rendering\GUI\Container.cs" />
@@ -97,7 +102,6 @@
     <Compile Include="Rendering\GUI\TextBox.cs" />
     <Compile Include="Rendering\IRender.cs" />
     <Compile Include="Rendering\KeyEventArgs.cs" />
-    <Compile Include="Rendering\MainMenuScreen.cs" />
     <Compile Include="Rendering\MouseEventArgs.cs" />
     <Compile Include="Rendering\Screen.cs" />
     <Compile Include="Rendering\TickEventArgs.cs" />
@@ -111,6 +115,7 @@
     <Folder Include="Collection" />
     <Folder Include="localization" />
     <Folder Include="Exceptions" />
+    <Folder Include="Module" />
     <Folder Include="Rendering\" />
     <Folder Include="Rendering\GUI" />
   </ItemGroup>
