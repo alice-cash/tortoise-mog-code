@@ -45,6 +45,7 @@ namespace Tortoise.Client.Rendering
 	/// </summary>
 	public class Window
 	{
+		public static IScreen StartScreen{get;set;}
 		public static DisplayWindow MainWindow{get; private set;}
 		public static Window Instance {get; private set;}
 		
@@ -71,7 +72,7 @@ namespace Tortoise.Client.Rendering
 				return;
 			
 			// Resizing is broken in the current agatelib revision.
-			MainWindow = DisplayWindow.CreateWindowed ("Tortoise MOG", 800, 600, false);
+			MainWindow = DisplayWindow.CreateWindowed ("Tortoise MOG",  Program.ScreenHeight,  Program.ScreenWidth, false);
 			
 			MainWindow.Resize += delegate(object sender, EventArgs e) 
 			{
@@ -79,7 +80,9 @@ namespace Tortoise.Client.Rendering
 			};
 			
 			//This selects our first screen, and Loads it.
-			CurrentScreen = new MainMenuScreen();
+			if(StartScreen == null)
+				throw new Exception("No module has set a screen!");
+			CurrentScreen = StartScreen;
 			CurrentScreen.Init();
 			CurrentScreen.Load();
 			

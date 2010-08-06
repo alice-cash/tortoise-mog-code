@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/29/2010
- * Time: 11:25 PM
+ * Date: 8/5/2010
+ * Time: 11:46 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -30,29 +30,42 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
+  
 using System;
 using AgateLib;
 using AgateLib.Geometry;
 using AgateLib.DisplayLib;
 using AgateLib.Resources;
 
+using Tortoise.Client.Exceptions;
+using Tortoise.Client.Rendering;
 using Tortoise.Client.Rendering.GUI;
 
-
-namespace Tortoise.Client.Rendering
+namespace Tortoise.Client.Module
 {
-	/// <summary>
-	/// Description of MainMenuScreen.
-	/// </summary>
-	public class MainMenuScreen : Control, IScreen
+	
+	internal class MainMenuLoader : ModuleLoader
 	{
+		public override void Load()
+		{
+			if(Window.StartScreen !=  null)
+				throw new ModuleLoadException("The Current screen has already been set!");
+			Window.StartScreen = new MainMenu();
+		}
+	}
+	/// <summary>
+	/// Description of MainMenu.
+	/// </summary>
+	public class MainMenu : Control, IScreen
+	{
+
 		AgateResourceCollection _resourceCollection;
 		Container _renderItems;
 		
-		public MainMenuScreen():base("_Screen",Point.Empty,Size.Empty)
+		public MainMenu():base("_Screen",Point.Empty,Size.Empty)
 		{
 			_resourceCollection = new AgateResourceCollection();
-			_renderItems  = new Container("_parent", 0,0,Display.CurrentWindow.Width, Display.CurrentWindow.Height);
+			_renderItems  = new Container("_parent", 0,0, Program.ScreenHeight,  Program.ScreenWidth);
 			_renderItems._backgroundColor = Color.Wheat;
 		}
 		
@@ -128,3 +141,4 @@ namespace Tortoise.Client.Rendering
 		}
 	}
 }
+	
