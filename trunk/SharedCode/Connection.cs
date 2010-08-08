@@ -38,17 +38,18 @@ using System.Diagnostics;
 using C5;
 
 using Tortoise.Shared.Module;
+using Tortoise.Shared.IO;
+using Tortoise.Shared.Net;
 
 
-
-namespace Tortoise.Shared.Connections
+namespace Tortoise.Shared.Net
 {
 	/// <summary>
 	/// Base connection for conitivity between 2 hosts.
 	/// </summary>
-	abstract class Connection
+	class Connection
 	{
-		internal static Dictionary<ushort, IModule> _moduleActions = new Dictionary<ushort, IModule>();
+		protected static Dictionary<ushort, IModule> _moduleActions = new Dictionary<ushort, IModule>();
 		public static void AddModuleHandle(ushort ID,IModule module)
 		{
 			if(_moduleActions.ContainsKey(ID))
@@ -56,15 +57,31 @@ namespace Tortoise.Shared.Connections
 			_moduleActions.Add(ID, module);
 		}
 		
-		
-		internal TcpClient _client;
-		internal BinaryReader _sr;
-		internal BinaryWriter _sw;
-		//private byte[] _data;
-		internal ushort _length;
-		internal DateTime _recived;
+		public System.EventHandler<ServerMessageEventArgs> ServerMessageEvent;
+		public System.EventHandler ReadyForDataEvent;
 
-		internal string _authKey;
+		public static ConnectionState ConnectionState = ConnectionState.NotConnected;
+		
+		private bool _readyForData;
+		
+		public bool ReadyForData
+		{
+			get{return _readyForData;}
+		}
+
+		protected TcpClient _client;
+		protected BinaryReader _sr;
+		protected BinaryWriter _sw;
+		//private byte[] _data;
+		protected ushort _length;
+		protected DateTime _recived;
+
+		protected string _authKey;
+		
+		public string AuthKey
+		{
+			get{return _authKey;}
+		}
 		
 		public EventHandler DisconnectedEvent;
 		
@@ -140,18 +157,97 @@ namespace Tortoise.Shared.Connections
 			_length = 0;
 		}
 		
-		/// <summary>
-		/// When overriden in a base class, handles input from the Connection.
-		/// </summary>
-		/// <param name="packetID"></param>
-		internal abstract void HandleInput(ushort length, ushort packetID);
+		protected void HandleInput(ushort length, ushort packetID)
+		{
+			PacketID pID = PacketID.Null;
+			if(!pID.TryParse(packetID))
+			{
+				SyncError();
+				return;
+			}
+
+			//Switch through all of the items, even if we throw a SyncError.
+			//Otherwise each ID should call a Read_{DescritiveInfo}()
+			//The reason for the empty SyncError() for a release is we don't care about
+			//reasons. We can assume the end developer has
+			Dictionary<String, Object> debugData;
+			switch(pID)
+			{
+				case PacketID.Null:
+					debugData = new Dictionary<String, Object>();
+					debugData.Add("PacketID", PacketID.Null);
+					SyncError(debugData);
+
+					break;
+				case PacketID.Message:
+					Read_Message();
+					break;
+				case PacketID.ModulePacket:
+					Read_ModulePacket(length);
+					break;
+			}
+		}		
+
+
+		void Read_Message()
+		{
+			//(MessageID reason)
+			//Check for a valid Enum Item.
+			ushort rTmp;
+			rTmp = _sr.ReadUInt16();
+			MessageID mID = MessageID.Null;
+			if(!mID.TryParse(rTmp))
+			{
+				Disconnect(MessageID.SyncError);
+				return;
+			}
+			if(ServerMessageEvent != null)
+				ServerMessageEvent(this, new ServerMessageEventArgs(mID));
+		}
 		
+		void Read_ModulePacket(ushort length)
+		{
+			ushort moduleID = _sr.ReadUInt16();
+			if(!_moduleActions.ContainsKey(moduleID))
+			{
+				SyncError();
+				throw new Exception("moduleID not regesterd!");
+			}
+			//remove 2 from the length because we just read 2 off
+			ByteReader data = new ByteReader(_sr, length - 2);
+			_moduleActions[moduleID].Communication(this, data);
+		}
+		
+		void Write_ModulePacket(byte[] data, ushort moduleID)
+		{
+			//2 for ID, 2 for module ID, x for data length
+			ushort length = Convert.ToUInt16(4 + data.Length);
+			_sw.Write(length);
+			_sw.Write(PacketID.ModulePacket.Value());
+			_sw.Write(moduleID);
+			_sw.Write(data);
+			
+		}
+		
+
+		public void Write_Message(MessageID reason)
+		{
+			//2 for ID, 2 for message ID
+			ushort length = 4;
+			_sw.Write(length);
+			_sw.Write(PacketID.Message.Value());
+			_sw.Write(reason.Value());
+			_sw.Flush();
+		}
+		
+
 		/// <summary>
 		/// Disconnects the client without any reason.
 		/// </summary>
-		public virtual void Disconnect()
+		public void Disconnect()
 		{
 			_client.Close();
+			Disconnected();
 		}	
 		
 		private void Disconnected()
@@ -163,14 +259,31 @@ namespace Tortoise.Shared.Connections
 		}
 
 		/// <summary>
+		/// Disconnects the client with the specified reason.
+		/// </summary>
+		public void Disconnect(MessageID reason)
+		{
+			Write_Message(reason);
+			Disconnect();
+		}
+	
+		
+		/// <summary>
 		/// Calls a Sync Error, Usually when the reciving datastream contains data the program isn't expecting.
 		/// </summary>
-		public virtual void SyncError()
+		public  void SyncError()
 		{
 			SyncError(new Dictionary<String, Object>());
 		}
 		
-		public virtual void SyncError(Dictionary<String, Object> data)
+		public  void SyncError(string debugData)
+		{
+			Dictionary<String, Object> d = new Dictionary<String, Object>();
+			d.Add("Debug",debugData);
+			SyncError(new Dictionary<String, Object>());
+		}
+		
+		public  void SyncError(Dictionary<String, Object> data)
 		{
 			StackTrace stackTrace = new StackTrace();
 			
@@ -186,6 +299,7 @@ namespace Tortoise.Shared.Connections
 				System.Diagnostics.Debug.WriteLine(stackTrace.ToString());
 			}
 
+			Write_Message(MessageID.SyncError);
 			Disconnect();
 		}
 

@@ -36,15 +36,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Tortoise.Shared.Connections
+namespace Tortoise.Shared.Net
 {
 	public enum PacketID: ushort
 	{
 		  Null = 0,
-		  ClientInfo,
-   		  ModulePacket,
-		
-		  ServerMessage,
+   		  ModulePacket,	
+		  Message,
 	}
 	
 	public static class PacketIDHelper
