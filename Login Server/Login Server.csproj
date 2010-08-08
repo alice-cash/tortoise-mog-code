@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Exe</OutputType>
-    <RootNamespace>LoginServer</RootNamespace>
+    <RootNamespace>Tortoise.LoginServer</RootNamespace>
     <AssemblyName>LoginServer</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -99,25 +99,36 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedCode\ByteReader.cs">
+      <Link>IO\ByteReader.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\ByteWriter.cs">
+      <Link>IO\ByteWriter.cs</Link>
+    </Compile>
     <Compile Include="..\SharedCode\Connection.cs">
-      <Link>Connections\Connection.cs</Link>
+      <Link>Net\Connection.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\ConnectionState.cs">
+      <Link>Net\ConnectionState.cs</Link>
     </Compile>
     <Compile Include="..\SharedCode\IModule.cs">
       <Link>Module\IModule.cs</Link>
     </Compile>
+    <Compile Include="..\SharedCode\MessageEventArgs.cs">
+      <Link>Net\MessageEventArgs.cs</Link>
+    </Compile>
     <Compile Include="..\SharedCode\MessageID.cs">
-      <Link>Connections\MessageID.cs</Link>
+      <Link>Net\MessageID.cs</Link>
     </Compile>
     <Compile Include="..\SharedCode\PacketID.cs">
-      <Link>Connections\PacketID.cs</Link>
+      <Link>Net\PacketID.cs</Link>
     </Compile>
-    <Compile Include="Connections\ClientConnection.cs" />
-    <Compile Include="Connections\ClientHandle.cs" />
-    <Compile Include="Connections\ClientReader.cs" />
-    <Compile Include="Connections\ClientWriter.cs" />
-    <Compile Include="Connections\ServerConnection.cs" />
-    <Compile Include="Connections\ServerHandle.cs" />
-    <Compile Include="Logic\RandomString.cs" />
+    <Compile Include="Module\Login.cs" />
+    <Compile Include="Module\ModuleInfo.cs" />
+    <Compile Include="Module\ModuleLoader.cs" />
+    <Compile Include="Net\ClientHandle.cs" />
+    <Compile Include="Net\ServerHandle.cs" />
+    <Compile Include="Text\RandomString.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="XML\LoginServer.cs" />
     <EmbeddedResource Include="XML\DefaultConfig.xml" />
@@ -147,5 +158,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Module" />
+    <Folder Include="IO" />
   </ItemGroup>
 </Project>
