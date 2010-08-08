@@ -83,6 +83,8 @@
     <Compile Include="Exceptions\ModuleLoadException.cs" />
     <Compile Include="Extension\AgateLib\Geometry\Point.cs" />
     <Compile Include="Extension\System\Random.cs" />
+    <Compile Include="IO\ByteReader.cs" />
+    <Compile Include="IO\ByteWriter.cs" />
     <Compile Include="localization\Default.cs" />
     <Compile Include="localization\LanguageStrings.cs" />
     <Compile Include="Module\Login.cs" />
@@ -111,7 +113,9 @@
     <Compile Include="Rendering\TickEventArgs.cs" />
     <Compile Include="Rendering\Window.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="IO" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Localization\EN-US.lang">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
