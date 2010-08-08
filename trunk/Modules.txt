@@ -1,0 +1,21 @@
+﻿As this is a framework, But i would like to have it modular so someone can litrally drop in a file and have new functionality
+To do this, there are several standerds i would like to keep.
+
+First:  All modules should be in the Tortoise.{Server or Client}.Module namespace
+Second: Modules that override exsisting ones can have different filenames, but they should 
+	keep the class name the same.
+For example, Lets say someone makes a more fancy Main Menu. The class name should still be 
+	MainMenu, so if someone has both files in the project, it will throw a compile time error.
+Third: All modules contain a class that inherits ModuleLoader. This class should contain a
+	paramaterless constructor, and will be initated at the start of the application autmaticly.
+	In the Load() function, it is best to check if a value the moduel has already been assigned,
+	and if so, throw an exception.
+	For example, a MainMenu replacement class would check to make sure the value "MainMenu"
+	isn't set in Window.AvailableScreens.
+
+Here are a list of Classes and Public methods one should expect to see. I am not going to use an interface as that limtis someone a bit and adds more complexity if they want to modify stuff themselves.
+
+Client:
+MainMenu
+ - Deligate LoginRequest(string, string)
+  - This will be called when the MainMenu(which should contain a login box) requests a login check. Any "Login" Modules which do login stuff and version check and whatever else should

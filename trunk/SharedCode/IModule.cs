@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/20/2010
- * Time: 5:21 PM
+ * Date: 8/7/2010
+ * Time: 10:11 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -30,43 +30,10 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
-
-using System;
-using Client.Connections;
-using Shared.Connections;
-
-namespace Tortoise.Client.Connections
+namespace Tortoise.Shared.Module
 {
-	//This part of the class deals with methods to read data from the server.
-	partial class ServerConnection
+	public interface IModule
 	{
-		
-		void Read_AuthKey()
-		{
-			//(string key)
-			_authKey = _sr.ReadString();
-			_readyForData = true;
-			if(ReadyForDataEvent !=null)
-				ReadyForDataEvent(this, EventArgs.Empty);
-		}
-		
-		void Read_ServerMessage()
-		{
-			//(MessageID reason)
-			//Check for a valid Enum Item.
-			ushort rTmp;
-			rTmp = _sr.ReadUInt16();
-			MessageID mID = MessageID.Null;
-			if(!mID.TryParse(rTmp))
-			{
-				Disconnect(MessageID.SyncError);
-				return;
-			}
-			if(ServerMessageEvent != null)
-				ServerMessageEvent(this, new ServerMessageEventArgs(mID));
-		}
-		
-		
-		
+		void Communication(byte[] data);
 	}
 }

@@ -36,7 +36,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.IO;
 
-using Shared.Connections;
+using Tortoise.Shared.Connections;
 
 namespace Tortoise.LoginServer.Connections
 {
@@ -49,7 +49,7 @@ namespace Tortoise.LoginServer.Connections
 			_authKey = LoginServer.Logic.RandomString.GetRandomString(64);
 		}
 
-		internal override void HandleInput(ushort packetID)
+		internal override void HandleInput(ushort length, ushort packetID)
 		{
 			//Make sure its a valid Enum Number
 			PacketID pID = PacketID.Null;
@@ -70,9 +70,9 @@ namespace Tortoise.LoginServer.Connections
 					debugData.Add("PacketID", PacketID.Null);
 					SyncError(debugData);
 					break;
-				case PacketID.Authintication:
+				//case PacketID.Authintication:
 					
-					break;
+				//	break;
 				case PacketID.ClientInfo:
 					
 					break;

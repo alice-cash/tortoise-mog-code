@@ -31,7 +31,7 @@
  * or implied, of Matthew Cash.
  */
 using System;
-using Shared.Connections;
+using Tortoise.Shared.Connections;
 
 using SharedServerLib.Exceptions;
 
@@ -51,7 +51,7 @@ namespace Tortoise.LoginServer.Connections
 			_sw.Write(reason.Value());
 			_sw.Flush();
 		}
-		
+		/*
 		public void Write_TempAuthKey(string key)
 		{
 			//this should never occure, but if it does, its mostlikley due to a horrible,
@@ -75,6 +75,6 @@ namespace Tortoise.LoginServer.Connections
 		    _sw.Write(PacketID.LoginSucess.Value());
 			_sw.Write(status);
 			_sw.Flush();
-		}
+		}*/
 	}							
 }

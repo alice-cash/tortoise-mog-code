@@ -33,50 +33,51 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using Shared.Connections;
+using Tortoise.Shared.Connections;
 
 namespace Tortoise.LoginServer.Connections
 {
-	/// <summary>
-	/// Description of ServerConnection.
-	/// </summary>
-	class ServerConnection : Connection
-	{
+    /// <summary>
+    /// Description of ServerConnection.
+    /// </summary>
+    class ServerConnection : Connection
+    {
 
-		public ServerConnection(TcpClient connection) : base(connection)
-		{
+        public ServerConnection(TcpClient connection)
+            : base(connection)
+        {
 
-		}
-		internal override void HandleInput(ushort packetID)
-		{
-			//Make sure its a valid Enum Number
-			PacketID pID = PacketID.Null;
-			if(!pID.TryParse(packetID))
-			{
-				SyncError();
-				return;
-			}
+        }
+        internal override void HandleInput(ushort length, ushort packetID)
+        {
+            //Make sure its a valid Enum Number
+            PacketID pID = PacketID.Null;
+            if (!pID.TryParse(packetID))
+            {
+                SyncError();
+                return;
+            }
 
-			//Switch through all of the items, even if we throw a SyncError.
-			//Otherwise each method should call a Read_{DescritiveInfo}()
-			Dictionary<String, Object> debugData;
-			switch(pID)
-			{
-				case PacketID.Null:
-					debugData = new Dictionary<String, Object>();
-					debugData.Add("PacketID", PacketID.Null);
-					SyncError(debugData);
-					break;
-				case PacketID.Authintication:
-					
-					break;
-				case PacketID.ClientInfo:
-					
-					break;
-			}
-		}
-		
-		
+            //Switch through all of the items, even if we throw a SyncError.
+            //Otherwise each method should call a Read_{DescritiveInfo}()
+            Dictionary<String, Object> debugData;
+            switch (pID)
+            {
+                case PacketID.Null:
+                    debugData = new Dictionary<String, Object>();
+                    debugData.Add("PacketID", PacketID.Null);
+                    SyncError(debugData);
+                    break;
+                //case PacketID.Authintication:
 
-	}
+                 //   break;
+                case PacketID.ClientInfo:
+
+                    break;
+            }
+        }
+
+
+
+    }
 }

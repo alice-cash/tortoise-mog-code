@@ -46,32 +46,32 @@ namespace Tortoise.Client.Rendering.GUI
 	/// </summary>
 	public abstract class Control
 	{
-		#region protected internal Varables
-		protected internal Rectangle _area = new Rectangle();
-		protected internal Color _backgroundColor = Color.White;
-		protected internal bool _visible = true;
+		#region internal Varables
+		internal Rectangle _area = new Rectangle();
+		internal Color _backgroundColor = Color.White;
+		internal bool _visible = true;
 
 		//Mark items that have changed so they can be updated next time their renderd.
 		/*
-		protected internal bool _changed = false;
-		protected internal bool _chancedLocation = false;
-		protected internal bool _chancedSize = false;
-		protected internal bool _chancedBackgroundColor = false;
+		internal bool _changed = false;
+		internal bool _chancedLocation = false;
+		internal bool _chancedSize = false;
+		internal bool _chancedBackgroundColor = false;
 		 */
-		//protected internal ControlContainer _parent = null;
+		//internal ControlContainer _parent = null;
 
-		protected internal bool _inited = false;
-		protected internal bool _loaded = false;
+		internal bool _inited = false;
+		internal bool _loaded = false;
 		
-		protected internal Container _parent;
+		internal Container _parent;
 		
-		protected internal FrameBuffer _preRenderd;
-		protected internal bool _redrawPreRenderd = false;
+		internal FrameBuffer _preRenderd;
+		internal bool _redrawPreRenderd = false;
 		
-		protected internal bool _enforceThreadSafeCalls = false;
-		protected internal int _safeThreadID;
+		internal bool _enforceThreadSafeCalls = false;
+		internal int _safeThreadID;
 		
-		protected internal bool _hasFocus;
+		internal bool _hasFocus;
 		
 		private Queue<InvokeItem> _invokeList;
 		#endregion
@@ -88,25 +88,25 @@ namespace Tortoise.Client.Rendering.GUI
 		
 		public System.EventHandler TickEvent;
 
-		protected internal bool doMouseDown(MouseEventArgs e)
+		internal bool doMouseDown(MouseEventArgs e)
 		{
 			if (MouseDown != null)
 				MouseDown(this, e);
 			return MouseDown != null;
 		}
-		protected internal bool doMouseUp(MouseEventArgs e)
+		internal bool doMouseUp(MouseEventArgs e)
 		{
 			if (MouseUp != null)
 				MouseUp(this, e);
 			return MouseUp != null;
 		}
-		protected internal bool doMouseMove(MouseEventArgs e)
+		internal bool doMouseMove(MouseEventArgs e)
 		{
 			if (MouseMove != null)
 				MouseMove(this, e);
 			return MouseMove != null;
 		}
-		protected internal bool doKeybordDown(KeyEventArgs e)
+		internal bool doKeybordDown(KeyEventArgs e)
 		{
 			//Keybord events should never be triggerd in the base control event.
 			return false;
@@ -114,7 +114,7 @@ namespace Tortoise.Client.Rendering.GUI
 			//    KeybordDown(this, e);
 			//return KeybordDown != null;
 		}
-		protected internal bool doKeybordUp(KeyEventArgs e)
+		internal bool doKeybordUp(KeyEventArgs e)
 		{
 			//Keybord events should never be triggerd in the base control event.
 			return false;
@@ -122,12 +122,12 @@ namespace Tortoise.Client.Rendering.GUI
 			//    KeybordUp(this, e);
 			//return KeybordUp != null;
 		}
-		protected internal void doResize(ResizeEventArgs e)
+		internal void doResize(ResizeEventArgs e)
 		{
 			if (Resized != null)
 				Resized(this, e);
 		}
-		protected internal void doMove(MovedEventArgs e)
+		internal void doMove(MovedEventArgs e)
 		{
 			if (Moved != null)
 				Moved(this, e);
@@ -135,7 +135,7 @@ namespace Tortoise.Client.Rendering.GUI
 		#endregion
 		
 		#region Properties
-		public string Name { get; protected internal set; }
+		public string Name { get; internal set; }
 		
 		public bool HasFocus
 		{
@@ -184,7 +184,7 @@ namespace Tortoise.Client.Rendering.GUI
 		public Container Parent
 		{
 			get { return _parent; }
-			protected internal set
+			internal set
 			{
 				EnforceThreadSafty();
 				_parent = value;
@@ -383,7 +383,7 @@ namespace Tortoise.Client.Rendering.GUI
 				Unload();
 		}
 
-		internal protected virtual void Tick(TickEventArgs e)
+		internal virtual void Tick(TickEventArgs e)
 		{
 			EnforceThreadSafty();
 			if (_redrawPreRenderd || _preRenderd == null)
@@ -409,7 +409,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// <summary>
 		/// Renders the control to the screen.
 		/// </summary>
-		internal protected virtual void Render()
+		internal virtual void Render()
 		{
 			EnforceThreadSafty();
 			if (!_visible)
@@ -425,7 +425,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// <summary>
 		/// Redraws the PreRenderd Surface, recomended to override this instead of Render.
 		/// </summary>
-		protected internal virtual void Redraw_PreRenderd()
+		internal virtual void Redraw_PreRenderd()
 		{
 			if (_preRenderd != null)
 			{
@@ -513,23 +513,23 @@ namespace Tortoise.Client.Rendering.GUI
 		}
 		#endregion
 		
-		#region Internal Protected Methods
-		internal protected bool IsPointOver(Point pos)
+		#region internal Methods
+		internal bool IsPointOver(Point pos)
 		{
 			return Area.Contains(pos);
 		}
-		internal protected void EnforceThreadSafty()
+		internal void EnforceThreadSafty()
 		{
 			if(!CheckThreadSafty()) throw new InvalidOperationException(string.Format("Crossthread Access to '{0}' is not permited.",Name));
 		}
-		internal protected bool CheckThreadSafty()
+		internal bool CheckThreadSafty()
 		{
 			//If enforce threadsafty is on, we return based on if the thread is the same as the parent,
 			//otherwise we just return true because we want whatevers using this to suceed.
 			return _enforceThreadSafeCalls ? _safeThreadID == GetManagedThreadId(): true;
 		}
 		
-		internal protected int GetManagedThreadId()
+		internal int GetManagedThreadId()
 		{
 			return Thread.CurrentThread.ManagedThreadId;
 		}

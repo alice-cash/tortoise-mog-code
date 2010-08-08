@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/23/2010
- * Time: 11:42 PM
+ * Date: 8/6/2010
+ * Time: 7:38 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -31,18 +31,16 @@
  * or implied, of Matthew Cash.
  */
 using System;
-using Tortoise.Shared.Connections;
-namespace Client.Connections
+
+namespace Tortoise.Client.Connections
 {
 	/// <summary>
-	/// Description of ServerMessageEventArgs.
+	/// Description of ConnectionState.
 	/// </summary>
-	class ServerMessageEventArgs: EventArgs
+	public enum ConnectionState
 	{
-		public MessageID ServerMessage {get;set;}
-		public ServerMessageEventArgs(MessageID mID)
-		{
-			ServerMessage = mID;
-		}
+		NotConnected,
+		ConnectedToLoginServer,
+		ConnectedToGameServer
 	}
 }

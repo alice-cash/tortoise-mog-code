@@ -44,7 +44,7 @@ namespace Tortoise.Client.Rendering.GUI
 {
 	public class Container : Control
 	{
-		protected internal ControlContainer _Items;
+		internal ControlContainer _Items;
 		private bool _inFocusChange = false;
 
 		public ControlContainer Controls
@@ -110,7 +110,7 @@ namespace Tortoise.Client.Rendering.GUI
 					Item.Load();
 		}
 
-		protected internal override void Tick(TickEventArgs e)
+		internal override void Tick(TickEventArgs e)
 		{
 			foreach (var Item in Controls)
 			{
@@ -152,7 +152,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// <summary>
 		/// Renders the control to the screen.
 		/// </summary>
-		protected internal override void Render()
+		internal override void Render()
 		{
 			base.Render();
 

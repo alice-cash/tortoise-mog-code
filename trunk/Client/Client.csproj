@@ -49,8 +49,9 @@
     <Reference Include="AgateLib">
       <HintPath>..\..\..\AgateLib\Binaries\Debug\AgateLib.dll</HintPath>
     </Reference>
-    <Reference Include="C5">
-      <HintPath>..\..\..\..\..\..\Users\Matthew\Downloads\C5.bin\C5.dll</HintPath>
+    <Reference Include="C5, Version=1.1.0.0, Culture=neutral, PublicKeyToken=06a1b38866503b69, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\C5.bin\C5.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -63,6 +64,9 @@
     <Compile Include="..\SharedCode\Connection.cs">
       <Link>Connections\Connection.cs</Link>
     </Compile>
+    <Compile Include="..\SharedCode\IModule.cs">
+      <Link>Module\IModule.cs</Link>
+    </Compile>
     <Compile Include="..\SharedCode\MessageID.cs">
       <Link>Connections\MessageID.cs</Link>
     </Compile>
@@ -70,10 +74,9 @@
       <Link>Connections\PacketID.cs</Link>
     </Compile>
     <Compile Include="Collection\LimitedList.cs" />
+    <Compile Include="Connections\ConnectionState.cs" />
     <Compile Include="Connections\ServerConnection.cs" />
     <Compile Include="Connections\ServerMessageEventArgs.cs" />
-    <Compile Include="Connections\ServerReader.cs" />
-    <Compile Include="Connections\ServerWriter.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="Exceptions\ConsoleException.cs" />
     <Compile Include="Exceptions\InvalidVarableNameExceptions.cs" />
@@ -82,8 +85,9 @@
     <Compile Include="Extension\System\Random.cs" />
     <Compile Include="localization\Default.cs" />
     <Compile Include="localization\LanguageStrings.cs" />
+    <Compile Include="Module\Login.cs" />
     <Compile Include="Module\MainMenu.cs" />
-    <Compile Include="Module\Module.cs" />
+    <Compile Include="Module\ModuleInfo.cs" />
     <Compile Include="Module\ModuleLoader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -107,18 +111,7 @@
     <Compile Include="Rendering\TickEventArgs.cs" />
     <Compile Include="Rendering\Window.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Extension" />
-    <Folder Include="Extension\AgateLib" />
-    <Folder Include="Extension\AgateLib\Geometry" />
-    <Folder Include="Extension\System" />
-    <Folder Include="Collection" />
-    <Folder Include="localization" />
-    <Folder Include="Exceptions" />
-    <Folder Include="Module" />
-    <Folder Include="Rendering\" />
-    <Folder Include="Rendering\GUI" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Localization\EN-US.lang">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

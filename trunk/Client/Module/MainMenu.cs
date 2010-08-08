@@ -36,10 +36,10 @@ using AgateLib;
 using AgateLib.Geometry;
 using AgateLib.DisplayLib;
 using AgateLib.Resources;
-
 using Tortoise.Client.Exceptions;
 using Tortoise.Client.Rendering;
 using Tortoise.Client.Rendering.GUI;
+using Tortoise.Shared.Module;
 
 namespace Tortoise.Client.Module
 {
@@ -48,15 +48,15 @@ namespace Tortoise.Client.Module
 	{
 		public override void Load()
 		{
-			if(Window.StartScreen !=  null)
+			if(Window.AvailableScreens.ContainsKey("MainMenu"))
 				throw new ModuleLoadException("The Current screen has already been set!");
-			Window.StartScreen = new MainMenu();
+			Window.AvailableScreens.Add("MainMenu",new MainMenu());
 		}
 	}
 	/// <summary>
 	/// Description of MainMenu.
 	/// </summary>
-	public class MainMenu : Control, IScreen
+	public class MainMenu : Control, IScreen, IModule
 	{
 
 		AgateResourceCollection _resourceCollection;
@@ -138,6 +138,11 @@ namespace Tortoise.Client.Module
 		public void OnResize()
 		{
 			_renderItems.Size = Window.MainWindow.Size;
+		}
+		
+		public void Communication(byte[] data)
+		{
+			
 		}
 	}
 }
