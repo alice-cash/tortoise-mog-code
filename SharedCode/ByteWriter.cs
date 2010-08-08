@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 8/7/2010
- * Time: 10:11 PM
+ * Date: 8/8/2010
+ * Time: 2:16 AM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -30,13 +30,84 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
-using Tortoise.Shared.IO;
-using Tortoise.Shared.Net;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Linq;
 
-namespace Tortoise.Shared.Module
+namespace Tortoise.Shared.IO
 {
-	interface IModule
+	/// <summary>
+	/// Writes to a byte array.
+	/// </summary>
+	public class ByteWriter
 	{
-		void Communication(Connection Sender, ByteReader data);
+		List<byte> _data;
+		Encoding _encoder ;
+
+		public ByteWriter()
+		{
+			_data = new List<byte>();
+			_encoder = Encoding.Unicode;
+		}
+		
+		public void Write(byte data)
+		{
+			_data.Add(data);
+		}
+		
+		public void Write(byte[] data)
+		{
+			_data.AddRange(data);
+		}
+		
+		public void Write(sbyte data)
+		{
+			_data.Add(Convert.ToByte(data));
+		}
+		
+		public void Write(short data)
+		{
+			_data.AddRange(BitConverter.GetBytes(data));
+		}
+		
+		public void Write(ushort data)
+		{
+			_data.AddRange(BitConverter.GetBytes(data));
+		}
+		public void Write(int data)
+		{
+			_data.AddRange(BitConverter.GetBytes(data));
+		}
+		public void Write(uint data)
+		{
+			_data.AddRange(BitConverter.GetBytes(data));
+		}
+		public void Write(long data)
+		{
+			_data.AddRange(BitConverter.GetBytes(data));
+		}
+		public void Write(ulong data)
+		{
+			_data.AddRange(BitConverter.GetBytes(data));
+		}
+		public void Write(float data)
+		{
+			_data.AddRange(BitConverter.GetBytes(data));
+		}
+		public void Write(double data)
+		{
+			_data.AddRange(BitConverter.GetBytes(data));
+		}
+		public void Write(string data)
+		{
+			Write(Convert.ToUInt16(data.Length));
+			Write(_encoder.GetBytes(data));
+		}
+		
+		public byte[] GetArray()
+		{
+			return _data.ToArray();
+		}
 	}
 }

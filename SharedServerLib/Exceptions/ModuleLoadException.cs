@@ -1,20 +1,20 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/18/2010
- * Time: 3:05 PM
+ * Date: 8/6/2010
+ * Time: 12:02 AM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
  * 
- *	1. Redistributions of source code must retain the above copyright notice, this list of
- *	   conditions and the following disclaimer.
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
  * 
- *	2. Redistributions in binary form must reproduce the above copyright notice, this list
- *	   of conditions and the following disclaimer in the documentation and/or other materials
- *	   provided with the distribution.
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY Matthew Cash ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -28,33 +28,33 @@
  * 
  * The views and conclusions contained in the software and documentation are those of the
  * authors and should not be interpreted as representing official policies, either expressed
- * or implied, of Matthew Cash. */
+ * or implied, of Matthew Cash.
+ */
 using System;
+using System.Runtime.Serialization;
 
-namespace Tortoise.Shared.Net
+namespace SharedServerLib.Exceptions
 {
 	/// <summary>
-	/// Message IDs. All text shown to the user should be client side for localization.
+	/// Desctiption of ModuleLoadException.
 	/// </summary>
-	enum MessageID:ushort
+	public class ModuleLoadException : Exception, ISerializable
 	{
-		Null,
-   		SyncError,
-		OutOfDate,
-	}
-	
-	static class MessageIDHelper
-	{
-		public static bool TryParse(this MessageID mID, ushort value)
+		public ModuleLoadException()
 		{
-			if(!Enum.IsDefined(typeof(MessageID), value))
-				return false;
-			mID = (MessageID)value;
-			return true;
 		}
-		public static ushort Value(this MessageID mID)
+
+	 	public ModuleLoadException(string message) : base(message)
 		{
-			return (ushort)mID;
+		}
+
+		public ModuleLoadException(string message, Exception innerException) : base(message, innerException)
+		{
+		}
+
+		// This constructor is needed for serialization.
+		protected ModuleLoadException(SerializationInfo info, StreamingContext context) : base(info, context)
+		{
 		}
 	}
 }
