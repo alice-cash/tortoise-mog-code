@@ -35,24 +35,39 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.IO;
 using System.Diagnostics;
+using C5;
 
-namespace Shared.Connections
+using Tortoise.Shared.Module;
+
+
+
+namespace Tortoise.Shared.Connections
 {
 	/// <summary>
 	/// Base connection for conitivity between 2 hosts.
 	/// </summary>
 	abstract class Connection
 	{
+		internal static Dictionary<ushort, IModule> _moduleActions = new Dictionary<ushort, IModule>();
+		public static void AddModuleHandle(ushort ID,IModule module)
+		{
+			if(_moduleActions.ContainsKey(ID))
+				throw new Exception("ID already exsists!");
+			_moduleActions.Add(ID, module);
+		}
+		
+		
 		internal TcpClient _client;
 		internal BinaryReader _sr;
 		internal BinaryWriter _sw;
 		//private byte[] _data;
-		internal int _length;
+		internal ushort _length;
 		internal DateTime _recived;
 
 		internal string _authKey;
 		
 		public EventHandler DisconnectedEvent;
+		
 		private bool _DisconnectedEventCalled;
 
 		public bool Connected
@@ -119,7 +134,8 @@ namespace Shared.Connections
 				}
 				
 				ushort pTempID = _sr.ReadUInt16();
-				HandleInput(pTempID);
+				//remove 2 from the length that we just read from
+				HandleInput(Convert.ToUInt16(_length - 2), pTempID);
 			}
 			_length = 0;
 		}
@@ -128,7 +144,7 @@ namespace Shared.Connections
 		/// When overriden in a base class, handles input from the Connection.
 		/// </summary>
 		/// <param name="packetID"></param>
-		internal abstract void HandleInput(ushort packetID);
+		internal abstract void HandleInput(ushort length, ushort packetID);
 		
 		/// <summary>
 		/// Disconnects the client without any reason.

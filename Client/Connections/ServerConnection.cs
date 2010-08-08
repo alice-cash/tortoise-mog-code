@@ -37,7 +37,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using Client.Connections;
-using Shared.Connections;
+using Tortoise.Client.Connections;
+using Tortoise.Shared.Connections;
 using System.Diagnostics;
 
 namespace Tortoise.Client.Connections
@@ -45,10 +46,17 @@ namespace Tortoise.Client.Connections
 	/// <summary>
 	/// 
 	/// </summary>
-	partial class ServerConnection : Connection
+	class ServerConnection : Connection
 	{
 		
+		public static ConnectionState ConnectionState = ConnectionState.NotConnected;
+		
 		private bool _readyForData;
+		
+		public string AuthKey
+		{
+			get{return _authKey;}
+		}
 
 		public bool ReadyForData
 		{
@@ -65,7 +73,7 @@ namespace Tortoise.Client.Connections
 		}
 
 		
-		internal override void HandleInput(ushort packetID)
+		internal override void HandleInput(ushort length, ushort packetID)
 		{
 			PacketID pID = PacketID.Null;
 			if(!pID.TryParse(packetID))
@@ -87,17 +95,82 @@ namespace Tortoise.Client.Connections
 					SyncError(debugData);
 
 					break;
-					case PacketID.Authintication: Read_AuthKey();
-					break;
+				//case PacketID.Authintication:
+				//	Read_AuthKey();
+			//		break;
 				case PacketID.ClientInfo:
 					debugData = new Dictionary<String, Object>();
 					debugData.Add("PacketID", PacketID.ClientInfo);
 					SyncError(debugData);
 
 					break;
-					case PacketID.ServerMessage: Read_ServerMessage();
+				case PacketID.ServerMessage:
+					Read_ServerMessage();
+					break;
+				case PacketID.ModulePacket:
+					Read_ModulePacket(length);
 					break;
 			}
+		}
+		
+		void Read_AuthKey()
+		{
+			//(string key)
+			_authKey = _sr.ReadString();
+			_readyForData = true;
+			if(ReadyForDataEvent !=null)
+				ReadyForDataEvent(this, EventArgs.Empty);
+		}
+		
+		void Read_ServerMessage()
+		{
+			//(MessageID reason)
+			//Check for a valid Enum Item.
+			ushort rTmp;
+			rTmp = _sr.ReadUInt16();
+			MessageID mID = MessageID.Null;
+			if(!mID.TryParse(rTmp))
+			{
+				Disconnect(MessageID.SyncError);
+				return;
+			}
+			if(ServerMessageEvent != null)
+				ServerMessageEvent(this, new ServerMessageEventArgs(mID));
+		}
+		
+		void Read_ModulePacket(ushort length)
+		{
+			ushort moduleID = _sr.ReadUInt16();
+			if(!_moduleActions.ContainsKey(moduleID))
+			{
+				SyncError();
+				throw new Exception("moduleID not regesterd!");
+			}
+			//remove 2 from the length because we just read 2 off
+			byte[] data = _sr.ReadBytes(length - 2);
+			
+		}
+		
+		public void Write_Version(byte major, byte minor, ushort revision)
+		{
+			//2 for PacketID, 1 for major, 1 for minor, 2 for revision
+			ushort length = 6;
+			_sw.Write(length);
+			_sw.Write((ushort)PacketID.ClientInfo);
+			_sw.Write(major);
+			_sw.Write(minor);
+			_sw.Write(revision);
+			_sw.Flush();
+		}
+		
+		public void Write_ServerMessage(MessageID reason)
+		{
+			//2 for ID, 2 for message ID
+			ushort length = 4;
+			_sw.Write(length);
+			_sw.Write((ushort)PacketID.ServerMessage);
+			_sw.Write((ushort)reason);
+			_sw.Flush();
 		}
 		
 		/// <summary>

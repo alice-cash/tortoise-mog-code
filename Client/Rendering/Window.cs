@@ -31,6 +31,7 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using System.Collections.Generic;
 using AgateLib;
 using AgateLib.DisplayLib;
 using AgateLib.Geometry;
@@ -45,7 +46,13 @@ namespace Tortoise.Client.Rendering
 	/// </summary>
 	public class Window
 	{
-		public static IScreen StartScreen{get;set;}
+		//This is called autmaticly when any static property is accessed
+		//or an instance of the class is created
+		static Window()
+		{
+			AvailableScreens = new Dictionary<string, IScreen>();
+		}
+		public static Dictionary<string, IScreen> AvailableScreens{get; private set;}
 		public static DisplayWindow MainWindow{get; private set;}
 		public static Window Instance {get; private set;}
 		
@@ -80,9 +87,9 @@ namespace Tortoise.Client.Rendering
 			};
 			
 			//This selects our first screen, and Loads it.
-			if(StartScreen == null)
-				throw new Exception("No module has set a screen!");
-			CurrentScreen = StartScreen;
+			if(AvailableScreens.ContainsKey("MainMenu"))
+				throw new Exception("No module has set a MainMenu screen!");
+			CurrentScreen = AvailableScreens["MainMenu"];
 			CurrentScreen.Init();
 			CurrentScreen.Load();
 			

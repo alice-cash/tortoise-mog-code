@@ -1,20 +1,20 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/18/20010
- * Time: 12:49 PM
+ * Date: 8/7/2010
+ * Time: 10:01 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
  * 
- *	1. Redistributions of source code must retain the above copyright notice, this list of
- *	   conditions and the following disclaimer.
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
  * 
- *	2. Redistributions in binary form must reproduce the above copyright notice, this list
- *	   of conditions and the following disclaimer in the documentation and/or other materials
- *	   provided with the distribution.
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY Matthew Cash ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -30,38 +30,39 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Shared.Connections;
+using Tortoise.Client.Connections;
+using Tortoise.Shared.Module;
 
-namespace Tortoise.Client.Connections
+namespace Tortoise.Client.Module
 {
-	//This part of the class deals with methods to write data to the server.
-	partial class ServerConnection
+	
+	internal class LoginLoader : ModuleLoader
 	{
-		public void Write_Version(byte major, byte minor, ushort revision)
+		const ushort ClientModuleComID = 10010;
+		const ushort ServerModuleComID = 10015;
+		
+		static Login _instance;
+		public override void Load()
 		{
-			//2 for PacketID, 1 for major, 1 for minor, 2 for revision
-			ushort length = 6;
-			_sw.Write(length);
-			_sw.Write((ushort)PacketID.ClientInfo);
-			_sw.Write(major);
-			_sw.Write(minor);
-			_sw.Write(revision);
-			_sw.Flush();
+			_instance = new Login();
+			ServerConnection.AddModuleHandle(ClientModuleComID, _instance);
+		
+		}
+	}
+	
+	/// <summary>
+	/// Description of Login.
+	/// </summary>
+	public class Login : IModule
+	{
+		public Login()
+		{
 		}
 		
-		public void Write_ServerMessage(MessageID reason)
+		public void Communication(byte[] data)
 		{
-			//2 for ID, 2 for message ID
-			ushort length = 4;
-			_sw.Write(length);
-			_sw.Write((ushort)PacketID.ServerMessage);
-			_sw.Write((ushort)reason);
-			_sw.Flush();
+			
 		}
 	}
 }

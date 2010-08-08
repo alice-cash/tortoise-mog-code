@@ -78,6 +78,9 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="C5">
+      <HintPath>..\..\..\C5.bin\C5.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Posix">
       <HintPath>..\..\..\..\..\..\Program Files %28x86%29\Mono-2.6.3\lib\mono\2.0\Mono.Posix.dll</HintPath>
     </Reference>
@@ -98,6 +101,9 @@
   <ItemGroup>
     <Compile Include="..\SharedCode\Connection.cs">
       <Link>Connections\Connection.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\IModule.cs">
+      <Link>Module\IModule.cs</Link>
     </Compile>
     <Compile Include="..\SharedCode\MessageID.cs">
       <Link>Connections\MessageID.cs</Link>
@@ -140,6 +146,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Logic" />
+    <Folder Include="Module" />
   </ItemGroup>
 </Project>

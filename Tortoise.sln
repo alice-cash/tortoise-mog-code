@@ -6,6 +6,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SharedCode", "SharedCode", 
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Module", "Module", "{1BF8CF8B-FF16-4210-AAE9-C71E9D26034C}"
+	ProjectSection(SolutionItems) = postProject
+		SharedCode\Module.cs = SharedCode\Module.cs
+		SharedCode\IModule.cs = SharedCode\IModule.cs
+	EndProjectSection
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Networking", "Networking", "{B2151312-57FD-47AF-825D-59AE1BCA8B5F}"
 	ProjectSection(SolutionItems) = preProject
 		SharedCode\MessageID.cs = SharedCode\MessageID.cs
@@ -18,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		Code Formating.txt = Code Formating.txt
 		Requirements.txt = Requirements.txt
 		Localization.txt = Localization.txt
+		Modules.txt = Modules.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedServerLib", "SharedServerLib\SharedServerLib.csproj", "{14D29E3B-DFCB-42AC-99F4-0E9DAF07B091}"
@@ -88,5 +95,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B2151312-57FD-47AF-825D-59AE1BCA8B5F} = {DF44B900-3E66-4601-9267-BDBC81A61723}
+		{1BF8CF8B-FF16-4210-AAE9-C71E9D26034C} = {DF44B900-3E66-4601-9267-BDBC81A61723}
 	EndGlobalSection
 EndGlobal

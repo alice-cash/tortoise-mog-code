@@ -32,7 +32,7 @@
  */
 using System;
 using System.Runtime.Remoting.Channels;
-using Shared.Connections;
+using Tortoise.Shared.Connections;
 
 namespace Tortoise.LoginServer.Connections
 {
@@ -58,7 +58,7 @@ namespace Tortoise.LoginServer.Connections
 			{
 				Disconnect(MessageID.OutOfDate);
 			}
-			Write_TempAuthKey(_authKey);
+			//Write_TempAuthKey(_authKey);
 		}
 	}
 }

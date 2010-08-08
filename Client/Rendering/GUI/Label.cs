@@ -92,7 +92,7 @@ namespace Tortoise.Client.Rendering.GUI
 			_fontSurface = FontSurface.AgateSans10;
 		}
 				
-		protected internal override void Redraw_PreRenderd()
+		internal override void Redraw_PreRenderd()
 		{		
 			if (_preRenderd != null)
 			{

@@ -65,7 +65,7 @@ namespace Tortoise.Client.Rendering.GUI
 		//private Timing.StopWatch _repeaterTimer;
 		private bool _showMarker;
 		
-		protected internal bool _allowNewLines = false;		
+		internal bool _allowNewLines = false;		
 		
 		public event System.EventHandler<KeyPressed> CancelCharacterInput;
 		
@@ -136,7 +136,7 @@ namespace Tortoise.Client.Rendering.GUI
 		}
 		
 		
-		protected internal override void Tick(TickEventArgs e)
+		internal override void Tick(TickEventArgs e)
 		{
 			_visibleText = Text;
 			if (_usePasswordChar)
@@ -287,7 +287,7 @@ namespace Tortoise.Client.Rendering.GUI
 			}
 		}
 		
-		protected internal override void Render()
+		internal override void Render()
 		{
 			if(!_visible)
 				return;
@@ -302,7 +302,7 @@ namespace Tortoise.Client.Rendering.GUI
 			}
 		}
 		
-		protected internal override void Redraw_PreRenderd()
+		internal override void Redraw_PreRenderd()
 		{
 			if (_preRenderd != null)
 			{

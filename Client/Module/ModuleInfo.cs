@@ -48,16 +48,15 @@ namespace Tortoise.Client.Module
 			object instance;
 			foreach (Type type in thisasm.GetTypes())
 			{
-				if(type.Namespace == "Tortoise.Client.Module")
-					if(	type.BaseType == typeof(ModuleLoader))
-					{
-						ModuleLoader ml = Activator.CreateInstance(type) as ModuleLoader;
-						if(ml == null) continue;
-						ml.Load();
-					}
+				if(type.Namespace == "Tortoise.Client.Module" && type.BaseType == typeof(ModuleLoader))
+				{
+					ModuleLoader ml = Activator.CreateInstance(type) as ModuleLoader;
+					if(ml == null) continue;
+					ml.Load();
 				}
-			
-			
+			}
 		}
 	}
+	
+
 }

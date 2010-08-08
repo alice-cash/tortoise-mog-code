@@ -31,7 +31,7 @@
  * or implied, of Matthew Cash. */
 using System;
 
-namespace Shared.Connections
+namespace Tortoise.Shared.Connections
 {
 	/// <summary>
 	/// Message IDs. All text shown to the user should be client side for localization.

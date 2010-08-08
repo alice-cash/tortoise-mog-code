@@ -44,4 +44,10 @@ namespace Tortoise.Client.Module
 			throw new ModuleLoadException("Your loader must override the Load Function");				
 		}
 	}
+	
+	public abstract class Module
+	{
+		public abstract void NetworkCommunication(byte[] Data);
+
+	}
 }
