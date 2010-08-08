@@ -31,7 +31,8 @@
  * or implied, of Matthew Cash.
  */
 using System;
-using Tortoise.Client.Connections;
+using Tortoise.Shared.Net;
+using Tortoise.Shared.IO;
 using Tortoise.Shared.Module;
 
 namespace Tortoise.Client.Module
@@ -39,14 +40,14 @@ namespace Tortoise.Client.Module
 	
 	internal class LoginLoader : ModuleLoader
 	{
-		const ushort ClientModuleComID = 10010;
-		const ushort ServerModuleComID = 10015;
+		public const ushort ClientModuleComID = 10010;
+		public const ushort ServerModuleComID = 20010;
 		
 		static Login _instance;
 		public override void Load()
 		{
 			_instance = new Login();
-			ServerConnection.AddModuleHandle(ClientModuleComID, _instance);
+			Connection.AddModuleHandle(ClientModuleComID, _instance);
 		
 		}
 	}
@@ -54,13 +55,22 @@ namespace Tortoise.Client.Module
 	/// <summary>
 	/// Description of Login.
 	/// </summary>
-	public class Login : IModule
+	class Login : IModule
 	{
+		//These are IDs used by the packet. The random numbers
+		//should help catch sync issues.
+		//TODO: Change these to different values for your game, make sure they match in the server.
+		private const byte _packet_AuthKey = 			200;
+		private const byte _packet_LoginRequest = 	202;
+		private const byte _packet_LoginResponce = 	207;
+		private const byte _packet_Version =			209;
+
+
 		public Login()
 		{
 		}
 		
-		public void Communication(byte[] data)
+		public void Communication(Connection Sender, ByteReader data)
 		{
 			
 		}

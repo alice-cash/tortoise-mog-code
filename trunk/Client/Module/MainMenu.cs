@@ -40,6 +40,7 @@ using Tortoise.Client.Exceptions;
 using Tortoise.Client.Rendering;
 using Tortoise.Client.Rendering.GUI;
 using Tortoise.Shared.Module;
+using Tortoise.Shared.IO;
 
 namespace Tortoise.Client.Module
 {
@@ -56,7 +57,7 @@ namespace Tortoise.Client.Module
 	/// <summary>
 	/// Description of MainMenu.
 	/// </summary>
-	public class MainMenu : Control, IScreen, IModule
+	class MainMenu : Control, IScreen, IModule
 	{
 
 		AgateResourceCollection _resourceCollection;
@@ -69,12 +70,12 @@ namespace Tortoise.Client.Module
 			_renderItems._backgroundColor = Color.Wheat;
 		}
 		
-		public  void Dispose()
+		public override void Dispose()
 		{
 			_renderItems.Dispose();
 		}
 		
-		public  void Init()
+		public override void Init()
 		{
 			_renderItems.Init();
 			
@@ -110,27 +111,27 @@ namespace Tortoise.Client.Module
 			_renderItems.Tick(e);
 		}
 		
-		public  void OnMouseUp(MouseEventArgs e)
+		public new void OnMouseUp(MouseEventArgs e)
 		{
 			_renderItems.OnMouseUp(e);
 		}
 		
-		public  void OnMouseMove(MouseEventArgs e)
+		public new void OnMouseMove(MouseEventArgs e)
 		{
 			_renderItems.OnMouseMove(e);
 		}
 		
-		public  void OnMouseDown(MouseEventArgs e)
+		public new void OnMouseDown(MouseEventArgs e)
 		{
 			_renderItems.OnMouseDown(e);
 		}
 		
-		public  void OnKeyboardUp(KeyEventArgs e)
+		public new void OnKeyboardUp(KeyEventArgs e)
 		{
 			_renderItems.OnKeyboardUp(e);
 		}
 		
-		public  void OnKeyboardDown(KeyEventArgs e)
+		public new void OnKeyboardDown(KeyEventArgs e)
 		{
 			_renderItems.OnKeyboardDown(e);
 		}
@@ -140,7 +141,7 @@ namespace Tortoise.Client.Module
 			_renderItems.Size = Window.MainWindow.Size;
 		}
 		
-		public void Communication(byte[] data)
+		public void Communication(Tortoise.Shared.Net.Connection Sender, ByteReader data)
 		{
 			
 		}
