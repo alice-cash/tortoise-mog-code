@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 5/2/2010
- * Time: 1:35 AM
+ * Date: 7/29/2010
+ * Time: 11:03 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -31,19 +31,30 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using System.Text;
 
-namespace GameServer
+namespace Tortoise.Server.Text
 {
-	class Program
+	/// <summary>
+	/// Description of RandomString.
+	/// </summary>
+	class RandomString
 	{
-		public static void Main(string[] args)
+		private static Random _random = new Random();
+		
+		public static string GetRandomString(int Length)
 		{
-			Console.WriteLine("Hello World!");
+			StringBuilder sb = new StringBuilder(Length);
 			
-			// TODO: Implement Functionality Here
-			
-			Console.Write("Press any key to continue . . . ");
-			Console.ReadKey(true);
+			for(int i = 0; i < Length; i++)
+				sb.Append(GetChar());
+			return sb.ToString();
+		}
+		
+		private static char GetChar()
+		{
+			string validChars = "123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-=_+()[]{};\"'\\|!@#$%^&*";
+			return validChars[_random.Next(validChars.Length)];
 		}
 	}
 }

@@ -31,13 +31,14 @@
  * or implied, of Matthew Cash.
  * */
 using System;
-
-using SharedServerLib.Exceptions;
+using System.Diagnostics;
+using Tortoise.Server.Exceptions;
+using Tortoise.Shared.Module;
 #if LINUX
 using System.Threading;
 using Mono.Unix;
 #endif
-namespace Tortoise.LoginServer
+namespace Tortoise.Server
 {
 	class Program
 	{
@@ -61,6 +62,7 @@ namespace Tortoise.LoginServer
          	}
          });
 		#endif
+
 		public static bool RunServer{get;set;}
 		
 		public static void Main(string[] args)
@@ -73,9 +75,12 @@ namespace Tortoise.LoginServer
 			#if LINUX
 			signal_thread.Start();
 			#endif
+			//add the diagnostic debug output to console.
+			Debug.WriteLine("HELLO");
+			Debug.Listeners.Add(new ConsoleTraceListener());
 			//Load up the configeration file
 			try{
-				XML.LoginServerConfig.LoadConfig();
+				XML.ServerConfig.LoadConfig();
 			} catch(TortoiseMissingResourceException ex)
 			{
 				Console.WriteLine("The server could not load the embeded resource. Please check following embeded resource: {0}", ex.Data["ResourceName"]);
@@ -91,21 +96,23 @@ namespace Tortoise.LoginServer
 				Console.WriteLine("An uknown error occured during deserialization. More information: {0}", ex.InnerException.ToString());
 				return;
 			}
-			if(XML.LoginServerConfig.Instance.MysqlUser == "{EDIT ME}" ||
-			   XML.LoginServerConfig.Instance.MysqlPass == "{EDIT ME}")
+			if(XML.ServerConfig.Instance.MysqlUser == "{EDIT ME}" ||
+			   XML.ServerConfig.Instance.MysqlPass == "{EDIT ME}")
 			{
 				Console.WriteLine("Edit the LoginConfig.xml file");
 				return;
 			}
-			if (XML.LoginServerConfig.Instance.AcceptAnyAddress)
+			if (XML.ServerConfig.Instance.AcceptAnyAddress)
 			{
 				Console.WriteLine("Warning: This server is set to accept server connections from any IP address. ANY server with the secrets can connect.");
 			}
 			
+			ModuleInfo.LoadModules();
+			
 			//Start the various Listiners.
-			LoginServer.Connections.ServerHandle.CreateInstance();
+			Server.Connections.ServerHandle.CreateInstance();
 
-			LoginServer.Connections.ClientHandle.CreateInstance();
+			Server.Connections.ClientHandle.CreateInstance();
 			#if DEBUG
 			Console.WriteLine("Press a key...");
 			Console.ReadKey(true);

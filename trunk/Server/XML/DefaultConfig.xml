@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<LoginServer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Server xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<!-- This is the name of your server, for internal use. -->
 	<ServerName>Tortoise Login Server</ServerName>
 	
@@ -28,6 +28,7 @@
 			SomeGameServer.MyGameSite.com will use the first IP returned by this domain.
 			-->
 	<ServerListenAcceptedAddresses>
+		<!-- This is the IPv6 Listen all -->
 		<string>::</string>
 		<!-- Some examples:
 		<string>192.168.1.10</string>
@@ -36,7 +37,7 @@
 		<string>MyGameServer03.MyGameSite.com</string>
 		-->
 		
-		<!-- Go to http://stormraidergames.com/TortoisePoll for more info. -->
+		<!-- Go to http://stormraidergames.com/Tortoise-Poll for more info. -->
 		<!-- <string>Tortoisepoll.stormraidergames.com</string> -->
 	</ServerListenAcceptedAddresses>
 	
@@ -46,10 +47,10 @@
 	<!-- This is the address to connect to Mysql. Leave alone if you are not sure. -->
 	<MysqlAddress>127.0.0.1</MysqlAddress>
 	
-	<!-- This is the Database for user account information. Leave alone if you are not sure. -->
+	<!-- This is the Database for user account information. -->
 	<MysqlAccountDatabse>TortoiseAccounts</MysqlAccountDatabse>
 	
-	<!-- This is the Database for server information. Leave alone if you are not sure. -->
+	<!-- This is the Database for server information. -->
 	<MysqlServerDatabse>TortoiseServers</MysqlServerDatabse>
 	
 	<!-- This is the Database user. It is NOT recomended to use your root mysql account. -->
@@ -57,11 +58,7 @@
 	
 	<!-- This is the Database user's Password. -->
 	<MysqlPass>{EDIT ME}</MysqlPass>
-	
-	<!-- It is important to know that the next 2 values are just for the Login system. It handles users untill they connect
- 		 to a game server(or disconnect from the login server.) When a user connects after all the slots are full, they will
-		 get a  "Login server is Busy, try again later" message. Normally users should not have this issue. -->
-	
+		
 	<!-- This is the number of threads for the system to create, for listining to clients. -->
 	<ClientListenThreads>2</ClientListenThreads>
 	
@@ -74,8 +71,5 @@
 	<CLientMinor>1</CLientMinor>
 	<!-- This is the Clients Revision version number. -->
 	<ClientRevision>0</ClientRevision>
-
-	<!-- This is randomly generated when this file is created. This must be the same between all Servers. -->
-	<SyncKey>{KEY}</SyncKey>
   
-</LoginServer>
+</Server>

@@ -5,8 +5,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Tortoise.LoginServer</RootNamespace>
-    <AssemblyName>LoginServer</AssemblyName>
+    <RootNamespace>Tortoise.Server</RootNamespace>
+    <AssemblyName>Server</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SourceAnalysisOverrideSettingsFile>C:\Users\Matthew\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
@@ -99,45 +99,57 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedCode\ByteReader.cs">
+    <Compile Include="..\SharedCode\Collection\SortedList.cs">
+      <Link>Collection\SortedList.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\IO\ByteReader.cs">
       <Link>IO\ByteReader.cs</Link>
     </Compile>
-    <Compile Include="..\SharedCode\ByteWriter.cs">
+    <Compile Include="..\SharedCode\IO\ByteWriter.cs">
       <Link>IO\ByteWriter.cs</Link>
     </Compile>
-    <Compile Include="..\SharedCode\Connection.cs">
+    <Compile Include="..\SharedCode\Module\IComModule.cs">
+      <Link>Module\IComModule.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\Module\ModuleInfo.cs">
+      <Link>Module\ModuleInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\Module\ModuleLoader.cs">
+      <Link>Module\ModuleLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\Net\Connection.cs">
       <Link>Net\Connection.cs</Link>
     </Compile>
-    <Compile Include="..\SharedCode\ConnectionState.cs">
+    <Compile Include="..\SharedCode\Net\ConnectionState.cs">
       <Link>Net\ConnectionState.cs</Link>
     </Compile>
-    <Compile Include="..\SharedCode\IModule.cs">
-      <Link>Module\IModule.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\MessageEventArgs.cs">
+    <Compile Include="..\SharedCode\Net\MessageEventArgs.cs">
       <Link>Net\MessageEventArgs.cs</Link>
     </Compile>
-    <Compile Include="..\SharedCode\MessageID.cs">
+    <Compile Include="..\SharedCode\Net\MessageID.cs">
       <Link>Net\MessageID.cs</Link>
     </Compile>
-    <Compile Include="..\SharedCode\PacketID.cs">
+    <Compile Include="..\SharedCode\Net\Packet.cs">
+      <Link>Net\Packet.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\Net\PacketID.cs">
       <Link>Net\PacketID.cs</Link>
     </Compile>
+    <Compile Include="..\SharedCode\Net\PacketSorter.cs">
+      <Link>Net\PacketSorter.cs</Link>
+    </Compile>
+    <Compile Include="Exceptions\ModuleLoadException.cs" />
+    <Compile Include="Exceptions\TortoiseFileException.cs" />
+    <Compile Include="Exceptions\TortoiseFormatException.cs" />
+    <Compile Include="Exceptions\TortoiseGeneralException.cs" />
+    <Compile Include="Exceptions\TortoiseMissingResourceException .cs" />
     <Compile Include="Module\Login.cs" />
-    <Compile Include="Module\ModuleInfo.cs" />
-    <Compile Include="Module\ModuleLoader.cs" />
     <Compile Include="Net\ClientHandle.cs" />
     <Compile Include="Net\ServerHandle.cs" />
     <Compile Include="Text\RandomString.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="XML\LoginServer.cs" />
     <EmbeddedResource Include="XML\DefaultConfig.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SharedServerLib\SharedServerLib.csproj">
-      <Project>{14D29E3B-DFCB-42AC-99F4-0E9DAF07B091}</Project>
-      <Name>SharedServerLib</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -157,7 +169,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Exceptions" />
     <Folder Include="Module" />
     <Folder Include="IO" />
+    <Folder Include="Collection" />
   </ItemGroup>
 </Project>
