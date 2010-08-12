@@ -33,6 +33,7 @@
 using System;
 using Tortoise.Client.Rendering;
 using Tortoise.Client.Module;
+using Tortoise.Shared.Module;
 
 namespace Tortoise.Client
 {

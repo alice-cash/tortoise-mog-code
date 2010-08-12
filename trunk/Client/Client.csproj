@@ -61,29 +61,44 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedCode\ByteReader.cs">
+    <Compile Include="..\SharedCode\Collection\SortedList.cs">
+      <Link>Collection\SortedList.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\IO\ByteReader.cs">
       <Link>IO\ByteReader.cs</Link>
     </Compile>
-    <Compile Include="..\SharedCode\ByteWriter.cs">
+    <Compile Include="..\SharedCode\IO\ByteWriter.cs">
       <Link>IO\ByteWriter.cs</Link>
     </Compile>
-    <Compile Include="..\SharedCode\Connection.cs">
+    <Compile Include="..\SharedCode\Module\IComModule.cs">
+      <Link>Module\IComModule.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\Module\ModuleInfo.cs">
+      <Link>Module\ModuleInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\Module\ModuleLoader.cs">
+      <Link>Module\ModuleLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\Net\Connection.cs">
       <Link>Net\Connection.cs</Link>
     </Compile>
-    <Compile Include="..\SharedCode\ConnectionState.cs">
+    <Compile Include="..\SharedCode\Net\ConnectionState.cs">
       <Link>Net\ConnectionState.cs</Link>
     </Compile>
-    <Compile Include="..\SharedCode\IModule.cs">
-      <Link>Module\IModule.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\MessageEventArgs.cs">
+    <Compile Include="..\SharedCode\Net\MessageEventArgs.cs">
       <Link>Net\MessageEventArgs.cs</Link>
     </Compile>
-    <Compile Include="..\SharedCode\MessageID.cs">
+    <Compile Include="..\SharedCode\Net\MessageID.cs">
       <Link>Net\MessageID.cs</Link>
     </Compile>
-    <Compile Include="..\SharedCode\PacketID.cs">
+    <Compile Include="..\SharedCode\Net\Packet.cs">
+      <Link>Net\Packet.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\Net\PacketID.cs">
       <Link>Net\PacketID.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\Net\PacketSorter.cs">
+      <Link>Net\PacketSorter.cs</Link>
     </Compile>
     <Compile Include="Collection\LimitedList.cs" />
     <Compile Include="Console.cs" />
@@ -96,8 +111,6 @@
     <Compile Include="localization\LanguageStrings.cs" />
     <Compile Include="Module\Login.cs" />
     <Compile Include="Module\MainMenu.cs" />
-    <Compile Include="Module\ModuleInfo.cs" />
-    <Compile Include="Module\ModuleLoader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\Delegates.cs" />
@@ -123,6 +136,7 @@
   <ItemGroup>
     <Folder Include="IO" />
     <Folder Include="IO" />
+    <Folder Include="Net" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Localization\EN-US.lang">

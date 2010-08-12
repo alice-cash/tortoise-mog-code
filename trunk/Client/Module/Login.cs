@@ -43,6 +43,17 @@ namespace Tortoise.Client.Module
 		public const ushort ClientModuleComID = 10010;
 		public const ushort ServerModuleComID = 20010;
 		
+		public override Version Version {
+			get {
+				return new Version(1,0,0,0);
+			}
+		}
+		
+		public override string Name {
+			get {
+				return "Tortoise Login Manager.";
+			}
+		}		
 		static Login _instance;
 		public override void Load()
 		{
@@ -50,12 +61,14 @@ namespace Tortoise.Client.Module
 			Connection.AddModuleHandle(ClientModuleComID, _instance);
 		
 		}
+		
+
 	}
 	
 	/// <summary>
 	/// Description of Login.
 	/// </summary>
-	class Login : IModule
+	class Login : IComModule
 	{
 		//These are IDs used by the packet. The random numbers
 		//should help catch sync issues.
