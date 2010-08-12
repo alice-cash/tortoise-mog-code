@@ -9,12 +9,12 @@
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
  * 
- *	1. Redistributions of source code must retain the above copyright notice, this list of
- *	   conditions and the following disclaimer.
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
  * 
- *	2. Redistributions in binary form must reproduce the above copyright notice, this list
- *	   of conditions and the following disclaimer in the documentation and/or other materials
- *	   provided with the distribution.
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY Matthew Cash ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -32,26 +32,29 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-using Tortoise.LoginServer.XML;
+using Tortoise.Server.XML;
 using Tortoise.Shared.Net;
 
-namespace Tortoise.LoginServer.Connections
+namespace Tortoise.Server.Connections
 {
 	/// <summary>
-	/// Description of ClientHandle.
+	/// Description of ServerHandle.
 	/// </summary>
-	public class ClientHandle
+	public class ServerHandle
 	{
-		public static ClientHandle _instance;
-		public static ClientHandle Instance
-		{ get { return _instance; } }
+		private static ServerHandle _instance;
+		public static ServerHandle Instance
+		{
+			get { return _instance; }
+		}
 
 		private List<Connection> _clients;
-
+		private Queue<TcpClient> _requests;
 		
 		private Thread _listenThread;
 		private bool _threadRunning;
@@ -59,15 +62,15 @@ namespace Tortoise.LoginServer.Connections
 		private TcpListener _secondaryListiner;
 		private bool _secondaryListinerActive;
 		
-		private ClientHandle()
+		private ServerHandle()
 		{
 			_clients = new List<Connection>();
-			_threadRunning = true;
-			
+			_requests = new Queue<TcpClient>();
+
 			_listenThread = new Thread(WorkThread);
 			_listenThread.Start();
 			_secondaryListinerActive = false;
-
+			
 			_instance = this;
 		}
 
@@ -75,41 +78,60 @@ namespace Tortoise.LoginServer.Connections
 		{
 			if (Instance != null)
 				return;
-			_instance = new ClientHandle();
+			_instance = new ServerHandle();
 		}
 
 
 		private void WorkThread()
 		{
 			//If the Listen address is IPv6Any, then we possibly need to create a second listiner for IPv4
-			if (LoginServerConfig.Instance.ConvertedClientListenAddress == IPAddress.IPv6Any)
+			if (ServerConfig.Instance.ConvertedServerListenAddress == IPAddress.IPv6Any)
 			{
 				_secondaryListinerActive = true;
-				_secondaryListiner = new TcpListener(IPAddress.Any, LoginServerConfig.Instance.ServerListenPort);
+				_secondaryListiner = new TcpListener(IPAddress.Any, ServerConfig.Instance.ServerListenPort);
 				_secondaryListiner.Start();
 			}
-			_listiner = new TcpListener(LoginServerConfig.Instance.ConvertedClientListenAddress, LoginServerConfig.Instance.ServerListenPort);
+			_listiner = new TcpListener(ServerConfig.Instance.ConvertedServerListenAddress, ServerConfig.Instance.ServerListenPort);
 			_listiner.Start();
-
+			
 			_threadRunning = true;
 			while (_threadRunning)
 			{
-				if (_listiner.Pending())
+				if (_listiner.Pending() || (_secondaryListinerActive && _secondaryListiner.Pending()))
 				{
-					AcceptConnection(_listiner.AcceptTcpClient());
-				}
+					//If the main listiner didn't trigger this, then it has to have been the secondary one.
+					TcpClient Request = _listiner.Pending() ? _listiner.AcceptTcpClient() : _secondaryListiner.AcceptTcpClient();
+					Connection Conn = new Connection(Request);
 
-				if (_secondaryListinerActive && _secondaryListiner.Pending())
-				{
-					AcceptConnection(_secondaryListiner.AcceptTcpClient());
+					//Check that its an accepted IP
+					if (!ServerConfig.Instance.AcceptAnyAddress)
+					{
+						foreach (var address in ServerConfig.Instance.ConvertedAcceptedServerAddresses)
+						{
+							if (((IPEndPoint)Request.Client.RemoteEndPoint).Address.Equals(address))
+							{
+								_clients.Add(Conn);
+							}
+						}
+					}
+					else
+					{
+						_clients.Add(Conn);
+					}
 				}
-
+				
+				_clients.ForEach((Connection sc) =>
+				                 {
+				                 	if (!sc.Connected)
+				                 	{
+				                 		_clients.Remove(sc);
+				                 	}
+				                 });
 				foreach (var c in _clients)
 				{
 					c.Poll();
 				}
 			}
-
 		}
 		
 		private void AcceptConnection(TcpClient client)
@@ -124,6 +146,5 @@ namespace Tortoise.LoginServer.Connections
 					_clients.Remove(sender as Connection);
 			};
 		}
-
 	}
 }

@@ -37,25 +37,23 @@ using System.Reflection;
 using System.Xml.Serialization;
 using System.Security;
 
-using SharedServerLib.Communication;
-using SharedServerLib.Exceptions;
-using SharedServerLib.Misc;
+using Tortoise.Server.Exceptions;
 
-namespace Tortoise.LoginServer.XML
+namespace Tortoise.Server.XML
 {
 	/// <summary>
 	/// Configeration Database for Login Server
 	/// </summary>
 	[Serializable]
-	public class LoginServerConfig
+	public class ServerConfig
 	{
 
-		private static LoginServerConfig _instance;
-		public static LoginServerConfig Instance
+		private static ServerConfig _instance;
+		public static ServerConfig Instance
 		{
 			get { return _instance; }
 		}
-		private const string DefaultConfigPath = "LoginServer.XML.DefaultConfig.xml";
+		private const string DefaultConfigPath = "Server.XML.DefaultConfig.xml";
 
 
 		/// <summary>
@@ -156,39 +154,11 @@ namespace Tortoise.LoginServer.XML
 	
 
 
-		public string SyncKey
-		{
-			get
-			{
-				return _SyncKey;
-			}
-			set
-			{
-				_Key = SharedServerLib.Misc.ByteStringConverter.StringToBytes(value);
-				_SyncKey = value;
-			}
-		}
-		public byte[] Key
-		{
-			get
-			{
-				return _Key;
-			}
-		}
-
-
-
-
-
-		private string _SyncKey;
-		private byte[] _Key;
-
-
 		/// <summary>
 		/// This creates a default Config and saves it.
 		/// </summary>
-		/// <exception cref="SharedServerLib.Exceptions.TortoiseMissingResourceException">The embeded resource cannot be loaded.</exception>
-		/// <exception cref="SharedServerLib.Exceptions.TortoiseFileException">The configeration cannot be saved.</exception>
+		/// <exception cref="Tortoise.Server.Exceptions.TortoiseMissingResourceException">The embeded resource cannot be loaded.</exception>
+		/// <exception cref="Tortoise.Server.Exceptions.TortoiseFileException">The configeration cannot be saved.</exception>
 		public static void CreateDefault()
 		{
 
@@ -213,11 +183,6 @@ namespace Tortoise.LoginServer.XML
 			byte[] Key;
 			string cKey;
 
-			Key = AESEncryption.GenerateEncryptionKey();
-
-			cKey = ByteStringConverter.BytesToString(Key);
-
-			DefaultFile = DefaultFile.Replace("{KEY}", cKey);
 
 			try
 			{
@@ -234,22 +199,22 @@ namespace Tortoise.LoginServer.XML
 		}
 
 		/// <summary>
-		/// This Loads the configeration file into the static feild LoginServer.XML.LoginServer.Instance.
+		/// This Loads the configeration file into the static feild Server.XML.Server.Instance.
 		/// </summary>
-		/// <exception cref="SharedServerLib.Exceptions.TortoiseMissingResourceException">The embeded resource cannot be loaded.</exception>
-		/// <exception cref="SharedServerLib.Exceptions.TortoiseFileException">The configeration cannot be loaded or initally created.</exception>
-		/// <exception cref="SharedServerLib.Exceptions.TortoiseFormatException">An IP or Hostname is invalid.</exception>
+		/// <exception cref="Tortoise.Server.Exceptions.TortoiseMissingResourceException">The embeded resource cannot be loaded.</exception>
+		/// <exception cref="Tortoise.Server.Exceptions.TortoiseFileException">The configeration cannot be loaded or initally created.</exception>
+		/// <exception cref="Tortoise.Server.Exceptions.TortoiseFormatException">An IP or Hostname is invalid.</exception>
 		/// <exception cref="System.InvalidOperationException"> An error occurred during deserialization. The original exception is available using the <see cref="System.innerException">innerException</see>  property. </exception>
 		public static void LoadConfig()
 		{
 			LoadConfig(true);
 		}
 		/// <summary>
-		/// This Loads the configeration file into the static feild LoginServer.XML.LoginServer.Instance.
+		/// This Loads the configeration file into the static feild Server.XML.Server.Instance.
 		/// </summary>
-		/// <exception cref="SharedServerLib.Exceptions.TortoiseMissingResourceException">The embeded resource cannot be loaded.</exception>
-		/// <exception cref="SharedServerLib.Exceptions.TortoiseFileException">The configeration cannot be loaded or initally created.</exception>
-		/// <exception cref="SharedServerLib.Exceptions.TortoiseFormatException">An IP or Hostname is invalid.</exception>
+		/// <exception cref="Tortoise.Server.Exceptions.TortoiseMissingResourceException">The embeded resource cannot be loaded.</exception>
+		/// <exception cref="Tortoise.Server.Exceptions.TortoiseFileException">The configeration cannot be loaded or initally created.</exception>
+		/// <exception cref="Tortoise.Server.Exceptions.TortoiseFormatException">An IP or Hostname is invalid.</exception>
 		/// <exception cref="System.InvalidOperationException"> An error occurred during deserialization. The original exception is available using the <see cref="System.innerException">innerException</see>  property. </exception>
 		public static void LoadConfig(bool ignoreErrors)
 		{
@@ -260,17 +225,17 @@ namespace Tortoise.LoginServer.XML
 
 			TextReader reader = new StreamReader("./LoginConfig.xml");
 
-			XmlSerializer serializer = new XmlSerializer(typeof(LoginServerConfig));
-			LoginServerConfig._instance = (LoginServerConfig)serializer.Deserialize(reader);
+			XmlSerializer serializer = new XmlSerializer(typeof(ServerConfig));
+			ServerConfig._instance = (ServerConfig)serializer.Deserialize(reader);
 			reader.Close();
 
-			string[] AcceptedAddresses = LoginServerConfig.Instance.ServerListenAcceptedAddresses;
+			string[] AcceptedAddresses = ServerConfig.Instance.ServerListenAcceptedAddresses;
 			int AddressLen = AcceptedAddresses.Length;
 
-			LoginServerConfig.Instance.ConvertedAcceptedServerAddresses = new IPAddress[AddressLen];
+			ServerConfig.Instance.ConvertedAcceptedServerAddresses = new IPAddress[AddressLen];
 			for (int Index = 0; Index < AddressLen; Index++)
 			{
-				if (!IPAddress.TryParse(AcceptedAddresses[Index], out LoginServerConfig.Instance.ConvertedAcceptedServerAddresses[Index]))
+				if (!IPAddress.TryParse(AcceptedAddresses[Index], out ServerConfig.Instance.ConvertedAcceptedServerAddresses[Index]))
 				{
 					//Maybe its a hostname
 					System.Net.IPAddress[] Addresses;
@@ -300,27 +265,27 @@ namespace Tortoise.LoginServer.XML
 							throw new TortoiseFormatException("DNS Host did not resolve to an IP address", AcceptedAddresses[Index], "Any IP Address or DNS host");
 					}
 
-					LoginServerConfig.Instance.ConvertedAcceptedServerAddresses[Index] = Addresses[0];
+					ServerConfig.Instance.ConvertedAcceptedServerAddresses[Index] = Addresses[0];
 				}
 
-				if (LoginServerConfig.Instance.ConvertedAcceptedServerAddresses[Index] == IPAddress.Any ||
-					LoginServerConfig.Instance.ConvertedAcceptedServerAddresses[Index] == IPAddress.IPv6Any)
+				if (ServerConfig.Instance.ConvertedAcceptedServerAddresses[Index] == IPAddress.Any ||
+					ServerConfig.Instance.ConvertedAcceptedServerAddresses[Index] == IPAddress.IPv6Any)
 				{
-					LoginServerConfig.Instance.AcceptAnyAddress = true;
+					ServerConfig.Instance.AcceptAnyAddress = true;
 				}
 
 
 			}
 
 
-			if (IPAddress.TryParse(LoginServerConfig.Instance.ClientListenAddress, out LoginServerConfig.Instance.ConvertedClientListenAddress))
+			if (IPAddress.TryParse(ServerConfig.Instance.ClientListenAddress, out ServerConfig.Instance.ConvertedClientListenAddress))
 			{
-				throw new TortoiseFormatException("Value is not a valid IP Address or DNS Host", LoginServerConfig.Instance.ClientListenAddress, "Any IP Address or DNS host");
+				throw new TortoiseFormatException("Value is not a valid IP Address or DNS Host", ServerConfig.Instance.ClientListenAddress, "Any IP Address or DNS host");
 			}
 
-			if (IPAddress.TryParse(LoginServerConfig.Instance.ServerListenAddress, out LoginServerConfig.Instance.ConvertedServerListenAddress))
+			if (IPAddress.TryParse(ServerConfig.Instance.ServerListenAddress, out ServerConfig.Instance.ConvertedServerListenAddress))
 			{
-				throw new TortoiseFormatException("Value is not a valid IP Address or DNS Host", LoginServerConfig.Instance.ServerListenAddress, "Any IP Address or DNS host");
+				throw new TortoiseFormatException("Value is not a valid IP Address or DNS Host", ServerConfig.Instance.ServerListenAddress, "Any IP Address or DNS host");
 			}
 
 		}

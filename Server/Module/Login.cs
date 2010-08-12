@@ -31,32 +31,52 @@
  * or implied, of Matthew Cash.
  */
 using System;
-using Tortoise.LoginServer.Text;
+using System.Collections.Generic;
+using Tortoise.Server.Text;
 using Tortoise.Shared.Module;
 using Tortoise.Shared.Net;
 
-namespace Tortoise.LoginServer.Module
+namespace Tortoise.Server.Module
 {
 	internal class LoginLoader : ModuleLoader
 	{
 		public const ushort ClientModuleComID = 10010;
 		public const ushort ServerModuleComID = 20010;
 		
+		public override Version Version {
+			get {
+				return new Version(1,0,0,0);
+			}
+		}
+		
+		public override string Name {
+			get {
+				return "Tortoise Login and Client handle Module.";
+			}
+		}
+		
 		static Login _instance;
 		public override void Load()
 		{
 			_instance = new Login();
 			Connection.AddModuleHandle(ServerModuleComID, _instance);
-		
+			
 		}
+	}
+	
+	struct PlayerData
+	{
+		
 	}
 
 
 	/// <summary>
 	/// Description of Login.
 	/// </summary>
-	class Login : IModule
+	class Login : IComModule
 	{
+		public static Dictionary<Connection, PlayerData> PlayerData = new System.Collections.Generic.Dictionary<Connection, PlayerData>();
+
 		//These are IDs used by the packet. The random numbers
 		//should help catch sync issues.
 		//TODO: Change these to different values for your game, make sure they match in the client.
@@ -67,9 +87,10 @@ namespace Tortoise.LoginServer.Module
 		
 		public Login()
 		{
+
 		}
 		
-			/*	
+		/*
 		void Read_ClientInfo()
 		{
 			//(byte major, byte minor, ushort revision)
@@ -78,9 +99,9 @@ namespace Tortoise.LoginServer.Module
 			major = _sr.ReadByte();
 			minor = _sr.ReadByte();
 			revision = _sr.ReadUInt16();
-			if(revision != XML.LoginServerConfig.Instance.ClientRevision ||
-			   minor != XML.LoginServerConfig.Instance.CLientMinor ||
-			   major != XML.LoginServerConfig.Instance.ClientMajor)
+			if(revision != XML.ServerConfig.Instance.ClientRevision ||
+			   minor != XML.ServerConfig.Instance.CLientMinor ||
+			   major != XML.ServerConfig.Instance.ClientMajor)
 			{
 				Disconnect(MessageID.OutOfDate);
 			}
