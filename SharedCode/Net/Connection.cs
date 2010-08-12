@@ -49,15 +49,17 @@ namespace Tortoise.Shared.Net
 	/// </summary>
 	class Connection
 	{
-		protected static Dictionary<ushort, IModule> _moduleActions = new Dictionary<ushort, IModule>();
-		public static void AddModuleHandle(ushort ID,IModule module)
+		protected static Dictionary<ushort, IComModule> _moduleActions = new Dictionary<ushort, IComModule>();
+		public static void AddModuleHandle(ushort ID,IComModule module)
 		{
 			if(_moduleActions.ContainsKey(ID))
 				throw new Exception("ID already exsists!");
 			_moduleActions.Add(ID, module);
 		}
 		
-		public System.EventHandler<ServerMessageEventArgs> ServerMessageEvent;
+		private Tortoise.Shared.Collection.SortedList<Packet> _packetQue = new Tortoise.Shared.Collection.SortedList<Packet>(new PacketSorter());
+		
+		public System.EventHandler<MessageEventArgs> MessageEvent;
 		public System.EventHandler ReadyForDataEvent;
 
 		public static ConnectionState ConnectionState = ConnectionState.NotConnected;
@@ -120,19 +122,15 @@ namespace Tortoise.Shared.Net
 				return;
 			}
 			//If we are waiting for data.
-			if(_length > 0)
+			if(_length >= _client.Available)
 			{
-				//if we still don't have it.
-				if(_client.Available < _length)
+				//if its been more than a second, call a sync error.
+				//Snipits of data should not take more than a second to recive.
+				if(_recived + TimeSpan.FromMilliseconds(1000) >= DateTime.Now)
 				{
-					//if its been more than a second, call a sync error.
-					if(_recived + TimeSpan.FromMilliseconds(1000) >= DateTime.Now)
-					{
-						SyncError();
-					}
-					return;
+					SyncError();
 				}
-				
+				return;
 			}
 			//if enough data is avalable to read the ushort
 			if (_client.Available > 2)
@@ -166,7 +164,7 @@ namespace Tortoise.Shared.Net
 				return;
 			}
 
-			//Switch through all of the items, even if we throw a SyncError.
+			//Switch through all of the items, even if we need to throw a SyncError.
 			//Otherwise each ID should call a Read_{DescritiveInfo}()
 			//The reason for the empty SyncError() for a release is we don't care about
 			//reasons. We can assume the end developer has
@@ -186,7 +184,7 @@ namespace Tortoise.Shared.Net
 					Read_ModulePacket(length);
 					break;
 			}
-		}		
+		}
 
 
 		void Read_Message()
@@ -201,8 +199,8 @@ namespace Tortoise.Shared.Net
 				Disconnect(MessageID.SyncError);
 				return;
 			}
-			if(ServerMessageEvent != null)
-				ServerMessageEvent(this, new ServerMessageEventArgs(mID));
+			if(MessageEvent != null)
+				MessageEvent(this, new MessageEventArgs(mID));
 		}
 		
 		void Read_ModulePacket(ushort length)
@@ -248,7 +246,7 @@ namespace Tortoise.Shared.Net
 		{
 			_client.Close();
 			Disconnected();
-		}	
+		}
 		
 		private void Disconnected()
 		{
@@ -266,7 +264,7 @@ namespace Tortoise.Shared.Net
 			Write_Message(reason);
 			Disconnect();
 		}
-	
+		
 		
 		/// <summary>
 		/// Calls a Sync Error, Usually when the reciving datastream contains data the program isn't expecting.

@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/23/2010
- * Time: 11:42 PM
+ * Date: 8/11/2010
+ * Time: 11:28 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -30,19 +30,15 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
+
 using System;
-using Tortoise.Shared.Net;
+
 namespace Tortoise.Shared.Net
 {
-	/// <summary>
-	/// Description of ServerMessageEventArgs.
-	/// </summary>
-	class MessageEventArgs: EventArgs
+	struct Packet
 	{
-		public MessageID Message {get;set;}
-		public MessageEventArgs(MessageID mID)
-		{
-			ServerMessage = mID;
-		}
+		public byte[] Data;
+		public int Priority;
 	}
+	
 }

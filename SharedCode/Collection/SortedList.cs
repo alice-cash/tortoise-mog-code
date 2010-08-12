@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 8/6/2010
- * Time: 7:38 PM
+ * Date: 8/129/2010
+ * Time: 3:45 AM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -31,16 +31,80 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using C5;
 
-namespace Tortoise.Shared.Net
+
+namespace Tortoise.Shared.Collection
 {
 	/// <summary>
-	/// Description of ConnectionState.
+	/// A sorted LinkedList.
 	/// </summary>
-	public enum ConnectionState
+	class SortedList<T>:LinkedList<T>
 	{
-		NotConnected,
-		ConnectedToLoginServer,
-		ConnectedToGameServer
+		System.Collections.Generic.IComparer<T> _comparer;
+		public SortedList(System.Collections.Generic.IComparer<T> comparer)
+		{
+			_comparer = comparer;
+			base.FIFO = false;
+		}
+		
+		public override void Enqueue(T item)
+		{
+			int pos = 0;
+			while(pos+1 <= Count && _comparer.Compare(this[pos], this[pos+1]) < 0)pos++;
+			base.Insert(pos, item);
+		}
+		
+		public override bool Add(T item)
+		{
+			Enqueue(item);
+			return true;
+		}
+		
+		public override void AddAll<U>(System.Collections.Generic.IEnumerable<U> items)
+		{
+			foreach(U item in items)
+				Enqueue(item);
+		}
+		
+		public override void Insert(int i, T item)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override void InsertAll<U>(int i, System.Collections.Generic.IEnumerable<U> items)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override void InsertFirst(T item)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override void InsertLast(T item)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override void Shuffle()
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override void Shuffle(Random rnd)
+		{
+			throw new NotSupportedException();
+		}
+		
+		public override void Sort()
+		{
+			base.Sort(_comparer);
+		}
+		
+		public override bool FIFO {
+			get { return base.FIFO; }
+			set { /*do nothing as it should always be false*/ }
+		}
 	}
 }
