@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 8/7/2010
- * Time: 10:11 PM
+ * Date: 7/23/2010
+ * Time: 11:42 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -30,13 +30,19 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
-using Tortoise.Shared.IO;
+using System;
 using Tortoise.Shared.Net;
-
-namespace Tortoise.Shared.Module
+namespace Tortoise.Shared.Net
 {
-	interface IModule
+	/// <summary>
+	/// Description of ServerMessageEventArgs.
+	/// </summary>
+	class MessageEventArgs: EventArgs
 	{
-		void Communication(Connection Sender, ByteReader data);
+		public MessageID Message {get;set;}
+		public MessageEventArgs(MessageID mID)
+		{
+			Message = mID;
+		}
 	}
 }
