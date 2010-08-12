@@ -1,0 +1,22 @@
+﻿Packets:
+Packets of data(not to be confused with actual packets networking 
+protocols use) are simply bytes of data.
+Each one is always prefixed with 4 bytes no matter what, the first 
+2 specify the lengh, and the next 2 specify the type of packet. 
+Both are unsigned 16 bit integers.
+This allows for 65536 bytes of data, or 64kb, in each packet, but 
+i would highly recomend limiting yourself to 1000-2000 as an upper
+limit. Its preferable to, lets say, read and write 2000 blocks to/from 
+10 clients rather than 20000 to/from 1 client.
+
+When sending large ammounts of data, its better to split it into smaller 
+blocks and send each as the other side requests, so you don't stuff 3 
+megabytes in a buffer you have no control over. When you suddenly need to 
+send somthing important to the other side(like a message asking you to ban
+someone spamming chat), you have to wait for that buffer 
+to clear which could take a while on slow connections.
+
+Also, you cannot garintee which packets will be sent first.
+If your sending 2 packets with data with the same priority, that represent
+a single larger entity, the second one may arive before the first, so make 
+sure you are prepared for those situations.
