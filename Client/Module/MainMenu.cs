@@ -47,6 +47,18 @@ namespace Tortoise.Client.Module
 	
 	internal class MainMenuLoader : ModuleLoader
 	{
+		public override Version Version {
+			get {
+				return new Version(1,0,0,0);
+			}
+		}
+		
+		public override string Name {
+			get {
+				return "Tortoise Main Menu.";
+			}
+		}	
+
 		public override void Load()
 		{
 			if(Window.AvailableScreens.ContainsKey("MainMenu"))
@@ -57,7 +69,7 @@ namespace Tortoise.Client.Module
 	/// <summary>
 	/// Description of MainMenu.
 	/// </summary>
-	class MainMenu : Control, IScreen, IModule
+	class MainMenu : Control, IScreen
 	{
 
 		AgateResourceCollection _resourceCollection;
@@ -140,11 +152,7 @@ namespace Tortoise.Client.Module
 		{
 			_renderItems.Size = Window.MainWindow.Size;
 		}
-		
-		public void Communication(Tortoise.Shared.Net.Connection Sender, ByteReader data)
-		{
-			
-		}
+
 	}
 }
 	
