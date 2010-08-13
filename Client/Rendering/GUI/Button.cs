@@ -31,14 +31,39 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using AgateLib.Geometry;
 
 namespace Tortoise.Client.Rendering.GUI
 {
 	/// <summary>
 	/// Desctiption of Button.
 	/// </summary>
-	//public class Button : Control
-	//{
+	public class Button : Control
+	{
 		
-	//}
+		public Button(string name, Point location, Size size)
+			: this(name, new Rectangle(location, size))
+		{
+
+		}
+
+		public Button(string name, int x, int y, int width, int height)
+			: this(name, new Rectangle(x, y, width, height))
+		{
+
+		}
+
+		public Button(string name, Rectangle area)
+			: base(name, area)
+		{
+		
+		}
+		
+		internal override bool OnMouseMove(MouseEventArgs e)
+		{
+			_threadSafety.EnforceThreadSafety();
+			if(!IsPointOver(e.MousePosition)) return false;
+			return doMouseMove(e);
+		}
+	}
 }

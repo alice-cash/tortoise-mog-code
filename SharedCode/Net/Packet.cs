@@ -39,6 +39,12 @@ namespace Tortoise.Shared.Net
 	{
 		public byte[] Data;
 		public int Priority;
+		
+		public Packet(byte[] data, int priority)
+		{
+			Data = data;
+			Priority = priority;
+		}
 	}
 	
 }

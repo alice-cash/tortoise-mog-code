@@ -20,3 +20,7 @@ Also, you cannot garintee which packets will be sent first.
 If your sending 2 packets with data with the same priority, that represent
 a single larger entity, the second one may arive before the first, so make 
 sure you are prepared for those situations.
+
+Priority determins which packets are sent when a que builds up. Lower 
+numbers are sent first, so a packet with a priority if -5 will be sent before
+one with a priority of 0.

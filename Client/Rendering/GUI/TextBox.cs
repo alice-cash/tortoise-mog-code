@@ -75,7 +75,7 @@ namespace Tortoise.Client.Rendering.GUI
 			get{return _usePasswordChar;}
 			set
 			{
-				EnforceThreadSafty();
+				_threadSafety.EnforceThreadSafety();
 				_usePasswordChar = value;
 			}
 		}
@@ -85,7 +85,7 @@ namespace Tortoise.Client.Rendering.GUI
 			get{return _passwordChar;}
 			set
 			{
-				EnforceThreadSafty();
+				_threadSafety.EnforceThreadSafety();
 				_passwordChar = value;
 			}
 		}
@@ -95,7 +95,7 @@ namespace Tortoise.Client.Rendering.GUI
 			get{return _cursorPosition;}
 			set
 			{
-				EnforceThreadSafty();
+				_threadSafety.EnforceThreadSafety();
 				if(value < 0 || value > Text.Length)
 					throw new ArgumentException("CursorPosition must be between 0 and Text.Length");
 				_cursorPosition = value;
@@ -107,7 +107,7 @@ namespace Tortoise.Client.Rendering.GUI
 			get{return _text;}
 			set
 			{
-				EnforceThreadSafty();
+				_threadSafety.EnforceThreadSafety();
 				_text = value;
 				//_textChanged = true;
 				_redrawPreRenderd = true;
@@ -192,7 +192,7 @@ namespace Tortoise.Client.Rendering.GUI
 		
 		internal override bool OnMouseUp(MouseEventArgs e)
 		{
-			EnforceThreadSafty();
+			_threadSafety.EnforceThreadSafety();
 			if(IsPointOver(e.MousePosition))
 			{
 				this.HasFocus = true;

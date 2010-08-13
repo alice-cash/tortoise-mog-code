@@ -31,6 +31,7 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using System.Diagnostics;
 using Tortoise.Client.Rendering;
 using Tortoise.Client.Module;
 using Tortoise.Shared.Module;
@@ -41,8 +42,11 @@ namespace Tortoise.Client
 	{
 		public const int ScreenHeight = 800, ScreenWidth = 600;
 		static Window MainWindow = null;
+		//public static 
 		public static void Main(string[] args)
 		{
+			Debug.Listeners.Add(new ConsoleTraceListener());
+			
 			ModuleInfo.LoadModules();
 			
 			

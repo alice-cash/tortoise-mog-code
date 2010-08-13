@@ -32,8 +32,10 @@
  */
 using System;
 
-namespace Tortoise.Client.Rendering.GUI
+namespace Tortoise.Shared.Threading
 {
+	public delegate void InvokeDelegate(object userData);
+
 	/// <summary>
 	/// Description of InvokeItem.
 	/// </summary>
