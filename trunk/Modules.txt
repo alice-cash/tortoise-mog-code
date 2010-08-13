@@ -13,9 +13,14 @@ Third: All modules contain a class that inherits ModuleLoader. This class should
 	For example, a MainMenu replacement class would check to make sure the value "MainMenu"
 	isn't set in Window.AvailableScreens.
 
-Here are a list of Classes and Public methods one should expect to see. I am not going to use an interface as that limtis someone a bit and adds more complexity if they want to modify stuff themselves.
+Here are a list of Classes and Public methods one should expect to see. I am not going to use an 
+interface as that limtis someone a bit and adds more complexity if they want to modify stuff themselves.
+
+All of these are focused on a purly online game.
+Any code should make sure they are null or not set, otherwise the code should throw a ModuleLoadException()
 
 Client:
 MainMenu
- - Deligate LoginRequest(string, string)
-  - This will be called when the MainMenu(which should contain a login box) requests a login check. Any "Login" Modules which do login stuff and version check and whatever else should
+ - Deligate void LoginRequest(string, string)
+  - This will be called when the MainMenu(which may contain a login box) requests a login check.
+	  Any "Login" Module which does login stuff and version check and whatever else should use this.

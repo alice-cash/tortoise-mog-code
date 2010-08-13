@@ -76,7 +76,6 @@ namespace Tortoise.Server
 			signal_thread.Start();
 			#endif
 			//add the diagnostic debug output to console.
-			Debug.WriteLine("HELLO");
 			Debug.Listeners.Add(new ConsoleTraceListener());
 			//Load up the configeration file
 			try{

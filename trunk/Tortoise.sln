@@ -6,6 +6,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SharedCode", "SharedCode", 
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Collection", "Collection", "{38D4C6D7-76CC-46FF-A8D9-5734844451B9}"
+	ProjectSection(SolutionItems) = postProject
+		SharedCode\Collection\SortedList.cs = SharedCode\Collection\SortedList.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IO", "IO", "{19A1D559-95EF-4775-A7E9-AD20CF40F1BC}"
+	ProjectSection(SolutionItems) = postProject
+		SharedCode\IO\ByteReader.cs = SharedCode\IO\ByteReader.cs
+		SharedCode\IO\ByteWriter.cs = SharedCode\IO\ByteWriter.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Module", "Module", "{1BF8CF8B-FF16-4210-AAE9-C71E9D26034C}"
+	ProjectSection(SolutionItems) = postProject
+		SharedCode\Module\IComModule.cs = SharedCode\Module\IComModule.cs
+		SharedCode\Module\ModuleInfo.cs = SharedCode\Module\ModuleInfo.cs
+		SharedCode\Module\ModuleLoader.cs = SharedCode\Module\ModuleLoader.cs
+	EndProjectSection
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Net", "Net", "{B2151312-57FD-47AF-825D-59AE1BCA8B5F}"
 	ProjectSection(SolutionItems) = preProject
 		SharedCode\Net\Packet.cs = SharedCode\Net\Packet.cs
@@ -17,22 +35,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Net", "Net", "{B2151312-57F
 		SharedCode\Net\PacketSorter.cs = SharedCode\Net\PacketSorter.cs
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Module", "Module", "{1BF8CF8B-FF16-4210-AAE9-C71E9D26034C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Threading", "Threading", "{91FB6C9F-7072-4030-B00E-5801E8EAFD5C}"
 	ProjectSection(SolutionItems) = postProject
-		SharedCode\Module\IComModule.cs = SharedCode\Module\IComModule.cs
-		SharedCode\Module\ModuleInfo.cs = SharedCode\Module\ModuleInfo.cs
-		SharedCode\Module\ModuleLoader.cs = SharedCode\Module\ModuleLoader.cs
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IO", "IO", "{19A1D559-95EF-4775-A7E9-AD20CF40F1BC}"
-	ProjectSection(SolutionItems) = postProject
-		SharedCode\IO\ByteReader.cs = SharedCode\IO\ByteReader.cs
-		SharedCode\IO\ByteWriter.cs = SharedCode\IO\ByteWriter.cs
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Collection", "Collection", "{38D4C6D7-76CC-46FF-A8D9-5734844451B9}"
-	ProjectSection(SolutionItems) = postProject
-		SharedCode\Collection\SortedList.cs = SharedCode\Collection\SortedList.cs
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{7E8CCA61-1E2B-4399-B2A3-220EB04B3C4C}"
@@ -44,9 +48,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		Packets.txt = Packets.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Login Server\Server.csproj", "{8EFF4DFF-8F00-404C-ABA0-1EB63DCE72C3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{DB1D97B5-42D2-4706-8C8F-316CEAFCF0AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "6219682A-B0B6-4BCD-8E07-D51FCB91B8D8"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,17 +62,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8EFF4DFF-8F00-404C-ABA0-1EB63DCE72C3}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{8EFF4DFF-8F00-404C-ABA0-1EB63DCE72C3}.Debug|Any CPU.Build.0 = Debug|x86
-		{8EFF4DFF-8F00-404C-ABA0-1EB63DCE72C3}.Debug|x86.ActiveCfg = Debug|x86
-		{8EFF4DFF-8F00-404C-ABA0-1EB63DCE72C3}.Debug|x86.Build.0 = Debug|x86
-		{8EFF4DFF-8F00-404C-ABA0-1EB63DCE72C3}.Release_Linux|Any CPU.ActiveCfg = Release_Linux|x86
-		{8EFF4DFF-8F00-404C-ABA0-1EB63DCE72C3}.Release_Linux|x86.ActiveCfg = Release_Linux|x86
-		{8EFF4DFF-8F00-404C-ABA0-1EB63DCE72C3}.Release_Linux|x86.Build.0 = Release_Linux|x86
-		{8EFF4DFF-8F00-404C-ABA0-1EB63DCE72C3}.Release|Any CPU.ActiveCfg = Release|x86
-		{8EFF4DFF-8F00-404C-ABA0-1EB63DCE72C3}.Release|Any CPU.Build.0 = Release|x86
-		{8EFF4DFF-8F00-404C-ABA0-1EB63DCE72C3}.Release|x86.ActiveCfg = Release|x86
-		{8EFF4DFF-8F00-404C-ABA0-1EB63DCE72C3}.Release|x86.Build.0 = Release|x86
 		{DB1D97B5-42D2-4706-8C8F-316CEAFCF0AE}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{DB1D97B5-42D2-4706-8C8F-316CEAFCF0AE}.Debug|Any CPU.Build.0 = Debug|x86
 		{DB1D97B5-42D2-4706-8C8F-316CEAFCF0AE}.Debug|x86.ActiveCfg = Debug|x86
@@ -80,14 +73,27 @@ Global
 		{DB1D97B5-42D2-4706-8C8F-316CEAFCF0AE}.Release|Any CPU.Build.0 = Release|x86
 		{DB1D97B5-42D2-4706-8C8F-316CEAFCF0AE}.Release|x86.ActiveCfg = Release|x86
 		{DB1D97B5-42D2-4706-8C8F-316CEAFCF0AE}.Release|x86.Build.0 = Release|x86
+		6219682A-B0B6-4BCD-8E07-D51FCB91B8D8.Debug|Any CPU.Build.0 = Debug|x86
+		6219682A-B0B6-4BCD-8E07-D51FCB91B8D8.Debug|Any CPU.ActiveCfg = Debug|x86
+		6219682A-B0B6-4BCD-8E07-D51FCB91B8D8.Debug|x86.Build.0 = Debug|x86
+		6219682A-B0B6-4BCD-8E07-D51FCB91B8D8.Debug|x86.ActiveCfg = Debug|x86
+		6219682A-B0B6-4BCD-8E07-D51FCB91B8D8.Release_Linux|Any CPU.Build.0 = Release_Linux|x86
+		6219682A-B0B6-4BCD-8E07-D51FCB91B8D8.Release_Linux|Any CPU.ActiveCfg = Release_Linux|x86
+		6219682A-B0B6-4BCD-8E07-D51FCB91B8D8.Release_Linux|x86.Build.0 = Release_Linux|x86
+		6219682A-B0B6-4BCD-8E07-D51FCB91B8D8.Release_Linux|x86.ActiveCfg = Release_Linux|x86
+		6219682A-B0B6-4BCD-8E07-D51FCB91B8D8.Release|Any CPU.Build.0 = Release|x86
+		6219682A-B0B6-4BCD-8E07-D51FCB91B8D8.Release|Any CPU.ActiveCfg = Release|x86
+		6219682A-B0B6-4BCD-8E07-D51FCB91B8D8.Release|x86.Build.0 = Release|x86
+		6219682A-B0B6-4BCD-8E07-D51FCB91B8D8.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{38D4C6D7-76CC-46FF-A8D9-5734844451B9} = {DF44B900-3E66-4601-9267-BDBC81A61723}
-		{19A1D559-95EF-4775-A7E9-AD20CF40F1BC} = {DF44B900-3E66-4601-9267-BDBC81A61723}
-		{1BF8CF8B-FF16-4210-AAE9-C71E9D26034C} = {DF44B900-3E66-4601-9267-BDBC81A61723}
+		{91FB6C9F-7072-4030-B00E-5801E8EAFD5C} = {DF44B900-3E66-4601-9267-BDBC81A61723}
 		{B2151312-57FD-47AF-825D-59AE1BCA8B5F} = {DF44B900-3E66-4601-9267-BDBC81A61723}
+		{1BF8CF8B-FF16-4210-AAE9-C71E9D26034C} = {DF44B900-3E66-4601-9267-BDBC81A61723}
+		{19A1D559-95EF-4775-A7E9-AD20CF40F1BC} = {DF44B900-3E66-4601-9267-BDBC81A61723}
+		{38D4C6D7-76CC-46FF-A8D9-5734844451B9} = {DF44B900-3E66-4601-9267-BDBC81A61723}
 	EndGlobalSection
 EndGlobal

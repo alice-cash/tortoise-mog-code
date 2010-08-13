@@ -121,6 +121,14 @@ namespace Tortoise.Shared.Net
 				Disconnected();
 				return;
 			}
+			Poll_Read();
+			Poll_Write();
+			
+			
+		}
+		
+		private void Poll_Read()
+		{
 			//If we are waiting for data.
 			if(_length >= _client.Available)
 			{
@@ -155,6 +163,26 @@ namespace Tortoise.Shared.Net
 			_length = 0;
 		}
 		
+		private void Poll_Write()
+		{
+			lock(_packetQue)
+			{
+				if(_packetQue.Count > 0)
+				{
+					Packet p = _packetQue.Dequeue();
+					_sw.Write(p.Data);
+				}
+			}
+		}
+		
+		private void AddPacket(byte[] data, int priority)
+		{
+			lock(_packetQue)
+			{
+				_packetQue.Enqueue(new Packet(data, priority));
+			}
+		}
+
 		protected void HandleInput(ushort length, ushort packetID)
 		{
 			PacketID pID = PacketID.Null;
@@ -218,27 +246,36 @@ namespace Tortoise.Shared.Net
 		
 		void Write_ModulePacket(byte[] data, ushort moduleID)
 		{
-			//2 for ID, 2 for module ID, x for data length
-			ushort length = Convert.ToUInt16(4 + data.Length);
-			_sw.Write(length);
-			_sw.Write(PacketID.ModulePacket.Value());
-			_sw.Write(moduleID);
-			_sw.Write(data);
-			
+			Write_ModulePacket(data, moduleID, 0);
 		}
 		
+		void Write_ModulePacket(byte[] data, ushort moduleID, int priority)
+		{
+			//2 for ID, 2 for module ID, x for data length
+			ushort length = Convert.ToUInt16(4 + data.Length);
+			ByteWriter bw = new ByteWriter();
 
+			bw.Write(length);
+			bw.Write(PacketID.ModulePacket.Value());
+			bw.Write(moduleID);
+			bw.Write(data);
+			AddPacket(bw.GetArray(), priority);
+		}
+		
 		public void Write_Message(MessageID reason)
 		{
 			//2 for ID, 2 for message ID
 			ushort length = 4;
-			_sw.Write(length);
-			_sw.Write(PacketID.Message.Value());
-			_sw.Write(reason.Value());
-			_sw.Flush();
+			ByteWriter bw = new ByteWriter();
+
+			bw.Write(length);
+			bw.Write(PacketID.Message.Value());
+			bw.Write(reason.Value());
+			
+			//Messages are generally important, so slight priority change.
+			AddPacket(bw.GetArray(), -1);
 		}
 		
-
 		/// <summary>
 		/// Disconnects the client without any reason.
 		/// </summary>

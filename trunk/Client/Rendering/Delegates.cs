@@ -35,7 +35,6 @@ using AgateLib.InputLib;
 
 namespace Tortoise.Client.Rendering
 {
-	public delegate void InvokeDelegate(object userData);
 	public delegate void DInputArgs(object sender, InputEventArgs e);
 
 }

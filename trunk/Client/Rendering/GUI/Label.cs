@@ -54,7 +54,7 @@ namespace Tortoise.Client.Rendering.GUI
 			get{return _align;}
 			set
 			{
-				EnforceThreadSafty();
+				_threadSafety.EnforceThreadSafety();
 				_align = value;
 				_redrawPreRenderd = true;
 			}
@@ -65,7 +65,7 @@ namespace Tortoise.Client.Rendering.GUI
 			get{return _text;}
 			set
 			{
-				EnforceThreadSafty();
+				_threadSafety.EnforceThreadSafety();
 				_text = value;
 				//_textChanged = true;
 				_redrawPreRenderd = true;

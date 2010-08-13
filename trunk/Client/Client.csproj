@@ -115,13 +115,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\Delegates.cs" />
     <Compile Include="Rendering\GUI\Button.cs" />
+    <Compile Include="Rendering\GUI\ControlSorter.cs" />
     <Compile Include="Rendering\GUI\KeyPressed.cs" />
     <Compile Include="Rendering\GUI\Label.cs" />
     <Compile Include="Rendering\GUI\Container.cs" />
     <Compile Include="Rendering\GUI\Control.cs" />
     <Compile Include="Rendering\GUI\ControlContainer.cs" />
-    <Compile Include="Rendering\GUI\ControlSorter.cs" />
-    <Compile Include="Rendering\GUI\InvokeItem.cs" />
     <Compile Include="Rendering\GUI\MovedEventArgs.cs" />
     <Compile Include="Rendering\GUI\ResizeEventArgs.cs" />
     <Compile Include="Rendering\GUI\TextAlignement.cs" />
@@ -132,11 +131,14 @@
     <Compile Include="Rendering\Screen.cs" />
     <Compile Include="Rendering\TickEventArgs.cs" />
     <Compile Include="Rendering\Window.cs" />
+    <Compile Include="Threading\InvokeItem.cs" />
+    <Compile Include="Threading\ThreadSafetyEnforcer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="IO" />
     <Folder Include="IO" />
     <Folder Include="Net" />
+    <Folder Include="Threading" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Localization\EN-US.lang">

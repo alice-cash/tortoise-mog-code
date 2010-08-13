@@ -30,7 +30,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
-  
+
 using System;
 using AgateLib;
 using AgateLib.Geometry;
@@ -45,6 +45,9 @@ using Tortoise.Shared.IO;
 namespace Tortoise.Client.Module
 {
 	
+	/// <summary>
+	/// Load up the Main Menu Module.
+	/// </summary>
 	internal class MainMenuLoader : ModuleLoader
 	{
 		public override Version Version {
@@ -57,7 +60,7 @@ namespace Tortoise.Client.Module
 			get {
 				return "Tortoise Main Menu.";
 			}
-		}	
+		}
 
 		public override void Load()
 		{
@@ -66,18 +69,17 @@ namespace Tortoise.Client.Module
 			Window.AvailableScreens.Add("MainMenu",new MainMenu());
 		}
 	}
+	
 	/// <summary>
-	/// Description of MainMenu.
+	///  The Main Menu.
 	/// </summary>
 	class MainMenu : Control, IScreen
 	{
 
-		AgateResourceCollection _resourceCollection;
 		Container _renderItems;
 		
 		public MainMenu():base("_Screen",Point.Empty,Size.Empty)
 		{
-			_resourceCollection = new AgateResourceCollection();
 			_renderItems  = new Container("_parent", 0,0, Program.ScreenHeight,  Program.ScreenWidth);
 			_renderItems._backgroundColor = Color.Wheat;
 		}
@@ -119,7 +121,6 @@ namespace Tortoise.Client.Module
 		
 		public new void Tick(TickEventArgs e)
 		{
-			
 			_renderItems.Tick(e);
 		}
 		
@@ -154,5 +155,88 @@ namespace Tortoise.Client.Module
 		}
 
 	}
-}
 	
+	class About : Control, IScreen
+	{
+		
+		Container _renderItems;
+		
+		public About():base("_Screen",Point.Empty,Size.Empty)
+		{
+			_renderItems  = new Container("_parent", 0,0, Program.ScreenHeight,  Program.ScreenWidth);
+			_renderItems._backgroundColor = Color.Wheat;
+		}
+
+		public override void Dispose()
+		{
+			_renderItems.Dispose();
+		}
+
+		public override void Init()
+		{
+			_renderItems.Init();
+			
+			Label b1 = new Label("_b1", "HELLO WORLD", new Point(0,0), new Size(200,40));
+			TextBox b2 = new TextBox("_b2", new Point(100,40), new Size(200,40));
+			b1.TextAlignement = TextAlignement.Center;
+			b2.Text = "HELLO WORLD";
+			_renderItems.Controls.Add(10, b1);
+			_renderItems.Controls.Add(10, b2);
+
+			_renderItems.Controls["_b1"].BackgroundColor = Color.Red;
+			_renderItems.Controls["_b2"].BackgroundColor = Color.Transparent;
+		}
+		
+		
+		public override void Load()
+		{
+			_renderItems.Load();
+		}
+		
+		public override void Unload()
+		{
+			_renderItems.Unload();
+		}
+		
+		public new void Render()
+		{
+			_renderItems.Render();
+		}
+		
+		public new void Tick(TickEventArgs e)
+		{
+			_renderItems.Tick(e);
+		}
+		
+		public new void OnMouseUp(MouseEventArgs e)
+		{
+			_renderItems.OnMouseUp(e);
+		}
+		
+		public new void OnMouseMove(MouseEventArgs e)
+		{
+			_renderItems.OnMouseMove(e);
+		}
+		
+		public new void OnMouseDown(MouseEventArgs e)
+		{
+			_renderItems.OnMouseDown(e);
+		}
+		
+		public new void OnKeyboardUp(KeyEventArgs e)
+		{
+			_renderItems.OnKeyboardUp(e);
+		}
+		
+		public new void OnKeyboardDown(KeyEventArgs e)
+		{
+			_renderItems.OnKeyboardDown(e);
+		}
+		
+		public void OnResize()
+		{
+			_renderItems.Size = Window.MainWindow.Size;
+		}
+	}
+}
+

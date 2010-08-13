@@ -38,6 +38,7 @@ using AgateLib.Geometry;
 using AgateLib.InputLib;
 
 using Tortoise.Client.Collection;
+using Tortoise.Shared.Threading;
 
 namespace Tortoise.Client.Rendering
 {
@@ -52,10 +53,17 @@ namespace Tortoise.Client.Rendering
 		{
 			AvailableScreens = new Dictionary<string, IScreen>();
 		}
+		
 		public static Dictionary<string, IScreen> AvailableScreens{get; private set;}
 		public static DisplayWindow MainWindow{get; private set;}
 		public static Window Instance {get; private set;}
 		
+		public event EventHandler ScreenChanged;
+		
+		
+		private ThreadSafetyEnforcer _threadSafety;
+		private Queue<InvokeItem> _invokeList;
+
 		public IScreen CurrentScreen{get; set;}
 		public Window()
 		{
@@ -67,6 +75,10 @@ namespace Tortoise.Client.Rendering
 			//This is the main entry for the program.
 			//We create the window here
 			//and then loop to draw each frame.
+			
+			//Thread safety is a very important part since we use multiple threads
+			//and random people will use this and add more random stuff
+			_threadSafety = new ThreadSafetyEnforcer("Main Window Class");
 			
 			//Set up the Agate backend system, and send it the command line arguments
 			AgateSetup AS = new AgateSetup(Environment.GetCommandLineArgs());
@@ -81,13 +93,13 @@ namespace Tortoise.Client.Rendering
 			// Resizing is broken in the current agatelib revision.
 			MainWindow = DisplayWindow.CreateWindowed ("Tortoise MOG",  Program.ScreenHeight,  Program.ScreenWidth, false);
 			
-			MainWindow.Resize += delegate(object sender, EventArgs e) 
+			MainWindow.Resize += delegate(object sender, EventArgs e)
 			{
 				CurrentScreen.OnResize();
 			};
 			
 			//This selects our first screen, and Loads it.
-			if(AvailableScreens.ContainsKey("MainMenu"))
+			if(!AvailableScreens.ContainsKey("MainMenu"))
 				throw new Exception("No module has set a MainMenu screen!");
 			CurrentScreen = AvailableScreens["MainMenu"];
 			CurrentScreen.Init();
@@ -134,6 +146,7 @@ namespace Tortoise.Client.Rendering
 
 			while (MainWindow.IsClosed == false)
 			{
+				CheckInvokes();
 				CurrentScreen.Tick(tickEventData);
 				
 				if(Display.RenderTarget != MainWindow.FrameBuffer)
@@ -159,6 +172,59 @@ namespace Tortoise.Client.Rendering
 				tickEventData.TotalSeconds = TotalTimer.TotalSeconds;
 				tickEventData.TotalMilliseconds = TotalTimer.TotalMilliseconds;
 			}
+		}
+		
+		private void CheckInvokes()
+		{
+			lock(_invokeList)
+			{
+				InvokeItem item;
+				while(_invokeList.Count > 0)
+				{
+					item = _invokeList.Dequeue();
+					item.Action(item.UserData);
+				}
+				
+			}
+
+		}
+		
+		public void ChangeToScreen(string screenName)
+		{
+			//The lamba expression keeps the name in scope
+			//so no worried there, i hope...
+			InvokeDelegate id = (object nothing) =>
+			{
+				if(!AvailableScreens.ContainsKey(screenName))
+					throw new Exception(string.Format("{0} does not exsist!", screenName));
+				CurrentScreen = AvailableScreens["MainMenu"];
+				CurrentScreen.Init();
+				CurrentScreen.Load();
+				if(ScreenChanged!= null)
+					ScreenChanged(this, EventArgs.Empty);
+
+			};
+			InvokeMethod(id, null);
+		}
+		
+		public void InvokeMethod(InvokeDelegate methodToInvoke, object userData)
+		{
+			if(_threadSafety.CheckThreadSafety())
+			{
+				//if its true we just run it.
+				methodToInvoke.Invoke(userData);
+				return;
+			}
+			//Othherwise we lock it and add it.
+			lock(_invokeList)
+			{
+				_invokeList.Enqueue(new InvokeItem(methodToInvoke, userData));
+			}
+		}
+		
+		public bool InvokeRequired()
+		{
+			return _threadSafety.CheckThreadSafety();
 		}
 		
 		/// <summary>
