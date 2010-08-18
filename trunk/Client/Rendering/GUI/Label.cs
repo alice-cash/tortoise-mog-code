@@ -76,20 +76,30 @@ namespace Tortoise.Client.Rendering.GUI
 		
 
 		public Label(string name, string text, int x, int y, int width, int height)
-			: this(name, text, new Rectangle(x, y, width, height))
+			: this(name, text, new Rectangle(x, y, width, height), FontSurface.AgateSans10)
 		{
 
 		}
 		public Label(string name, string text, Point location, Size size)
-			: this(name, text, new Rectangle(location, size))
+			: this(name, text, new Rectangle(location, size), FontSurface.AgateSans10)
 		{
 
 		}
-		public Label(string name, string text, Rectangle area)
+		public Label(string name, string text, int x, int y, int width, int height, FontSurface fontsurface)
+			: this(name, text, new Rectangle(x, y, width, height), fontsurface)
+		{
+
+		}
+		public Label(string name, string text, Point location, Size size, FontSurface fontsurface)
+			: this(name, text, new Rectangle(location, size), fontsurface)
+		{
+
+		}
+		public Label(string name, string text, Rectangle area, FontSurface fontsurface)
 			: base(name, area)
 		{
 			Text = text;
-			_fontSurface = FontSurface.AgateSans10;
+			_fontSurface = fontsurface;
 		}
 				
 		internal override void Redraw_PreRenderd()
@@ -105,7 +115,8 @@ namespace Tortoise.Client.Rendering.GUI
 			Display.RenderTarget = _preRenderd;
 			Display.BeginFrame();
 
-			Display.Clear(_backgroundColor);
+			if(_backgroundColor != Color.Transparent)
+				Display.Clear(_backgroundColor);
 			_fontSurface.Color = Color.Black;
 			_fontSurface.DrawText(TextDestination(), _text);
 		

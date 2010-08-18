@@ -100,6 +100,18 @@
     <Compile Include="..\SharedCode\Net\PacketSorter.cs">
       <Link>Net\PacketSorter.cs</Link>
     </Compile>
+    <Compile Include="..\SharedCode\Threading\IInvokable.cs">
+      <Link>Threading\IInvokable.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\Threading\InvokeItem.cs">
+      <Link>Threading\InvokeItem.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\Threading\Invoker.cs">
+      <Link>Threading\Invoker.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedCode\Threading\ThreadSafetyEnforcer.cs">
+      <Link>Threading\ThreadSafetyEnforcer.cs</Link>
+    </Compile>
     <Compile Include="Collection\LimitedList.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="Exceptions\ConsoleException.cs" />
@@ -131,8 +143,6 @@
     <Compile Include="Rendering\Screen.cs" />
     <Compile Include="Rendering\TickEventArgs.cs" />
     <Compile Include="Rendering\Window.cs" />
-    <Compile Include="Threading\InvokeItem.cs" />
-    <Compile Include="Threading\ThreadSafetyEnforcer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="IO" />
