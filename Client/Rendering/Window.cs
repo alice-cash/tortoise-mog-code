@@ -43,9 +43,9 @@ using Tortoise.Shared.Threading;
 namespace Tortoise.Client.Rendering
 {
 	/// <summary>
-	/// Description of Screen.
+	/// The main window.
 	/// </summary>
-	public class Window
+	public class Window : IInvokable
 	{
 		//This is called autmaticly when any static property is accessed
 		//or an instance of the class is created
@@ -62,8 +62,8 @@ namespace Tortoise.Client.Rendering
 		
 		
 		private ThreadSafetyEnforcer _threadSafety;
-		private Queue<InvokeItem> _invokeList;
-
+		private Invoker _invoker;
+		
 		public IScreen CurrentScreen{get; set;}
 		public Window()
 		{
@@ -79,6 +79,7 @@ namespace Tortoise.Client.Rendering
 			//Thread safety is a very important part since we use multiple threads
 			//and random people will use this and add more random stuff
 			_threadSafety = new ThreadSafetyEnforcer("Main Window Class");
+			_invoker = new Invoker(_threadSafety);
 			
 			//Set up the Agate backend system, and send it the command line arguments
 			AgateSetup AS = new AgateSetup(Environment.GetCommandLineArgs());
@@ -108,7 +109,7 @@ namespace Tortoise.Client.Rendering
 			
 			//This catches and sends Input events to the current screen.
 			//We filter mouse and keybord events into 2 logical classes
-			//as we should not check for mouse values in keyboard event
+			//as we should not check for mouse values in a keyboard event
 			Mouse.MouseDown += delegate(InputEventArgs e)
 			{
 				CurrentScreen.OnMouseDown(new MouseEventArgs(e));
@@ -136,7 +137,9 @@ namespace Tortoise.Client.Rendering
 			
 			
 			
-			
+			//Now we just create some varables used by the loop.
+			//The TickEventArgs object is reused each frame.
+			//No reason to recreate it each frame.
 			TickEventArgs tickEventData = new TickEventArgs();
 			Timing.StopWatch frameTimer = new Timing.StopWatch(true);
 			Timing.StopWatch TotalTimer = new Timing.StopWatch(true);
@@ -146,25 +149,32 @@ namespace Tortoise.Client.Rendering
 
 			while (MainWindow.IsClosed == false)
 			{
-				CheckInvokes();
+				_invoker.PollInvokes();
 				CurrentScreen.Tick(tickEventData);
 				
+				//I should throw an exception, but we may have issues figuring out
+				//what forgot to change it back to the main window.
 				if(Display.RenderTarget != MainWindow.FrameBuffer)
 					Display.RenderTarget = MainWindow.FrameBuffer;
 				Display.BeginFrame();
+				
+				//I like black. Background should be done in the Current Screen.
 				Display.Clear(Color.Black);
 				
 				CurrentScreen.Render();
 
 				Display.EndFrame();
 				
-				
+				//Pureley for debuging purposes ATM
+				//TODO: Remove and replace with text based info in the window.
 				MainWindow.Title = tickEventData.FPS.ToString("f2") + " fps - " +  tickEventData.AverageFrameTime.ToString("f2") + " ms";
 				
+				//has somthing to do with the agatelib, probably to poll events for the window and such
 				Core.KeepAlive();
 				
+				//All of this is just for calculating the FPS and stuff.
 				tickEventData.LastFrameTime = frameTimer.TotalMilliseconds;
-				//this resets the timers time, but doesn't stop it.
+				//this resets the timer's time, but doesn't stop it.
 				frameTimer.Reset();
 				lastFrameTimes.Add(tickEventData.LastFrameTime);
 				tickEventData.AverageFrameTime = CalculateAverage(lastFrameTimes);
@@ -174,26 +184,15 @@ namespace Tortoise.Client.Rendering
 			}
 		}
 		
-		private void CheckInvokes()
-		{
-			lock(_invokeList)
-			{
-				InvokeItem item;
-				while(_invokeList.Count > 0)
-				{
-					item = _invokeList.Dequeue();
-					item.Action(item.UserData);
-				}
-				
-			}
 
-		}
-		
+		/// <summary>
+		/// Change to the screen name listed. The screenName should be an item in the AvailableScreens.
+		/// </summary>
 		public void ChangeToScreen(string screenName)
 		{
 			//The lamba expression keeps the name in scope
 			//so no worried there, i hope...
-			InvokeDelegate id = (object nothing) =>
+			System.Action<object> id = (object nothing) =>
 			{
 				if(!AvailableScreens.ContainsKey(screenName))
 					throw new Exception(string.Format("{0} does not exsist!", screenName));
@@ -207,31 +206,27 @@ namespace Tortoise.Client.Rendering
 			InvokeMethod(id, null);
 		}
 		
-		public void InvokeMethod(InvokeDelegate methodToInvoke, object userData)
+		/// <summary>
+		/// Either adds the specified thread to the invoke list, or calls it now if its in the parent thread.
+		/// </summary>
+		/// <param name="methodToInvoke">A method or deligate to call.</param>
+		/// <param name="userData">An object with information sent to the method.</param>
+		public void InvokeMethod(System.Action<object> methodToInvoke, object userData)
 		{
-			if(_threadSafety.CheckThreadSafety())
-			{
-				//if its true we just run it.
-				methodToInvoke.Invoke(userData);
-				return;
-			}
-			//Othherwise we lock it and add it.
-			lock(_invokeList)
-			{
-				_invokeList.Enqueue(new InvokeItem(methodToInvoke, userData));
-			}
-		}
-		
-		public bool InvokeRequired()
-		{
-			return _threadSafety.CheckThreadSafety();
+			_invoker.InvokeMethod(methodToInvoke, userData);
 		}
 		
 		/// <summary>
-		/// Calculates the average number in a LimitedList<double>. If allowZero is false, 0 will be replaced with 1
+		/// Returns true if we need to invoke a method.
 		/// </summary>
-		/// <param name="frameTimes"></param>
-		/// <returns></returns>
+		public bool InvokeRequired()
+		{
+			return _invoker.InvokeRequired();
+		}
+		
+		/// <summary>
+		/// Calculates the average number in a LimitedList<double>. If allowZero is false, 0 will be replaced with 1(for use in division)
+		/// </summary>
 		private double CalculateAverage(LimitedList<double> items, bool allowZero = false)
 		{
 			double count = 0, total = 0, result = 0;

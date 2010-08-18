@@ -31,9 +31,12 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using System.IO;
 using System.Linq;
 using C5;
 using Tortoise.Client.Exceptions;
+using Tortoise.Client.Collection;
+
 namespace Tortoise.Client
 {
 	public enum ConsoleCommandSucess
@@ -53,17 +56,20 @@ namespace Tortoise.Client
 	}
 
 	/// <summary>
-	/// Description of ConsoleData.
+	/// This is the backend for a Console.
 	/// </summary>
 	public class Console
 	{
 		private HashDictionary<string, ConsoleVarable> _varables;
 		private HashDictionary<string, System.Func<string[],ConsoleResponce>> _functions;
 		
+		private LimitedList<string> _consoleBacklog;
+		
 		public Console()
 		{
 			_varables = new HashDictionary<string, ConsoleVarable>();
 			_functions = new HashDictionary<string, System.Func<string[],ConsoleResponce>>();
+			_consoleBacklog = new LimitedList<string>(500, string.Empty);
 		}
 		
 		public ConsoleVarable GetValue(string name)
@@ -72,6 +78,7 @@ namespace Tortoise.Client
 			{
 				return _varables[name];
 			}
+			//this is called by normal code, so throw a normal exception!
 			throw new InvalidVarableNameExceptions(string.Format("{0} does not exist",name));
 		}
 		
@@ -98,12 +105,11 @@ namespace Tortoise.Client
 			cr.Sucess = ConsoleCommandSucess.Failure;
 			cr.Value = "";
 			try
-			{
-			
-			if(_functions.Contains(name))
-			{
-				return _functions[name](args);
-			}
+			{		
+				if(_functions.Contains(name))
+				{
+					return _functions[name](args);
+				}
 			} catch(ConsoleException ex)
 			{
 				cr.Value = localization.Default.Strings.GetFormatedString("Console_Function_Exception", ex);
@@ -162,7 +168,7 @@ namespace Tortoise.Client
 				else
 				{
 					cr.Sucess = ConsoleCommandSucess.Failure;
-					cr.Value = string.Format("The text '{1}' is not valid for {0}\n", name, value);
+					cr.Value = localization.Default.Strings.GetFormatedString("Console_Validation_Failure", name, value);
 					return cr;
 				}
 			}

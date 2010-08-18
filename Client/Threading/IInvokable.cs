@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 8/5/2010
- * Time: 11:39 PM
+ * Date: 8/14/2010
+ * Time: 2:00 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -31,68 +31,24 @@
  * or implied, of Matthew Cash.
  */
 using System;
-using AgateLib.Geometry;
 
-namespace Tortoise.Client.Rendering.GUI
+namespace Tortoise.Shared.Threading
 {
 	/// <summary>
-	/// Desctiption of Button.
+	/// Description of IInvokable.
 	/// </summary>
-	public class Button : Control
+	public interface IInvokable
 	{
-		private string _text;
-		private FontSurface _fontSurface;
-		private TextAlignement _align;
+		/// <summary>
+		/// Either adds the specified thread to the invoke list, or calls it now if its in the parent thread.
+		/// </summary>
+		/// <param name="methodToInvoke">A method or deligate to call.</param>
+		/// <param name="userData">An object with information sent to the method.</param>
+		void InvokeMethod(System.Action<object> methodToInvoke, object userData);
+		/// <summary>
+		/// Returns true if we need to invoke a method.
+		/// </summary>
+		bool InvokeRequired();
 		
-		
-		public TextAlignement TextAlignement
-		{
-			get{return _align;}
-			set
-			{
-				_threadSafety.EnforceThreadSafety();
-				_align = value;
-				_redrawPreRenderd = true;
-			}
-		}
-		//private bool _textChanged;
-		public string Text
-		{
-			get{return _text;}
-			set
-			{
-				_threadSafety.EnforceThreadSafety();
-				_text = value;
-				//_textChanged = true;
-				_redrawPreRenderd = true;
-			}
-			
-		}
-
-		
-		public Button(string name, Point location, Size size)
-			: this(name, new Rectangle(location, size))
-		{
-
-		}
-
-		public Button(string name, int x, int y, int width, int height)
-			: this(name, new Rectangle(x, y, width, height))
-		{
-
-		}
-
-		public Button(string name, Rectangle area)
-			: base(name, area)
-		{
-			
-		}
-		
-		internal override bool OnMouseMove(MouseEventArgs e)
-		{
-			_threadSafety.EnforceThreadSafety();
-			if(!IsPointOver(e.MousePosition)) return false;
-			return doMouseMove(e);
-		}
 	}
 }

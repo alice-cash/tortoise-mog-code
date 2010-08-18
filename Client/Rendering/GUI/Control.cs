@@ -72,8 +72,7 @@ namespace Tortoise.Client.Rendering.GUI
 		internal bool _hasFocus;
 		
 		internal ThreadSafetyEnforcer _threadSafety;
-		
-		private Queue<InvokeItem> _invokeList;
+		internal Invoker _invoker;
 		#endregion
 		
 		#region Event Handlers
@@ -342,9 +341,9 @@ namespace Tortoise.Client.Rendering.GUI
 		public Control(string name, Rectangle area)
 		{
 			_threadSafety = new ThreadSafetyEnforcer(name);
+			_invoker = new Invoker(_threadSafety);
 			_area = area;
 			Name = name;
-			_invokeList = new Queue<InvokeItem>();
 		}
 		#endregion
 
@@ -386,21 +385,15 @@ namespace Tortoise.Client.Rendering.GUI
 		internal virtual void Tick(TickEventArgs e)
 		{
 			_threadSafety.EnforceThreadSafety();
+			
+			_invoker.PollInvokes();
+				
 			if (_redrawPreRenderd || _preRenderd == null)
 			{
 				Redraw_PreRenderd();
 				_redrawPreRenderd = false;
 			}
-			lock(_invokeList)
-			{
-				InvokeItem item;
-				while(_invokeList.Count > 0)
-				{
-					item = _invokeList.Dequeue();
-					item.Action(item.UserData);
-				}
-				
-			}
+			
 			if(TickEvent != null)
 				TickEvent(this, EventArgs.Empty);
 		}
@@ -492,24 +485,14 @@ namespace Tortoise.Client.Rendering.GUI
 		#endregion
 		
 		#region Public Methods
-		public void InvokeMethod(InvokeDelegate methodToInvoke, object userData)
+		public void InvokeMethod(System.Action<object> methodToInvoke, object userData)
 		{
-			if(_threadSafety.CheckThreadSafety())
-			{
-				//if its true we just run it.
-				methodToInvoke.Invoke(userData);
-				return;
-			}
-			//Othherwise we lock it and add it.
-			lock(_invokeList)
-			{
-				_invokeList.Enqueue(new InvokeItem(methodToInvoke, userData));
-			}
+			_invoker.InvokeMethod(methodToInvoke, userData);
 		}
 		
 		public bool InvokeRequired()
 		{
-			return _threadSafety.CheckThreadSafety();
+			return _invoker.InvokeRequired();
 		}
 		#endregion
 		

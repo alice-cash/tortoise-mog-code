@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 8/5/2010
- * Time: 11:39 PM
+ * Date: 8/2/2010
+ * Time: 12:58 AM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -31,68 +31,23 @@
  * or implied, of Matthew Cash.
  */
 using System;
-using AgateLib.Geometry;
 
-namespace Tortoise.Client.Rendering.GUI
+namespace Tortoise.Shared.Threading
 {
 	/// <summary>
-	/// Desctiption of Button.
+	/// Contains data used by a class that uses an invoke
 	/// </summary>
-	public class Button : Control
+	struct InvokeItem
 	{
-		private string _text;
-		private FontSurface _fontSurface;
-		private TextAlignement _align;
-		
-		
-		public TextAlignement TextAlignement
-		{
-			get{return _align;}
-			set
-			{
-				_threadSafety.EnforceThreadSafety();
-				_align = value;
-				_redrawPreRenderd = true;
-			}
-		}
-		//private bool _textChanged;
-		public string Text
-		{
-			get{return _text;}
-			set
-			{
-				_threadSafety.EnforceThreadSafety();
-				_text = value;
-				//_textChanged = true;
-				_redrawPreRenderd = true;
-			}
-			
-		}
+		private System.Action<object> _action;
+		private object _userData;
+		public System.Action<object> Action{get{return _action;}}
+		public object UserData{get{return _userData;}}
 
-		
-		public Button(string name, Point location, Size size)
-			: this(name, new Rectangle(location, size))
+		public InvokeItem(System.Action<object> action, object userData)
 		{
-
-		}
-
-		public Button(string name, int x, int y, int width, int height)
-			: this(name, new Rectangle(x, y, width, height))
-		{
-
-		}
-
-		public Button(string name, Rectangle area)
-			: base(name, area)
-		{
-			
-		}
-		
-		internal override bool OnMouseMove(MouseEventArgs e)
-		{
-			_threadSafety.EnforceThreadSafety();
-			if(!IsPointOver(e.MousePosition)) return false;
-			return doMouseMove(e);
+			_action = action;
+			_userData = userData;
 		}
 	}
 }

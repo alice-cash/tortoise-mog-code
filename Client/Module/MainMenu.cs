@@ -93,15 +93,14 @@ namespace Tortoise.Client.Module
 		{
 			_renderItems.Init();
 			
-			Label b1 = new Label("_b1", "HELLO WORLD", new Point(0,0), new Size(200,40));
-			TextBox b2 = new TextBox("_b2", new Point(100,40), new Size(200,40));
-			b1.TextAlignement = TextAlignement.Center;
-			b2.Text = "HELLO WORLD";
-			_renderItems.Controls.Add(10, b1);
-			_renderItems.Controls.Add(10, b2);
+			Label logoText = new Label("_logoText", "Tortoise", new Point(10,10), new Size(200,40), FontSurface.AgateSans24);
+			Button about = new Button("_about", "About", new Point(200,200), new Size(60,25));
 
-			_renderItems.Controls["_b1"].BackgroundColor = Color.Red;
-			_renderItems.Controls["_b2"].BackgroundColor = Color.Transparent;
+			logoText.TextAlignement = TextAlignement.Center;
+
+			_renderItems.Controls.Add(10, logoText);
+
+			_renderItems.Controls["_logoText"].BackgroundColor = Color.Transparent;
 		}
 		
 		public override void Load()
@@ -176,15 +175,13 @@ namespace Tortoise.Client.Module
 		{
 			_renderItems.Init();
 			
-			Label b1 = new Label("_b1", "HELLO WORLD", new Point(0,0), new Size(200,40));
-			TextBox b2 = new TextBox("_b2", new Point(100,40), new Size(200,40));
-			b1.TextAlignement = TextAlignement.Center;
-			b2.Text = "HELLO WORLD";
-			_renderItems.Controls.Add(10, b1);
-			_renderItems.Controls.Add(10, b2);
+			Label b1 = new Label("_b1", "Tortoise", new Point(10,10), new Size(200,40), FontSurface.AgateSans24);
 
-			_renderItems.Controls["_b1"].BackgroundColor = Color.Red;
-			_renderItems.Controls["_b2"].BackgroundColor = Color.Transparent;
+			b1.TextAlignement = TextAlignement.Center;
+
+			_renderItems.Controls.Add(10, b1);
+
+			_renderItems.Controls["_b1"].BackgroundColor = Color.Transparent;
 		}
 		
 		
