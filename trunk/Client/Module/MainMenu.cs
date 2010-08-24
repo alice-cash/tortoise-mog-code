@@ -58,15 +58,16 @@ namespace Tortoise.Client.Module
 		
 		public override string Name {
 			get {
-				return "Tortoise Main Menu.";
+				return "Tortoise Main Menu and About Screen.";
 			}
 		}
 
 		public override void Load()
 		{
-			if(Window.AvailableScreens.ContainsKey("MainMenu"))
+			if(Window.AvailableScreens.ContainsKey("MainMenu") || Window.AvailableScreens.ContainsKey("About"))
 				throw new ModuleLoadException("The Current screen has already been set!");
 			Window.AvailableScreens.Add("MainMenu",new MainMenu());
+			Window.AvailableScreens.Add("About",new About());
 		}
 	}
 	
@@ -80,7 +81,7 @@ namespace Tortoise.Client.Module
 		
 		public MainMenu():base("_Screen",Point.Empty,Size.Empty)
 		{
-			_renderItems  = new Container("_parent", 0,0, Program.ScreenHeight,  Program.ScreenWidth);
+			_renderItems  = new Container("_parent", 0,0,  Program.ScreenWidth, Program.ScreenHeight);
 			_renderItems._backgroundColor = Color.Wheat;
 		}
 		
@@ -93,14 +94,24 @@ namespace Tortoise.Client.Module
 		{
 			_renderItems.Init();
 			
-			Label logoText = new Label("_logoText", "Tortoise", new Point(10,10), new Size(200,40), FontSurface.AgateSans24);
-			Button about = new Button("_about", "About", new Point(200,200), new Size(60,25));
+			Label title = new Label("_title", Program.GameName, new Point(10,10), new Size(Program.ScreenWidth - 20, 40), FontSurface.AgateSans24);
+			
+			string aboutText = localization.Default.Strings.GetFormatedString("Main_Menu_Credits");
+			Point buttonPos = new Point(Program.ScreenWidth - 60, Program.ScreenHeight - 20);
+			Button about = new Button("_about", aboutText, buttonPos, new Size(60,25), FontSurface.AgateSans10);
 
-			logoText.TextAlignement = TextAlignement.Center;
+			title.TextAlignement = TextAlignement.Center;
+			title.BackgroundColor = Color.Transparent;
+			
+			about.BackgroundColor = Color.FromArgb(40,Color.Gray);
+			about.MouseUp+= delegate
+			{
+				Window.Instance.ChangeToScreen("About");
+			};
+			
+			_renderItems.Controls.Add(10, title);
+			_renderItems.Controls.Add(10, about);
 
-			_renderItems.Controls.Add(10, logoText);
-
-			_renderItems.Controls["_logoText"].BackgroundColor = Color.Transparent;
 		}
 		
 		public override void Load()
@@ -154,7 +165,9 @@ namespace Tortoise.Client.Module
 		}
 
 	}
-	
+	/// <summary>
+	/// If you make your own About screen, please leave the "Made with the Tortoise MOG Framework." In it.
+	/// </summary>
 	class About : Control, IScreen
 	{
 		
@@ -162,7 +175,7 @@ namespace Tortoise.Client.Module
 		
 		public About():base("_Screen",Point.Empty,Size.Empty)
 		{
-			_renderItems  = new Container("_parent", 0,0, Program.ScreenHeight,  Program.ScreenWidth);
+			_renderItems  = new Container("_parent", 0,0,  Program.ScreenWidth, Program.ScreenHeight);
 			_renderItems._backgroundColor = Color.Wheat;
 		}
 
@@ -175,13 +188,31 @@ namespace Tortoise.Client.Module
 		{
 			_renderItems.Init();
 			
-			Label b1 = new Label("_b1", "Tortoise", new Point(10,10), new Size(200,40), FontSurface.AgateSans24);
+			Label title = new Label("_title", Program.GameName, new Point(10,10), new Size(Program.ScreenWidth - 20, 40), FontSurface.AgateSans24);
+			
+			string creditText = localization.Default.Strings.GetFormatedString("Credits_Text");
+			Label cointents = new Label("_contents", creditText, new Point(0,0), new Size(Program.ScreenWidth,Program.ScreenHeight), FontSurface.AgateSans10);
+			
+			Point buttonPos = new Point(Program.ScreenWidth - 250, Program.ScreenHeight - 20);
+			string returnText = localization.Default.Strings.GetFormatedString("Credits_Return");
+			Button returnButton = new Button("_return", returnText,buttonPos,new Size(250,20),FontSurface.AgateSans10);
 
-			b1.TextAlignement = TextAlignement.Center;
+			title.TextAlignement = TextAlignement.Center;
+			title.BackgroundColor = Color.Transparent;
+			
+			cointents.TextAlignement = TextAlignement.Center;
+			cointents.BackgroundColor = Color.Transparent;
+			
+			returnButton.BackgroundColor = Color.FromArgb(40,Color.Gray);
 
-			_renderItems.Controls.Add(10, b1);
+			returnButton.MouseUp+= delegate
+			{
+				Window.Instance.ChangeToScreen("MainMenu");
+			};
 
-			_renderItems.Controls["_b1"].BackgroundColor = Color.Transparent;
+			_renderItems.Controls.Add(10, title);
+			_renderItems.Controls.Add(15, cointents);
+			_renderItems.Controls.Add(10, returnButton);
 		}
 		
 		

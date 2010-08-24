@@ -92,7 +92,7 @@ namespace Tortoise.Client.Rendering
 				return;
 			
 			// Resizing is broken in the current agatelib revision.
-			MainWindow = DisplayWindow.CreateWindowed ("Tortoise MOG",  Program.ScreenHeight,  Program.ScreenWidth, false);
+			MainWindow = DisplayWindow.CreateWindowed ("Tortoise MOG",  Program.ScreenWidth,  Program.ScreenHeight, false);
 			
 			MainWindow.Resize += delegate(object sender, EventArgs e)
 			{
@@ -196,7 +196,7 @@ namespace Tortoise.Client.Rendering
 			{
 				if(!AvailableScreens.ContainsKey(screenName))
 					throw new Exception(string.Format("{0} does not exsist!", screenName));
-				CurrentScreen = AvailableScreens["MainMenu"];
+				CurrentScreen = AvailableScreens[screenName];
 				CurrentScreen.Init();
 				CurrentScreen.Load();
 				if(ScreenChanged!= null)

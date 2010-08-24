@@ -143,8 +143,7 @@ namespace Tortoise.Client.Rendering.GUI
 				}
 				_inFocusChange = false;
 			}
-			if(FocusChanged != null)
-				FocusChanged(this, EventArgs.Empty);
+			doFocusChange();
 		}
 		
 

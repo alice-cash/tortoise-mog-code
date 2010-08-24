@@ -39,8 +39,6 @@ namespace Tortoise.Client.localization
 	/// </summary>
 	public class Default
 	{
-		private static LanguageStrings _currentLang;
-	
-		public static LanguageStrings Strings{get{return _currentLang;}}
+		public static LanguageStrings Strings{get;set;}
 	}
 }

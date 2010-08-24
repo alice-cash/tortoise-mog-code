@@ -76,14 +76,14 @@ namespace Tortoise.Client.Rendering.GUI
 		#endregion
 		
 		#region Event Handlers
-		public EventHandler<MouseEventArgs> MouseDown;
-		public EventHandler<MouseEventArgs> MouseUp;
-		public EventHandler<MouseEventArgs> MouseMove;
-		public EventHandler<MouseEventArgs> KeybordDown;
-		public EventHandler<MouseEventArgs> KeybordUp;
-		public EventHandler<ResizeEventArgs> Resized;
-		public EventHandler<MovedEventArgs> Moved;
-		public EventHandler FocusChanged;
+		public event EventHandler<MouseEventArgs> MouseDown;
+		public event EventHandler<MouseEventArgs> MouseUp;
+		public event EventHandler<MouseEventArgs> MouseMove;
+		public event EventHandler<MouseEventArgs> KeybordDown;
+		public event EventHandler<MouseEventArgs> KeybordUp;
+		public event EventHandler<ResizeEventArgs> Resized;
+		public event EventHandler<MovedEventArgs> Moved;
+		public event EventHandler FocusChanged;
 		
 		public System.EventHandler TickEvent;
 
@@ -130,6 +130,12 @@ namespace Tortoise.Client.Rendering.GUI
 		{
 			if (Moved != null)
 				Moved(this, e);
+		}
+		
+		internal void doFocusChange()
+		{
+			if(FocusChanged != null)
+				FocusChanged(this, EventArgs.Empty);
 		}
 		#endregion
 		
@@ -387,7 +393,7 @@ namespace Tortoise.Client.Rendering.GUI
 			_threadSafety.EnforceThreadSafety();
 			
 			_invoker.PollInvokes();
-				
+			
 			if (_redrawPreRenderd || _preRenderd == null)
 			{
 				Redraw_PreRenderd();
