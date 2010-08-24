@@ -60,7 +60,7 @@ namespace Tortoise.Shared.Threading
 		/// <param name="userData">An object with information sent to the method.</param>
 		public void InvokeMethod(System.Action<object> methodToInvoke, object userData)
 		{
-			if(InvokeRequired())
+			if(!InvokeRequired())
 			{
 				//if its true we just run it.
 				//no reason to run it later.
@@ -79,7 +79,7 @@ namespace Tortoise.Shared.Threading
 		/// </summary>
 		public bool InvokeRequired()
 		{
-			return _threadSafety.CheckThreadSafety();
+			return !_threadSafety.CheckThreadSafety();
 		}
 		
 				

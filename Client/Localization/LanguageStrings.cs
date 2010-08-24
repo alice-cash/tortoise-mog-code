@@ -31,6 +31,7 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using C5;
 
@@ -41,6 +42,22 @@ namespace Tortoise.Client.localization
 	/// </summary>
 	public class LanguageStrings
 	{
+		private static List<LanguageStrings> _languageStrings;
+		public static LanguageStrings[] GetAvalableLanguages()
+		{
+			if(_languageStrings == null)
+			{
+				_languageStrings = new List<LanguageStrings>();
+				foreach(string locFile in Directory.GetFiles("./localization/"))
+				{
+					if(locFile.EndsWith(".lang"))
+						_languageStrings.Add(new LanguageStrings(locFile));
+				}
+				
+			}
+			return _languageStrings.ToArray();
+		}
+		
 		private string _errorNoLocal = "No 'Error_No_Local' in language file!";
 		private string _languageName = "No 'Language_Name' in language file!";
 		
@@ -53,7 +70,7 @@ namespace Tortoise.Client.localization
 		{
 			if(Language.Contains(name))
 				return string.Format(Language[name], args);
-			return ErrorNoLocal;
+			return string.Format(ErrorNoLocal, name);
 		}
 		
 
@@ -70,6 +87,8 @@ namespace Tortoise.Client.localization
 				type = line.Substring(0, line.IndexOf(' '));
 				if(Language.Contains(type)) continue;
 				text = line.Substring(line.IndexOf(' '));
+				text = text.Trim();
+				text = text.Replace("\\n","\n");
 				Language.Add(type, text);
 			}
 			
