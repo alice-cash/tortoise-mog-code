@@ -117,10 +117,12 @@
     <Compile Include="Exceptions\ConsoleException.cs" />
     <Compile Include="Exceptions\InvalidVarableNameExceptions.cs" />
     <Compile Include="Exceptions\ModuleLoadException.cs" />
+    <Compile Include="Exceptions\ResourceLoadingException.cs" />
     <Compile Include="Extension\AgateLib\Geometry\Point.cs" />
     <Compile Include="Extension\System\Random.cs" />
     <Compile Include="localization\Default.cs" />
     <Compile Include="localization\LanguageStrings.cs" />
+    <Compile Include="Module\GUI\FrameBuilder\FrameBuilder.cs" />
     <Compile Include="Module\Login.cs" />
     <Compile Include="Module\MainMenu.cs" />
     <Compile Include="Program.cs" />
@@ -144,15 +146,27 @@
     <Compile Include="Rendering\TickEventArgs.cs" />
     <Compile Include="Rendering\Window.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="IO" />
-    <Folder Include="IO" />
-    <Folder Include="Net" />
-    <Folder Include="Threading" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Localization\EN-US.lang">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Module\GUI\FrameBuilder\Frame1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Module\GUI\FrameBuilder\Frame2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Module\GUI\FrameBuilder\Frame3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Module\GUI\FrameBuilder\Frame4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Module\GUI\FrameBuilder\Frame5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

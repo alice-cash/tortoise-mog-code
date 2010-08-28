@@ -41,6 +41,7 @@ using Tortoise.Client.Rendering;
 using Tortoise.Client.Rendering.GUI;
 using Tortoise.Shared.Module;
 using Tortoise.Shared.IO;
+using Tortoise.Client.Module.GUI.FrameBuilder;
 
 namespace Tortoise.Client.Module
 {
@@ -97,8 +98,12 @@ namespace Tortoise.Client.Module
 			Label title = new Label("_title", Program.GameName, new Point(10,10), new Size(Program.ScreenWidth - 20, 40), FontSurface.AgateSans24);
 			
 			string aboutText = localization.Default.Strings.GetFormatedString("Main_Menu_Credits");
-			Point buttonPos = new Point(Program.ScreenWidth - 60, Program.ScreenHeight - 20);
+			Point buttonPos = new Point(Program.ScreenWidth - 80, Program.ScreenHeight - 40);
+
+            Surface aboutBackground = FrameBuilder.Frame1.CreateFrame(new Size(60,25));
+
 			Button about = new Button("_about", aboutText, buttonPos, new Size(60,25), FontSurface.AgateSans10);
+            about.BackgroundImage = aboutBackground;
 
 			title.TextAlignement = TextAlignement.Center;
 			title.BackgroundColor = Color.Transparent;
