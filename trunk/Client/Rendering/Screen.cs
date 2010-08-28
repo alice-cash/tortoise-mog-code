@@ -31,24 +31,36 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using Tortoise.Client.Rendering.GUI;
 
 namespace Tortoise.Client.Rendering
 {
-	/// <summary>
-	/// Description of Screen.
-	/// </summary>
-	public interface IScreen: IRender
-	{
-		void OnMouseDown(MouseEventArgs e);
-		
-		void OnMouseUp(MouseEventArgs e);
+    /// <summary>
+    /// Description of Screen.
+    /// </summary>
+    public class Screen : Container, IRender
+    {
+        public Screen()
+            : base("_Screen", 0, 0, Program.ScreenWidth, Program.ScreenHeight)
+        {
 
-		void  OnMouseMove(MouseEventArgs e);
+        }
 
-		void  OnKeyboardDown(KeyEventArgs e);
+        public new void OnMouseDown(MouseEventArgs e) { base.OnMouseDown(e); }
 
-		void  OnKeyboardUp(KeyEventArgs e);
-		
-		void OnResize();
-	}
+        public new void OnMouseUp(MouseEventArgs e) { base.OnMouseUp(e); }
+
+        public new void OnMouseMove(MouseEventArgs e) { base.OnMouseMove(e); }
+
+        public new void OnKeyboardDown(KeyEventArgs e) { base.OnKeyboardDown(e); }
+
+        public new void OnKeyboardUp(KeyEventArgs e) { base.OnKeyboardUp(e); }
+
+        public void OnResize() { this.Size = Window.MainWindow.Size; }
+
+        public new void Tick(TickEventArgs e) { base.Tick(e); }
+
+        public new void Render() { base.Render(); }
+
+    }
 }

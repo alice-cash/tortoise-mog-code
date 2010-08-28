@@ -44,9 +44,9 @@ namespace Tortoise.Client.Rendering.GUI
 	/// </summary>
 	public class Label : Control
 	{
-		private string _text;
-		private FontSurface _fontSurface;
-		private TextAlignement _align;
+        protected string _text;
+		protected FontSurface _fontSurface;
+        protected TextAlignement _align;
 		
 		
 		public TextAlignement TextAlignement
@@ -102,7 +102,7 @@ namespace Tortoise.Client.Rendering.GUI
 			_fontSurface = fontsurface;
 		}
 		
-		internal override void Redraw_PreRenderd()
+		protected override void Redraw_PreRenderd()
 		{
 			if (_preRenderd != null)
 			{
@@ -128,7 +128,7 @@ namespace Tortoise.Client.Rendering.GUI
             Display.RenderTarget = previousBuffer;
 		}
 		
-		private Point TextDestination()
+		protected Point TextDestination()
 		{
 			Size textSize = _fontSurface.MeasureString(_text);
 			Point position = new Point(0,0);

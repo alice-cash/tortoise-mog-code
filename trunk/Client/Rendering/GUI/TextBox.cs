@@ -65,7 +65,7 @@ namespace Tortoise.Client.Rendering.GUI
 		//private Timing.StopWatch _repeaterTimer;
 		private bool _showMarker;
 		
-		internal bool _allowNewLines = false;		
+		protected bool _allowNewLines = false;		
 		
 		public event System.EventHandler<KeyPressed> CancelCharacterInput;
 		
@@ -134,9 +134,9 @@ namespace Tortoise.Client.Rendering.GUI
 			
 			
 		}
-		
-		
-		internal override void Tick(TickEventArgs e)
+
+
+        internal override void Tick(TickEventArgs e)
 		{
 			_visibleText = Text;
 			if (_usePasswordChar)
@@ -189,8 +189,8 @@ namespace Tortoise.Client.Rendering.GUI
             }*/
 			base.Tick(e);
 		}
-		
-		internal override bool OnMouseUp(MouseEventArgs e)
+
+        internal override bool OnMouseUp(MouseEventArgs e)
 		{
 			_threadSafety.EnforceThreadSafety();
 			if(IsPointOver(e.MousePosition))
@@ -201,14 +201,14 @@ namespace Tortoise.Client.Rendering.GUI
 			}
 			return false;
 		}
-		
-		internal override bool OnKeyboardDown(KeyEventArgs e)
+
+        internal override bool OnKeyboardDown(KeyEventArgs e)
 		{
 			if(!HasFocus) return false;
 			return doKeybordDown(e);
 		}
-		
-		internal override bool OnKeyboardUp(KeyEventArgs e)
+
+        internal override bool OnKeyboardUp(KeyEventArgs e)
 		{
 			if(!HasFocus) return false;
 			//we base all work on the up part.
@@ -286,8 +286,8 @@ namespace Tortoise.Client.Rendering.GUI
 					break;
 			}
 		}
-		
-		internal override void Render()
+
+        internal override void Render()
 		{
 			if(!_visible)
 				return;
@@ -302,7 +302,7 @@ namespace Tortoise.Client.Rendering.GUI
 			}
 		}
 		
-		internal override void Redraw_PreRenderd()
+		protected override void Redraw_PreRenderd()
 		{
 			if (_preRenderd != null)
 			{

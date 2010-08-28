@@ -44,7 +44,7 @@ namespace Tortoise.Client.Rendering.GUI
 {
 	public class Container : Control
 	{
-		internal ControlContainer _Items;
+		protected ControlContainer _Items;
 		private bool _inFocusChange = false;
 
 		public ControlContainer Controls
@@ -88,6 +88,7 @@ namespace Tortoise.Client.Rendering.GUI
 
 		public override void Init()
 		{
+            if (_inited) return;
 			base.Init();
 			_Items = new ControlContainer();
 
@@ -110,7 +111,7 @@ namespace Tortoise.Client.Rendering.GUI
 					Item.Load();
 		}
 
-		internal override void Tick(TickEventArgs e)
+        internal override void Tick(TickEventArgs e)
 		{
 			foreach (var Item in Controls)
 			{
@@ -151,7 +152,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// <summary>
 		/// Renders the control to the screen.
 		/// </summary>
-		internal override void Render()
+        internal override void Render()
 		{
 			base.Render();
 
@@ -164,7 +165,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// <summary>
 		/// A MouseButton Event, returns true if the event is used, and false if it isn't.
 		/// </summary>
-		internal override bool OnMouseDown(MouseEventArgs e)
+        internal override bool OnMouseDown(MouseEventArgs e)
 		{
 			bool go = false;
 			foreach (Control Item in _Items.Values.Reverse())
@@ -178,7 +179,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// <summary>
 		/// A MouseButton Event, returns true if the event is used, and false if it isn't.
 		/// </summary>
-		internal override bool OnMouseUp(MouseEventArgs e)
+        internal override bool OnMouseUp(MouseEventArgs e)
 		{
 
 			bool go = false;
@@ -193,7 +194,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// <summary>
 		/// A MouseMove Event, returns true if the event is used, and false if it isn't.
 		/// </summary>
-		internal override bool OnMouseMove(MouseEventArgs e)
+        internal override bool OnMouseMove(MouseEventArgs e)
 		{
 			bool go = false;
 			foreach (Control Item in _Items.Values.Reverse())
@@ -207,7 +208,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// <summary>
 		/// A Keyboard Event, returns true if the event is used, and false if it isn't.
 		/// </summary>
-		internal override bool OnKeyboardDown(KeyEventArgs e)
+        internal override bool OnKeyboardDown(KeyEventArgs e)
 		{
 			bool go = false;
 			foreach (Control Item in _Items.Values.Reverse())
@@ -222,7 +223,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// <summary>
 		/// A Keyboard Event, returns true if the event is used, and false if it isn't.
 		/// </summary>
-		internal override bool OnKeyboardUp(KeyEventArgs e)
+        internal override bool OnKeyboardUp(KeyEventArgs e)
 		{
 			bool go = false;
 			foreach (Control Item in _Items.Values.Reverse())

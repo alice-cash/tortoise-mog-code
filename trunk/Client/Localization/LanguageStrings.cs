@@ -64,7 +64,7 @@ namespace Tortoise.Client.localization
 		public string ErrorNoLocal{get{return _errorNoLocal;}}
 		public string LanguageName{get{return _languageName;}}
 		
-		public HashDictionary<string, string> Language{get; internal set;}
+		public HashDictionary<string, string> Language{get; protected set;}
 		
 		public string GetFormatedString(string name, params object[] args)
 		{

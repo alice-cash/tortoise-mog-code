@@ -46,34 +46,34 @@ namespace Tortoise.Client.Rendering.GUI
 	/// </summary>
 	public abstract class Control
 	{
-		#region internal Varables
-		internal Rectangle _area = new Rectangle();
-		internal Color _backgroundColor = Color.White;
-		internal Surface _backgroundImage = null;
-		internal bool _visible = true;
+		#region protected Varables
+		protected Rectangle _area = new Rectangle();
+		protected Color _backgroundColor = Color.White;
+		protected Surface _backgroundImage = null;
+		protected bool _visible = true;
 
 		//Mark items that have changed so they can be updated next time their renderd.
 		/*
-		internal bool _changed = false;
-		internal bool _chancedLocation = false;
-		internal bool _chancedSize = false;
-		internal bool _chancedBackgroundColor = false;
+		protected bool _changed = false;
+		protected bool _chancedLocation = false;
+		protected bool _chancedSize = false;
+		protected bool _chancedBackgroundColor = false;
 		 */
-		//internal ControlContainer _parent = null;
+		//protected ControlContainer _parent = null;
 
-		internal bool _inited = false;
-		internal bool _loaded = false;
+		protected bool _inited = false;
+		protected bool _loaded = false;
 		
-		internal Container _parent;
+		protected Container _parent;
 		
-		internal FrameBuffer _preRenderd;
-		internal bool _redrawPreRenderd = false;
+		protected FrameBuffer _preRenderd;
+		protected bool _redrawPreRenderd = false;
 		
 		
-		internal bool _hasFocus;
+		protected bool _hasFocus;
 		
-		internal ThreadSafetyEnforcer _threadSafety;
-		internal Invoker _invoker;
+		protected ThreadSafetyEnforcer _threadSafety;
+		protected Invoker _invoker;
 		#endregion
 		
 		#region Event Handlers
@@ -88,25 +88,25 @@ namespace Tortoise.Client.Rendering.GUI
 		
 		public System.EventHandler TickEvent;
 
-		internal bool doMouseDown(MouseEventArgs e)
+		protected bool doMouseDown(MouseEventArgs e)
 		{
 			if (MouseDown != null)
 				MouseDown(this, e);
 			return MouseDown != null;
 		}
-		internal bool doMouseUp(MouseEventArgs e)
+		protected bool doMouseUp(MouseEventArgs e)
 		{
 			if (MouseUp != null)
 				MouseUp(this, e);
 			return MouseUp != null;
 		}
-		internal bool doMouseMove(MouseEventArgs e)
+		protected bool doMouseMove(MouseEventArgs e)
 		{
 			if (MouseMove != null)
 				MouseMove(this, e);
 			return MouseMove != null;
 		}
-		internal bool doKeybordDown(KeyEventArgs e)
+		protected bool doKeybordDown(KeyEventArgs e)
 		{
 			//Keybord events should never be triggerd in the base control event.
 			return false;
@@ -114,7 +114,7 @@ namespace Tortoise.Client.Rendering.GUI
 			//    KeybordDown(this, e);
 			//return KeybordDown != null;
 		}
-		internal bool doKeybordUp(KeyEventArgs e)
+		protected bool doKeybordUp(KeyEventArgs e)
 		{
 			//Keybord events should never be triggerd in the base control event.
 			return false;
@@ -122,18 +122,18 @@ namespace Tortoise.Client.Rendering.GUI
 			//    KeybordUp(this, e);
 			//return KeybordUp != null;
 		}
-		internal void doResize(ResizeEventArgs e)
+		protected void doResize(ResizeEventArgs e)
 		{
 			if (Resized != null)
 				Resized(this, e);
 		}
-		internal void doMove(MovedEventArgs e)
+		protected void doMove(MovedEventArgs e)
 		{
 			if (Moved != null)
 				Moved(this, e);
 		}
 		
-		internal void doFocusChange()
+		protected void doFocusChange()
 		{
 			if(FocusChanged != null)
 				FocusChanged(this, EventArgs.Empty);
@@ -141,7 +141,7 @@ namespace Tortoise.Client.Rendering.GUI
 		#endregion
 		
 		#region Properties
-		public string Name { get; internal set; }
+		public string Name { get; protected set; }
 		
 		public bool HasFocus
 		{
@@ -196,7 +196,7 @@ namespace Tortoise.Client.Rendering.GUI
 		public Container Parent
 		{
 			get { return _parent; }
-			internal set
+            internal set
 			{
 				_threadSafety.EnforceThreadSafety();
 				_parent = value;
@@ -395,7 +395,7 @@ namespace Tortoise.Client.Rendering.GUI
 				Unload();
 		}
 
-		internal virtual void Tick(TickEventArgs e)
+        internal virtual void Tick(TickEventArgs e)
 		{
 			_threadSafety.EnforceThreadSafety();
 			
@@ -431,7 +431,7 @@ namespace Tortoise.Client.Rendering.GUI
 		/// <summary>
 		/// Redraws the PreRenderd Surface, recomended to override this instead of Render.
 		/// </summary>
-		internal virtual void Redraw_PreRenderd()
+		protected virtual void Redraw_PreRenderd()
 		{
 			if (_preRenderd != null)
 			{
@@ -511,8 +511,8 @@ namespace Tortoise.Client.Rendering.GUI
 		}
 		#endregion
 		
-		#region internal Methods
-		internal bool IsPointOver(Point pos)
+		#region protected Methods
+		protected bool IsPointOver(Point pos)
 		{
 			return Area.Contains(pos);
 		}
