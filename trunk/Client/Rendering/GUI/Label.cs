@@ -109,9 +109,10 @@ namespace Tortoise.Client.Rendering.GUI
 				_preRenderd.Dispose();
 				_preRenderd = null;
 			}
-			
-			
-			_preRenderd = new FrameBuffer(Size);
+
+
+            FrameBuffer previousBuffer = Display.RenderTarget;
+            _preRenderd = new FrameBuffer(Size);
 			Display.RenderTarget = _preRenderd;
 			Display.BeginFrame();
 
@@ -124,7 +125,7 @@ namespace Tortoise.Client.Rendering.GUI
 			
 			Display.EndFrame();
 			Display.FlushDrawBuffer();
-			Display.RenderTarget = Window.MainWindow.FrameBuffer;
+            Display.RenderTarget = previousBuffer;
 		}
 		
 		private Point TextDestination()

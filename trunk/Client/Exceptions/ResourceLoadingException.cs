@@ -1,20 +1,20 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 7/18/20010
- * Time: 1:10 PM
+ * Date: 8/28/2010
+ * Time: 3:31 AM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
  * 
- *	1. Redistributions of source code must retain the above copyright notice, this list of
- *	   conditions and the following disclaimer.
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
  * 
- *	2. Redistributions in binary form must reproduce the above copyright notice, this list
- *	   of conditions and the following disclaimer in the documentation and/or other materials
- *	   provided with the distribution.
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY Matthew Cash ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -30,31 +30,25 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
-
 using System;
 
-
-namespace Tortoise.Shared.Net
+namespace Tortoise.Client.Exceptions
 {
-    public enum PacketID : ushort
-    {
-        Null = 0,
-        ModulePacket,
-        Message,
-    }
+	/// <summary>
+	/// Desctiption of ResourceLoadingException.
+	/// </summary>
+	public class ResourceLoadingException : Exception
+	{
+		public ResourceLoadingException()
+		{
+		}
 
-    public static class PacketIDHelper
-    {
-        public static bool TryParse(this PacketID pID, ushort value)
-        {
-            if (!Enum.IsDefined(typeof(PacketID), value))
-                return false;
-            pID = (PacketID)value;
-            return true;
-        }
-        public static ushort Value(this PacketID pID)
-        {
-            return (ushort)pID;
-        }
-    }
+	 	public ResourceLoadingException(string message) : base(message)
+		{
+		}
+
+		public ResourceLoadingException(string message, Exception innerException) : base(message, innerException)
+		{
+		}
+	}
 }
