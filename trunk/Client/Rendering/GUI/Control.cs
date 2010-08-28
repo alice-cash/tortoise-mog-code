@@ -49,6 +49,7 @@ namespace Tortoise.Client.Rendering.GUI
 		#region internal Varables
 		internal Rectangle _area = new Rectangle();
 		internal Color _backgroundColor = Color.White;
+		internal Surface _backgroundImage = null;
 		internal bool _visible = true;
 
 		//Mark items that have changed so they can be updated next time their renderd.
@@ -169,6 +170,12 @@ namespace Tortoise.Client.Rendering.GUI
 				}
 
 			}
+		}
+		
+		public Surface BackgroundImage
+		{
+			get{return _backgroundImage;}
+			set{_backgroundImage = value;}
 		}
 
 		public bool Loaded
@@ -437,6 +444,8 @@ namespace Tortoise.Client.Rendering.GUI
 			Display.BeginFrame();
 			if(_backgroundColor != Color.Transparent)
 				Display.Clear(_backgroundColor);
+			if(_backgroundImage != null)
+				_backgroundImage.Draw();
 			Display.EndFrame();
 			Display.RenderTarget = Window.MainWindow.FrameBuffer;
 
