@@ -51,10 +51,10 @@ namespace Tortoise.Client.Rendering
 		//or an instance of the class is created
 		static Window()
 		{
-			AvailableScreens = new Dictionary<string, IScreen>();
+			AvailableScreens = new Dictionary<string, Screen>();
 		}
 		
-		public static Dictionary<string, IScreen> AvailableScreens{get; private set;}
+		public static Dictionary<string, Screen> AvailableScreens{get; private set;}
 		public static DisplayWindow MainWindow{get; private set;}
 		public static Window Instance {get; private set;}
 		
@@ -64,7 +64,7 @@ namespace Tortoise.Client.Rendering
 		private ThreadSafetyEnforcer _threadSafety;
 		private Invoker _invoker;
 		
-		public IScreen CurrentScreen{get; set;}
+		public Screen CurrentScreen{get; set;}
 		public Window()
 		{
 			Instance = this;
@@ -103,7 +103,6 @@ namespace Tortoise.Client.Rendering
 			if(!AvailableScreens.ContainsKey("MainMenu"))
 				throw new Exception("No module has set a MainMenu screen!");
 			CurrentScreen = AvailableScreens["MainMenu"];
-			CurrentScreen.Init();
 			CurrentScreen.Load();
 			
 			
@@ -196,8 +195,8 @@ namespace Tortoise.Client.Rendering
 			{
 				if(!AvailableScreens.ContainsKey(screenName))
 					throw new Exception(string.Format("{0} does not exsist!", screenName));
+                CurrentScreen.Unload();
 				CurrentScreen = AvailableScreens[screenName];
-				CurrentScreen.Init();
 				CurrentScreen.Load();
 				if(ScreenChanged!= null)
 					ScreenChanged(this, EventArgs.Empty);

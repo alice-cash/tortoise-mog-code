@@ -36,28 +36,114 @@ using AgateLib.Geometry;
 
 namespace Tortoise.Client.Rendering.GUI
 {
-	/// <summary>
-	/// Desctiption of Button.
-	/// </summary>
-	public class Button : Label
-	{
-		public Button(string name, string text, Point location, Size size, FontSurface fontsurface)
-			: this(name, text, new Rectangle(location, size), fontsurface)
-		{
+    /// <summary>
+    /// Desctiption of Button.
+    /// </summary>
+    public class Button : Label
+    {
+        public Surface MouseOverTexture { get; set; }
+        public Surface MouseDownTexture { get; set; }
 
-		}
+        private bool _useDownTexture;
+        private bool _useOverTexture;
 
-		public Button(string name, string text, int x, int y, int width, int height, FontSurface fontsurface)
-			: this(name,text, new Rectangle(x, y, width, height), fontsurface)
-		{
+        internal override bool OnMouseMove(MouseEventArgs e)
+        {
+            _threadSafety.EnforceThreadSafety();
+            if (!IsPointOver(e.MousePosition))
+            {
+                _redrawPreRenderd = _useOverTexture == true || _useDownTexture == true;
+                _useOverTexture = false;
+                _useDownTexture = false;
 
-		}
+                return false;
+            }
+            _redrawPreRenderd = _useOverTexture == false;
+            _useOverTexture = true;
+            return doMouseMove(e);
+        }
 
-		public Button(string name, string text, Rectangle area,  FontSurface fontsurface)
-			: base(name, text, area, fontsurface)
-		{
-			
-		}
-		
-	}
+        internal override bool OnMouseDown(MouseEventArgs e)
+        {
+            _threadSafety.EnforceThreadSafety();
+            if (!IsPointOver(e.MousePosition)) return false;
+
+            _redrawPreRenderd = _useDownTexture == false || _useOverTexture == true;
+            _useOverTexture = false;
+            _useDownTexture = true;
+            return doMouseDown(e);
+        }
+
+        internal override bool OnMouseUp(MouseEventArgs e)
+        {
+            _threadSafety.EnforceThreadSafety();
+            if (!IsPointOver(e.MousePosition)) return false;
+            _redrawPreRenderd = _useOverTexture == true;
+            _useOverTexture = false;
+            return doMouseUp(e);
+        }
+
+        public Button(string name, string text, Point location, Size size, FontSurface fontsurface)
+            : this(name, text, new Rectangle(location, size), fontsurface)
+        {
+
+        }
+
+        public Button(string name, string text, int x, int y, int width, int height, FontSurface fontsurface)
+            : this(name, text, new Rectangle(x, y, width, height), fontsurface)
+        {
+
+        }
+
+        public Button(string name, string text, Rectangle area, FontSurface fontsurface)
+            : base(name, text, area, fontsurface)
+        {
+
+        }
+
+        public override void Load()
+        {
+            base.Load();
+            _useDownTexture = false;
+            _useOverTexture = false;
+        }
+
+        protected override void Redraw_PreRenderd()
+        {
+            if (_preRenderd != null)
+            {
+                _preRenderd.Dispose();
+                _preRenderd = null;
+            }
+
+
+            FrameBuffer previousBuffer = Display.RenderTarget;
+            _preRenderd = new FrameBuffer(Size);
+            Display.RenderTarget = _preRenderd;
+            Display.BeginFrame();
+
+            if (_backgroundColor != Color.Transparent)
+                Display.Clear(_backgroundColor);
+
+            if (_backgroundImage != null &&
+                !(_useOverTexture == true && MouseOverTexture != null) &&
+                !(_useDownTexture == true && MouseDownTexture != null))
+                _backgroundImage.Draw();
+
+            if (_useOverTexture == true && MouseOverTexture != null &&
+                !(_useDownTexture == true && MouseDownTexture != null))
+                MouseOverTexture.Draw();
+
+            if (_useDownTexture == true && MouseDownTexture != null)
+                MouseDownTexture.Draw();
+
+
+            _fontSurface.Color = Color.Black;
+            _fontSurface.DrawText(TextDestination(), _text);
+
+            Display.EndFrame();
+            Display.FlushDrawBuffer();
+            Display.RenderTarget = previousBuffer;
+        }
+    }
 }

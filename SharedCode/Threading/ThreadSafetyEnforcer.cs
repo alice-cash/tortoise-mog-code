@@ -41,9 +41,9 @@ namespace Tortoise.Shared.Threading
 	public class ThreadSafetyEnforcer
 	{
 		//When this is false, this class is absoutly useless... Other than IsSameThread()
-		internal bool _enforceThreadSafeCalls;
-		internal int _safeThreadID;
-		internal string _identifier;
+		protected bool _enforceThreadSafeCalls;
+		protected int _safeThreadID;
+		protected string _identifier;
 		
 		public bool EnforcingThreadSafety
 		{
@@ -102,7 +102,7 @@ namespace Tortoise.Shared.Threading
 			return  _safeThreadID == GetManagedThreadId();
 		}
 		
-		internal int GetManagedThreadId()
+		protected int GetManagedThreadId()
 		{
 			return Thread.CurrentThread.ManagedThreadId;
 		}
