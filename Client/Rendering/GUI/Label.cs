@@ -101,9 +101,9 @@ namespace Tortoise.Client.Rendering.GUI
 			Text = text;
 			_fontSurface = fontsurface;
 		}
-				
+		
 		internal override void Redraw_PreRenderd()
-		{		
+		{
 			if (_preRenderd != null)
 			{
 				_preRenderd.Dispose();
@@ -117,9 +117,11 @@ namespace Tortoise.Client.Rendering.GUI
 
 			if(_backgroundColor != Color.Transparent)
 				Display.Clear(_backgroundColor);
+			if(_backgroundImage != null)
+				_backgroundImage.Draw();
 			_fontSurface.Color = Color.Black;
 			_fontSurface.DrawText(TextDestination(), _text);
-		
+			
 			Display.EndFrame();
 			Display.FlushDrawBuffer();
 			Display.RenderTarget = Window.MainWindow.FrameBuffer;
