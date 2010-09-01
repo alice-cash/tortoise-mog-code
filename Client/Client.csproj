@@ -115,6 +115,7 @@
     <Compile Include="Collection\LimitedList.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="Exceptions\ConsoleException.cs" />
+    <Compile Include="Exceptions\GUIException.cs" />
     <Compile Include="Exceptions\InvalidVarableNameExceptions.cs" />
     <Compile Include="Exceptions\ModuleLoadException.cs" />
     <Compile Include="Exceptions\ResourceLoadingException.cs" />

@@ -43,18 +43,19 @@ namespace Tortoise.Client
 		public const string GameName = "Tortoise Demo";
 		public const int ScreenHeight = 600, ScreenWidth = 800;
 		static Window MainWindow = null;
-		//public static 
-		public static void Main(string[] args)
+
+        public static void Main(string[] args)
 		{
+
 			Debug.Listeners.Add(new ConsoleTraceListener());
-			//we are cheap and we just gona set it to the first language file for now
+			//we are cheap and we just going to set it to the first language file for now
 			//TODO: Make it select based on either a default or the systems current language.
 			localization.Default.Strings = localization.LanguageStrings.GetAvalableLanguages()[0];
 			ModuleInfo.LoadModules();
 			
 			
 			MainWindow = new Window();
-			//This blocks untill the window is closed.
+			//This blocks until the window is closed.
 			MainWindow.Run();
 		}
 	}

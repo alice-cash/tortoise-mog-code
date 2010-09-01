@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 8/3/2010
- * Time: 7:26 PM
+ * Date: 8/28/2010
+ * Time: 4:37 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -34,22 +34,25 @@ using System;
 
 namespace Tortoise.Client.Exceptions
 {
-	/// <summary>
-	/// Desctiption of ConsoleException.
-	/// </summary>
-	public class ConsoleException : Exception
-	{
-		public ConsoleException()
-		{
-		}
+    /// <summary>
+    /// Description of GUIException.
+    /// </summary>
+    public class GUIException : Exception
+    {
+        public GUIException()
+        {
+        }
 
-	 	public ConsoleException(string message) : base(message)
-		{
-		}
+        public GUIException(string message)
+            : base(message)
+        {
+        }
 
-		public ConsoleException(string message, Exception innerException) : base(message, innerException)
-		{
-		}
+        public GUIException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
 
-	}
+
+    }
 }
