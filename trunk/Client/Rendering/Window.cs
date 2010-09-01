@@ -63,7 +63,8 @@ namespace Tortoise.Client.Rendering
 		
 		private ThreadSafetyEnforcer _threadSafety;
 		private Invoker _invoker;
-		
+
+        public bool GameRunning { get; set; }
 		public Screen CurrentScreen{get; set;}
 		public Window()
 		{
@@ -98,6 +99,8 @@ namespace Tortoise.Client.Rendering
 			{
 				CurrentScreen.OnResize();
 			};
+
+            
 			
 			//This selects our first screen, and Loads it.
 			if(!AvailableScreens.ContainsKey("MainMenu"))
@@ -143,11 +146,17 @@ namespace Tortoise.Client.Rendering
 			Timing.StopWatch frameTimer = new Timing.StopWatch(true);
 			Timing.StopWatch TotalTimer = new Timing.StopWatch(true);
 			LimitedList<double> lastFrameTimes = new LimitedList<double>(30,0);
-			
-			
 
-			while (MainWindow.IsClosed == false)
+
+            GameRunning = true;
+            while (GameRunning)
 			{
+                if (MainWindow.IsClosed)
+                {
+                    GameRunning = false;
+                    break;
+                }
+
 				_invoker.PollInvokes();
 				CurrentScreen.Tick(tickEventData);
 				
@@ -164,11 +173,11 @@ namespace Tortoise.Client.Rendering
 
 				Display.EndFrame();
 				
-				//Pureley for debuging purposes ATM
+				//Purely for debugging purposes ATM
 				//TODO: Remove and replace with text based info in the window.
 				MainWindow.Title = tickEventData.FPS.ToString("f2") + " fps - " +  tickEventData.AverageFrameTime.ToString("f2") + " ms";
 				
-				//has somthing to do with the agatelib, probably to poll events for the window and such
+				//has something to do with the Agatelib, probably to poll events for the window and such
 				Core.KeepAlive();
 				
 				//All of this is just for calculating the FPS and stuff.
@@ -181,6 +190,12 @@ namespace Tortoise.Client.Rendering
 				tickEventData.TotalSeconds = TotalTimer.TotalSeconds;
 				tickEventData.TotalMilliseconds = TotalTimer.TotalMilliseconds;
 			}
+
+            foreach (Screen screen in AvailableScreens.Values)
+                if (screen.Loaded)
+                    screen.Unload();
+
+            //Code to run when everything else is unloaded should go here
 		}
 		
 
@@ -194,7 +209,7 @@ namespace Tortoise.Client.Rendering
 			System.Action<object> id = (object nothing) =>
 			{
 				if(!AvailableScreens.ContainsKey(screenName))
-					throw new Exception(string.Format("{0} does not exsist!", screenName));
+					throw new Exception(string.Format("{0} does not exist!", screenName));
                 CurrentScreen.Unload();
 				CurrentScreen = AvailableScreens[screenName];
 				CurrentScreen.Load();

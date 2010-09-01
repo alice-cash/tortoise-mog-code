@@ -69,8 +69,8 @@ namespace Tortoise.Client.localization
 		public string GetFormatedString(string name, params object[] args)
 		{
 			if(Language.Contains(name))
-				return string.Format(Language[name], args);
-			return string.Format(ErrorNoLocal, name);
+				return string.Format(Language[name], args).Trim();
+            return string.Format(ErrorNoLocal, name).Trim();
 		}
 		
 
@@ -78,22 +78,31 @@ namespace Tortoise.Client.localization
 		{
 			Language = new C5.HashDictionary<string, string>();
 			string type, text, line;
+            int pos;
 			foreach(string l in File.ReadAllLines(fileName))
 			{
 				line = l.Trim();
 				if(line.StartsWith("#")) continue;
-				if(!line.Contains(" ")) continue;
-				
-				type = line.Substring(0, line.IndexOf(' '));
+                if (!line.Contains(" ") && !line.Contains("\t")) continue;
+
+                //We need to stop at the first space or \t.
+                for (pos = 0; pos < line.Length; pos++)
+                {
+                    if (line[pos] == ' ' || line[pos] == '\t')
+                        break;
+                }
+
+				type = line.Substring(0, pos);
 				if(Language.Contains(type)) continue;
-				text = line.Substring(line.IndexOf(' '));
+
+				text = line.Substring(pos);
 				text = text.Trim();
 				text = text.Replace("\\n","\n");
 				Language.Add(type, text);
 			}
 			
 			if(Language.Contains("Error_No_Local")) _errorNoLocal = Language["Error_No_Local"];
-			if(Language.Contains("Language_Name")) _errorNoLocal = Language["Language_Name"];
+			if(Language.Contains("Language_Name")) _languageName = Language["Language_Name"];
 			
 		}
 		

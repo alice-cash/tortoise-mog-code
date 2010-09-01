@@ -82,6 +82,7 @@ namespace Tortoise.Client.Module
     class MainMenu : Screen
     {
 
+        public static Action<string, string> LoginRequest;
 
         public MainMenu()
         {
@@ -97,28 +98,93 @@ namespace Tortoise.Client.Module
             base.Init();
 
             BackgroundColor = Color.Wheat;
-            
+
             Label title = new Label("_title", Program.GameName, new Point(10, 10), new Size(Program.ScreenWidth - 20, 40), FontSurface.AgateSans24);
+            title.TextAlignement = TextAlignement.Center;
+            title.BackgroundColor = Color.Transparent;
 
             string aboutText = localization.Default.Strings.GetFormatedString("Main_Menu_Credits");
-            Point aboutPos = new Point(Program.ScreenWidth - 80, Program.ScreenHeight - 40);
+            Point aboutPos = new Point(Program.ScreenWidth - 60, Program.ScreenHeight - 25);
 
             Surface aboutBackground = FrameBuilder.Frame1.CreateFrame(new Size(60, 25));
+            Surface aboutOver = FrameBuilder.Frame4.CreateFrame(new Size(60, 25));
+            Surface aboutDown = FrameBuilder.Frame5.CreateFrame(new Size(60, 25));
 
             Button about = new Button("_about", aboutText, aboutPos, new Size(60, 25), FontSurface.AgateSans10);
             about.BackgroundImage = aboutBackground;
             about.TextAlignement = TextAlignement.Center;
+            about.MouseOverTexture = aboutOver;
+            about.MouseDownTexture = aboutDown;
 
-            title.TextAlignement = TextAlignement.Center;
-            title.BackgroundColor = Color.Transparent;
-
-            about.BackgroundColor = Color.FromArgb(40, Color.Gray);
+            about.BackgroundColor = Color.Transparent;
             about.MouseUp += delegate
             {
                 Window.Instance.ChangeToScreen("About");
             };
 
+
+
+            string exitText = localization.Default.Strings.GetFormatedString("Main_Menu_Exit");
+            Point exitPos = new Point(Program.ScreenWidth / 2 - 30, 500);
+
+            Surface exitBackground = FrameBuilder.Frame1.CreateFrame(new Size(60, 25));
+            Surface exitOver = FrameBuilder.Frame4.CreateFrame(new Size(60, 25));
+            Surface exitDown = FrameBuilder.Frame5.CreateFrame(new Size(60, 25));
+
+            Button exit = new Button("_exit", exitText, exitPos, new Size(60, 25), FontSurface.AgateSans10);
+            exit.BackgroundImage = exitBackground;
+            exit.TextAlignement = TextAlignement.Center;
+            exit.MouseOverTexture = exitOver;
+            exit.MouseDownTexture = exitDown;
+
+            exit.BackgroundColor = Color.Transparent;
+            exit.MouseUp += delegate
+            {
+                Window.Instance.GameRunning = false;
+            };
+
+
+
+            string loginText = localization.Default.Strings.GetFormatedString("Main_Menu_Login");
+            Point loginPos = new Point(Program.ScreenWidth / 2 - 30, 400);
+
+            Surface loginBackground = FrameBuilder.Frame1.CreateFrame(new Size(60, 25));
+            Surface loginOver = FrameBuilder.Frame4.CreateFrame(new Size(60, 25));
+            Surface loginDown = FrameBuilder.Frame5.CreateFrame(new Size(60, 25));
+
+            Button login = new Button("_login", loginText, loginPos, new Size(60, 25), FontSurface.AgateSans10);
+            login.BackgroundImage = loginBackground;
+            login.TextAlignement = TextAlignement.Center;
+            login.MouseOverTexture = loginOver;
+            login.MouseDownTexture = loginDown;
+
+            login.BackgroundColor = Color.Transparent;
+
+            Point usernamePos = new Point(Program.ScreenWidth / 2 - 100, 300);
+            TextBox username = new TextBox("_username", usernamePos, new Size(200, 25));
+            Point passwordPos = new Point(Program.ScreenWidth / 2 - 100, 350);
+            TextBox password = new TextBox("_password", passwordPos, new Size(200, 25));
+            password.PasswordCharacter = '*';
+            password.UsePasswordCharacter = true;
+
+
+            login.MouseUp += delegate
+            {
+                if (LoginRequest == null)
+                    throw new GUIException("LoginRequest was never assigned anything!");
+                LoginRequest(username.Text, password.Text);
+            };
+
+
+
+
+
+            Controls.Add(10, login);
+            Controls.Add(10, username);
+            Controls.Add(10, password);
+
             Controls.Add(10, title);
+            Controls.Add(10, exit);
             Controls.Add(10, about);
 
         }
@@ -133,6 +199,7 @@ namespace Tortoise.Client.Module
             base.Load();
             //This is called right before the window becomes the focused screen.
             //Any code to run should go here.
+            Controls["_username"].HasFocus = true;
         }
 
         public override void Unload()
@@ -140,6 +207,7 @@ namespace Tortoise.Client.Module
             base.Unload();
             //This is called when the window is no longer the focused screen.
             //Any code to run should go here.
+            (Controls["_password"] as TextBox).Text = "";
         }
     }
     /// <summary>
@@ -158,24 +226,25 @@ namespace Tortoise.Client.Module
         /// </summary>
         public override void Init()
         {
-            if (_inited) return;     
+            if (_inited) return;
             //This is called when the window is initially created.
             base.Init();
 
             BackgroundColor = Color.Wheat;
-            
+
             Label title = new Label("_title", Program.GameName, new Point(10, 10), new Size(Program.ScreenWidth - 20, 40), FontSurface.AgateSans24);
 
             string creditText = localization.Default.Strings.GetFormatedString("Credits_Text");
             Label cointents = new Label("_contents", creditText, new Point(0, 0), new Size(Program.ScreenWidth, Program.ScreenHeight), FontSurface.AgateSans10);
 
-            Point returnPos = new Point(Program.ScreenWidth - 250, Program.ScreenHeight - 20);
-            Surface returnBackground = FrameBuilder.Frame1.CreateFrame(new Size(250, 20));
-            Surface returnOver = FrameBuilder.Frame4.CreateFrame(new Size(250, 20));
-            Surface returnDown = FrameBuilder.Frame5.CreateFrame(new Size(250, 20));
+            Point returnPos = new Point(Program.ScreenWidth - 250, Program.ScreenHeight - 25);
+            Surface returnBackground = FrameBuilder.Frame1.CreateFrame(new Size(250, 25));
+            Surface returnOver = FrameBuilder.Frame4.CreateFrame(new Size(250, 25));
+            Surface returnDown = FrameBuilder.Frame5.CreateFrame(new Size(250, 25));
             string returnText = localization.Default.Strings.GetFormatedString("Credits_Return");
-            Button returnButton = new Button("_return", returnText, returnPos, new Size(250, 20), FontSurface.AgateSans10);
+            Button returnButton = new Button("_return", returnText, returnPos, new Size(250, 25), FontSurface.AgateSans10);
             returnButton.BackgroundImage = returnBackground;
+            returnButton.TextAlignement = TextAlignement.Center;
             returnButton.MouseDownTexture = returnDown;
             returnButton.MouseOverTexture = returnOver;
 
@@ -201,7 +270,7 @@ namespace Tortoise.Client.Module
         {
             Size = Window.MainWindow.Size;
         }
-        
+
         public override void Load()
         {
             base.Load();

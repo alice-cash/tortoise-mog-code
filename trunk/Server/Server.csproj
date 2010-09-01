@@ -147,6 +147,7 @@
     <Compile Include="..\SharedCode\Threading\ThreadSafetyEnforcer.cs">
       <Link>Threading\ThreadSafetyEnforcer.cs</Link>
     </Compile>
+    <Compile Include="Console.cs" />
     <Compile Include="Exceptions\ModuleLoadException.cs" />
     <Compile Include="Exceptions\TortoiseFileException.cs" />
     <Compile Include="Exceptions\TortoiseFormatException.cs" />
@@ -158,7 +159,9 @@
     <Compile Include="Text\RandomString.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="XML\LoginServer.cs" />
-    <EmbeddedResource Include="XML\DefaultConfig.xml" />
+    <EmbeddedResource Include="XML\DefaultConfig.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -177,12 +180,5 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Exceptions" />
-    <Folder Include="Exceptions" />
-    <Folder Include="Module" />
-    <Folder Include="IO" />
-    <Folder Include="Collection" />
-    <Folder Include="Threading" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

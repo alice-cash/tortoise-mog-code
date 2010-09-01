@@ -36,15 +36,41 @@ using C5;
 namespace Tortoise.Client.Collection
 {
 	/// <summary>
-	/// This stores a limited number of items, Dequeuing them automaticly once the limit has been met.
+	/// This stores a limited number of items, De-queuing them automatically once the limit has been met.
 	/// </summary>
 	public class LimitedList<T> : ArrayBase<T>
 	{
 		private int _limit;
-		public int Limit{get{return _limit;}}
+        private T _default;
+		public int Limit{
+            get{return _limit;}
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException("Value must be greater than 0");
+                if (value == _limit)
+                    return;
+                if (value < _limit)
+                {
+                    Array.Copy(base.array, 0, base.array, 0, value);
+                }
+                else
+                {
+                    T[] newArray = new T[value];
+                    Array.Copy(base.array, 0, newArray, 0, _limit);
+                    for (int i = _limit; i < value; i++)
+                        newArray[i] = _default;
+
+                    base.array = newArray;
+                }
+                _limit = value;
+                return;
+            }
+        }
 		public LimitedList(int limit, T fillWith): base(limit - 1, EqualityComparer<T>.Default)
 		{
 			_limit = limit;
+            _default = fillWith;
 			for(int i = 0; i < limit; i++)
 				base.array[i] = fillWith;
 			base.size = limit;

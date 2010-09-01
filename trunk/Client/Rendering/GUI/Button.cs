@@ -78,8 +78,9 @@ namespace Tortoise.Client.Rendering.GUI
         {
             _threadSafety.EnforceThreadSafety();
             if (!IsPointOver(e.MousePosition)) return false;
-            _redrawPreRenderd = _useOverTexture == true;
+            _redrawPreRenderd = _useOverTexture == true || _useDownTexture == true;
             _useOverTexture = false;
+            _useDownTexture = false;
             return doMouseUp(e);
         }
 

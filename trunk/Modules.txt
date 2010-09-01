@@ -1,22 +1,24 @@
-﻿As this is a framework, But i would like to have it modular so someone can litrally drop in a file and have new functionality
-To do this, there are several standerds i would like to keep.
+﻿As this is a framework, But i would like to have it modular so someone can literally drop in a file and have new functionality
+To do this, there are several standards i would like to keep.
 
 First:  All modules should be in the Tortoise.{Server or Client}.Module namespace
-Second: Modules that override exsisting ones can have different filenames, but they should 
+Second: Modules that override existing ones can have different filenames, but they should 
 	keep the class name the same.
 For example, Lets say someone makes a more fancy Main Menu. The class name should still be 
 	MainMenu, so if someone has both files in the project, it will throw a compile time error.
 Third: All modules contain a class that inherits ModuleLoader. This class should contain a
-	paramaterless constructor, and will be initated at the start of the application autmaticly.
-	In the Load() function, it is best to check if a value the moduel has already been assigned,
+	paramaterless constructor, and will be imitated at the start of the application automatically.
+	In the Load() function, it is best to check if a value the module has already been assigned,
 	and if so, throw an exception.
 	For example, a MainMenu replacement class would check to make sure the value "MainMenu"
 	isn't set in Window.AvailableScreens.
 
 Here are a list of Classes and Public methods one should expect to see. I am not going to use an 
-interface as that limtis someone a bit and adds more complexity if they want to modify stuff themselves.
+interface as that limits someone a bit and adds more complexity if they want to modify stuff themselves.
 
-All of these are focused on a purly online game.
+All of these are focused on a purely online game. A game whose focus isn't purely online game play may not
+follow these.
+
 Any code should make sure they are null or not set, otherwise the code should throw a ModuleLoadException()
 
 Client:

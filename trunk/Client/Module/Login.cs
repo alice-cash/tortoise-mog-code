@@ -34,6 +34,12 @@ using System;
 using Tortoise.Shared.Net;
 using Tortoise.Shared.IO;
 using Tortoise.Shared.Module;
+using Tortoise.Client.Exceptions;
+using Tortoise.Client.Rendering;
+using Tortoise.Client.Rendering.GUI;
+
+using AgateLib.Geometry;
+using AgateLib.DisplayLib;
 
 namespace Tortoise.Client.Module
 {
@@ -59,8 +65,15 @@ namespace Tortoise.Client.Module
 		{
 			_instance = new Login();
 			Connection.AddModuleHandle(ClientModuleComID, _instance);
-		
-		}
+            if (MainMenu.LoginRequest != null)
+                throw new ModuleLoadException("MainMenu.LoginRequest has already been set!");
+            MainMenu.LoginRequest = _instance.LoginRequest;
+
+            if (Window.AvailableScreens.ContainsKey("LoginStatusScreen"))
+                throw new ModuleLoadException("A LoginStatusScreen screen has already been set!");
+            LoginStatusScreen.Instance = new LoginStatusScreen();
+            Window.AvailableScreens.Add("LoginStatusScreen", LoginStatusScreen.Instance);
+        }
 		
 
 	}
@@ -87,5 +100,55 @@ namespace Tortoise.Client.Module
 		{
 			
 		}
+
+        public void LoginRequest(string username, string password)
+        {
+            Window.Instance.ChangeToScreen("LoginStatusScreen");
+            LoginStatusScreen.Instance.Text = localization.Default.Strings.GetFormatedString("Login_Status_Connecting");
+        }
 	}
+
+    class LoginStatusScreen : Screen
+    {
+        public static LoginStatusScreen Instance;
+        public string Text
+        {
+            get { return (Controls["_contents"] as Label).Text; }
+            set
+            {
+                _threadSafety.EnforceThreadSafety();
+                (Controls["_contents"] as Label).Text = value;
+            }
+        }
+        public override void Init()
+        {
+            BackgroundColor = Color.Wheat;
+            Label cointents = new Label("_contents", "", new Point(0, 0), new Size(Program.ScreenWidth, Program.ScreenHeight), FontSurface.AgateSans10);
+            cointents.TextAlignement = TextAlignement.Center;
+            Controls.Add(10, cointents);
+
+        }
+
+        public void OnResize()
+        {
+            Size = Window.MainWindow.Size;
+        }
+
+        public override void Load()
+        {
+            base.Load();
+            //This is called right before the window becomes the focused screen.
+            //Any code to run should go here.
+        }
+
+        public override void Unload()
+        {
+            base.Unload();
+            //This is called when the window is no longer the focused screen.
+            //Any code to run should go here.
+        }
+
+
+
+    }
 }
