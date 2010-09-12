@@ -147,6 +147,8 @@
     <Compile Include="..\SharedCode\Threading\ThreadSafetyEnforcer.cs">
       <Link>Threading\ThreadSafetyEnforcer.cs</Link>
     </Compile>
+    <Compile Include="Collection\CachedData.cs" />
+    <Compile Include="Collection\CachedDictionary.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="Exceptions\ModuleLoadException.cs" />
     <Compile Include="Exceptions\TortoiseFileException.cs" />

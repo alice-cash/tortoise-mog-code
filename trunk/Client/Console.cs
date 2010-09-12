@@ -31,6 +31,7 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -130,7 +131,7 @@ namespace Tortoise.Client
             }
         }
 
-       
+
 
         public void SetFunc(string name, System.Func<string[], ConsoleResponce> func)
         {
@@ -193,7 +194,7 @@ namespace Tortoise.Client
                 }
                 if (_functions.Contains(name))
                 {
-                    return ExecuteFunc(name, value);
+                    return ExecuteFunc(name, ArgSplit(value, true));
                 }
 
                 return cr;
@@ -238,14 +239,56 @@ namespace Tortoise.Client
                     }
                     else if (_functions.Contains(varableName))
                     {
-                        //TODO: NOT DONE!!!!!!!!!!
-
-                        ExecuteFunc(varableName, VarableArguments.Split(' '));
+                        var result = ExecuteFunc(varableName, ArgSplit(VarableArguments, true));
+                        if (result.Sucess == ConsoleCommandSucess.Failure)
+                            System.Console.WriteLine(result.Value);
                     }
                 }
 
             }
         }
+
+        private static string[] ArgSplit(string args, bool ignoreEmprt = false)
+        {
+            bool instring = false;
+            int escape = 0;
+            List<string> tmpArgs = new List<string>();
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in args)
+            {
+                if (escape > 0) escape--;
+                if (c == ' ' && !instring)
+                {
+                    if (sb.Length != 0 && ignoreEmprt == true || ignoreEmprt == false)
+                    {
+                        tmpArgs.Add(sb.ToString());
+                    }
+                    sb = new StringBuilder();
+                    continue;
+                }
+                if (c == '\\')
+                {
+                    escape += 2;
+                    continue;
+                }
+                if (c == '"' && escape == 0)
+                {
+                    instring = !instring;
+                    continue;
+                }
+
+                sb.Append(c);
+
+            }
+
+            if (sb.Length != 0 && ignoreEmprt == true || ignoreEmprt == false)
+            {
+                tmpArgs.Add(sb.ToString());
+            }
+
+            return tmpArgs.ToArray();
+        }
+
 
         public string GetBacklog(bool IncludeEmptyLines = true)
         {
