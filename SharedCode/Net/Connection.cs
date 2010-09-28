@@ -207,6 +207,8 @@ namespace Tortoise.Shared.Net
 					break;
 				case PacketID.Message:
 					Read_Message();
+                    break;
+                case PacketID.Key:
 					break;
 				case PacketID.ModulePacket:
 					Read_ModulePacket(length);
@@ -214,6 +216,12 @@ namespace Tortoise.Shared.Net
 			}
 		}
 
+
+        void Read_Key()
+        {
+            string tmp;
+            tmp = _sr.ReadString();
+        }
 
 		void Read_Message()
 		{
@@ -237,8 +245,9 @@ namespace Tortoise.Shared.Net
 			if(!_moduleActions.ContainsKey(moduleID))
 			{
 				SyncError();
-				throw new Exception("moduleID not regesterd!");
+				throw new Exception("moduleID not registered!");
 			}
+            
 			//remove 2 from the length because we just read 2 off
 			ByteReader data = new ByteReader(_sr, length - 2);
 			_moduleActions[moduleID].Communication(this, data);

@@ -7,10 +7,11 @@ namespace Tortoise.Server.Collection
 {
     abstract class CachedData<T>
     {
-        DateTime _lastUse;
+        protected DateTime _lastUse;
+        protected bool _indefinite;
         public bool Loaded { get; private set; }
-        private T _value;
-        public T Value
+        protected T _value;
+        public virtual T Value
         {
             get
             {
@@ -34,8 +35,9 @@ namespace Tortoise.Server.Collection
             }
         }
 
-        public virtual void Load();
-        public virtual void Unload();
+        public abstract void Load();
+        public abstract void Unload();
+        public abstract void Save();
 
     }
 }

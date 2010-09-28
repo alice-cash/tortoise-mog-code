@@ -38,87 +38,19 @@ using C5;
 
 namespace Tortoise.Server.Collection
 {
-    //TODO: Tottaly screwwed up, fix
-    class CachedDictionary<K, X, T> : DictionaryBase<K, T> where T: CachedData<X>
+    //TODO: Totally screwed up, fix
+    class CachedDictionary<K, X> : DictionaryBase<K, CachedData<X>>
     {
         int _position;
+        Type _default;
 
-        public CachedDictionary()
+        public CachedDictionary(Type defaultType)
             : base(C5.EqualityComparer<K>.Default)
         {
             _position = 0;
-            
+
         }
 
-        public new void Add(K key, X value)
-        {
-            CachedData<X> newValue = Activator.CreateInstance(typeof(T)) as CachedData<X>;
-            newValue.Value = value;
-            base.Add(key, newValue as T);
-        }
-
-        public override void AddAll<L, W>(IEnumerable<C5.KeyValuePair<L, W>> entries)
-        {
-            base.AddAll<L, W>(entries);
-        }
-
-        /*public override void CopyTo(C5.KeyValuePair<K, CachedData<X>>[] array, int index)
-        {
-            base.CopyTo(array, index);
-        }
-
-        public override bool Find(K key, out CachedData<X> value)
-        {
-            return base.Find(key, out value);
-        }
-
-        public override bool Find(ref K key, out CachedData<X> value)
-        {
-            return base.Find(ref key, out value);
-        }
-
-        public override bool FindOrAdd(K key, ref CachedData<X> value)
-        {
-            return base.FindOrAdd(key, ref value);
-        }
-        public override bool Remove(K key, out CachedData<X> value)
-        {
-            return base.Remove(key, out value);
-        }
-
-        public override CachedData<X> this[K key]
-        {
-            get
-            {
-                return base[key];
-            }
-            set
-            {
-                base[key] = value;
-            }
-        }
-
-        public override bool Update(K key, CachedData<X> value)
-        {
-            return base.Update(key, value);
-        }
-
-        public override bool Update(K key, CachedData<X> value, out CachedData<X> oldvalue)
-        {
-            return base.Update(key, value, out oldvalue);
-        }
-
-        public override bool UpdateOrAdd(K key, CachedData<X> value)
-        {
-            return base.UpdateOrAdd(key, value);
-        }
-
-        public override bool UpdateOrAdd(K key, CachedData<X> value, out CachedData<X> oldvalue)
-        {
-            return base.UpdateOrAdd(key, value, out oldvalue);
-        }
-
-         */
 
         public void Poll(int count = 100)
         {
@@ -132,8 +64,15 @@ namespace Tortoise.Server.Collection
             }
             else
             {
-                
+
             }
+        }
+
+        public override object Clone()
+        {
+            CachedDictionary<K, X> clone = new CachedDictionary<K, X>(_default);
+            clone.AddAll(this);
+            return clone;
         }
     }
 }

@@ -41,6 +41,7 @@ namespace Tortoise.Shared.Net
         Null = 0,
         ModulePacket,
         Message,
+        Key,
     }
 
     public static class PacketIDHelper

@@ -110,6 +110,7 @@ namespace Tortoise.Client.Rendering.GUI
                 _threadSafety.EnforceThreadSafety();
                 if (_text.Length > value.Length)
                     _cursorPosition = value.Length;
+
                 _text = value;
 
                 //_textChanged = true;
@@ -239,7 +240,7 @@ namespace Tortoise.Client.Rendering.GUI
                     if (_cursorPosition > 0)
                     {
                         Text = Text.Remove(_cursorPosition - 1, 1);
-                        _cursorPosition -= 1;
+                        //_cursorPosition -= 1;
                     }
                     break;
                 case (KeyCode.Delete):

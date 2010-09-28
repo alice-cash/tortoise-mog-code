@@ -77,22 +77,22 @@ namespace Tortoise.Server
 			#endif
 			//add the diagnostic debug output to console.
 			Debug.Listeners.Add(new ConsoleTraceListener());
-			//Load up the configeration file
+			//Load up the configuration file
 			try{
 				XML.ServerConfig.LoadConfig();
 			} catch(TortoiseMissingResourceException ex)
 			{
-				Console.WriteLine("The server could not load the embeded resource. Please check following embeded resource: {0}", ex.Data["ResourceName"]);
+				Console.WriteLine("The server could not load the embedded resource. Please check following embedded resource: {0}", ex.Data["ResourceName"]);
 				return;
 			}
 			catch (TortoiseFileException ex)
 			{
-				Console.WriteLine("The server could not load or create the configeration file. More information: {0}", ex.InnerException.ToString());
+				Console.WriteLine("The server could not load or create the configuration file. More information: {0}", ex.InnerException.ToString());
 				return;
 			}
 			catch (InvalidOperationException ex)
 			{
-				Console.WriteLine("An uknown error occured during deserialization. More information: {0}", ex.InnerException.ToString());
+				Console.WriteLine("An unknown error occurred during deserialization. More information: {0}", ex.InnerException.ToString());
 				return;
 			}
 			if(XML.ServerConfig.Instance.MysqlUser == "{EDIT ME}" ||
@@ -108,14 +108,10 @@ namespace Tortoise.Server
 			
 			ModuleInfo.LoadModules();
 			
-			//Start the various Listiners.
+			//Start the various Listeners.
 			Server.Connections.ServerHandle.CreateInstance();
 
 			Server.Connections.ClientHandle.CreateInstance();
-			#if DEBUG
-			Console.WriteLine("Press a key...");
-			Console.ReadKey(true);
-			#endif
 		}
 	}
 }

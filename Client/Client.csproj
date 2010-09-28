@@ -64,6 +64,9 @@
     <Compile Include="..\SharedCode\Collection\SortedList.cs">
       <Link>Collection\SortedList.cs</Link>
     </Compile>
+    <Compile Include="..\SharedCode\ExecutionState.cs">
+      <Link>ExecutionState.cs</Link>
+    </Compile>
     <Compile Include="..\SharedCode\IO\ByteReader.cs">
       <Link>IO\ByteReader.cs</Link>
     </Compile>
