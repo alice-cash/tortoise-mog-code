@@ -2,6 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SharedCode", "SharedCode", "{DF44B900-3E66-4601-9267-BDBC81A61723}"
+	ProjectSection(SolutionItems) = preProject
+		SharedCode\ExecutionState.cs = SharedCode\ExecutionState.cs
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Threading", "Threading", "{91FB6C9F-7072-4030-B00E-5801E8EAFD5C}"
 	ProjectSection(SolutionItems) = preProject

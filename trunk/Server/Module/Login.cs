@@ -38,7 +38,7 @@ using Tortoise.Shared.Net;
 
 namespace Tortoise.Server.Module
 {
-	protected class LoginLoader : ModuleLoader
+	class LoginLoader : ModuleLoader
 	{
 		public const ushort ClientModuleComID = 10010;
 		public const ushort ServerModuleComID = 20010;
