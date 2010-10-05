@@ -96,12 +96,12 @@ namespace Tortoise.Server.Connections
 			{
 				if (_listiner.Pending())
 				{
-					AcceptConnection(_listiner.AcceptSocket());
+                    AcceptConnection(_listiner.AcceptTcpClient());
 				}
 
 				if (_secondaryListinerActive && _secondaryListiner.Pending())
 				{
-                    AcceptConnection(_secondaryListiner.AcceptSocket());
+                    AcceptConnection(_secondaryListiner.AcceptTcpClient());
 				}
 
 				foreach (var c in _clients)
@@ -111,8 +111,8 @@ namespace Tortoise.Server.Connections
 			}
 
 		}
-		
-		private void AcceptConnection(Socket client)
+
+        private void AcceptConnection(TcpClient client)
 		{
 			Connection Conn = new Connection(client);
 			_clients.Add(Conn);

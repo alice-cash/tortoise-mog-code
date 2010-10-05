@@ -16,7 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Threading", "Threading", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Net", "Net", "{B2151312-57FD-47AF-825D-59AE1BCA8B5F}"
 	ProjectSection(SolutionItems) = preProject
-		SharedCode\Net\Connection.cs = SharedCode\Net\Connection.cs
 		SharedCode\Net\ConnectionState.cs = SharedCode\Net\ConnectionState.cs
 		SharedCode\Net\MessageEventArgs.cs = SharedCode\Net\MessageEventArgs.cs
 		SharedCode\Net\MessageID.cs = SharedCode\Net\MessageID.cs

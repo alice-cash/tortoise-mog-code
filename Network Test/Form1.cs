@@ -40,7 +40,7 @@ namespace Network_Test
 
             Side1 = new Connection(IPAddress.Parse("10.255.255.1"), 9999);
 
-            Side2 = new Connection(tmpl.AcceptSocket());
+            Side2 = new Connection(tmpl.AcceptTcpClient());
 
             tmpl.Stop();
 
@@ -164,11 +164,11 @@ namespace Network_Test
 
         protected void reciveds1(int priority, DateTime Time)
         {
-            Invoke((Action)(() =>
+          /*  Invoke((Action)(() =>
             {
                // listBox1.Items.Add(string.Format("Received a packet with {0} priority, sent at {1}", priority, Time));
               //  listBox1.SelectedIndex = listBox1.Items.Count - 1;
-            }));
+            }));*/
         }
 
         //Side 2
@@ -206,11 +206,11 @@ namespace Network_Test
 
         protected void reciveds2(int priority, DateTime Time)
         {
-            Invoke((Action)(() =>
+         /*   Invoke((Action)(() =>
              {
                //  listBox2.Items.Add(string.Format("Received a packet with {0} priority, sent at {1}", priority, Time));
                //  listBox2.SelectedIndex = listBox2.Items.Count - 1;
-             }));
+             }));*/
         }
 
         private void timer3_Tick(object sender, EventArgs e)
