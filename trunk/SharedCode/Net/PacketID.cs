@@ -40,17 +40,25 @@ namespace Tortoise.Shared.Net
     {
         Null = 0,
         ModulePacket,
+        ModuleRoute,
+        Passkey,
         Message,
         Key,
+
+
+
+
+        EndRecived = 0xFFFF
     }
 
     public static class PacketIDHelper
     {
-        public static bool TryParse(this PacketID pID, ushort value)
+        public static bool TryParse(ushort value, out PacketID parsed)
         {
+            parsed = PacketID.Null;
             if (!Enum.IsDefined(typeof(PacketID), value))
                 return false;
-            pID = (PacketID)value;
+            parsed = (PacketID)value;
             return true;
         }
         public static ushort Value(this PacketID pID)

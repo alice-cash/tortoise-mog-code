@@ -81,7 +81,7 @@ namespace Tortoise.Server.Connections
 
 		private void WorkThread()
 		{
-			//If the Listen address is IPv6Any, then we possibly need to create a second listiner for IPv4
+			//If the Listen address is IPv6Any, then we possibly need to create a second listener for IPv4
 			if (ServerConfig.Instance.ConvertedClientListenAddress == IPAddress.IPv6Any)
 			{
 				_secondaryListinerActive = true;
@@ -96,12 +96,12 @@ namespace Tortoise.Server.Connections
 			{
 				if (_listiner.Pending())
 				{
-					AcceptConnection(_listiner.AcceptTcpClient());
+					AcceptConnection(_listiner.AcceptSocket());
 				}
 
 				if (_secondaryListinerActive && _secondaryListiner.Pending())
 				{
-					AcceptConnection(_secondaryListiner.AcceptTcpClient());
+                    AcceptConnection(_secondaryListiner.AcceptSocket());
 				}
 
 				foreach (var c in _clients)
@@ -112,7 +112,7 @@ namespace Tortoise.Server.Connections
 
 		}
 		
-		private void AcceptConnection(TcpClient client)
+		private void AcceptConnection(Socket client)
 		{
 			Connection Conn = new Connection(client);
 			_clients.Add(Conn);

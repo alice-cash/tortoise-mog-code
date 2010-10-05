@@ -48,20 +48,35 @@ namespace Tortoise.Shared.IO
         private Encoding _encoder;
 
 
-        public ByteReader(byte[] array)
+        public ByteReader(byte[] array, int offset, int length)
         {
-            _array = array;
+            if (offset == 0 && array.Length == length)
+            {
+                _array = new byte[length];
+                Array.Copy(array, offset, _array, 0, length);
+            }
+            else
+            {
+                _array = array;
+            }
             init();
+        }
 
+        public ByteReader(byte[] array)
+            :this(array, 0, array.Length)
+        {
+            
         }
         public ByteReader(Stream stream, int offset, int length)
         {
+            _array = new byte[length];
             stream.Read(_array, offset, length);
             init();
         }
 
         public ByteReader(BinaryReader stream, int length)
         {
+            _array = new byte[length];
             _array = stream.ReadBytes(length);
             init();
         }
@@ -76,7 +91,7 @@ namespace Tortoise.Shared.IO
 
         private ExecutionState EnforceLength(int length)
         {
-            if (_pos + length >= _array.Length) return ExecutionState.Failed();
+            if (_pos + length > _array.Length) return ExecutionState.Failed();
             return ExecutionState.Succeeded();
         }
 

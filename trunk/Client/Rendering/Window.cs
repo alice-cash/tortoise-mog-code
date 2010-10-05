@@ -37,7 +37,7 @@ using AgateLib.DisplayLib;
 using AgateLib.Geometry;
 using AgateLib.InputLib;
 
-using Tortoise.Client.Collection;
+using Tortoise.Shared.Collection;
 using Tortoise.Shared.Threading;
 
 namespace Tortoise.Client.Rendering
@@ -47,11 +47,12 @@ namespace Tortoise.Client.Rendering
 	/// </summary>
 	public class Window : IInvokable
 	{
-		//This is called autmaticly when any static property is accessed
+		//This is called automatically when any static property is accessed
 		//or an instance of the class is created
 		static Window()
 		{
 			AvailableScreens = new Dictionary<string, Screen>();
+            
 		}
 		
 		public static Dictionary<string, Screen> AvailableScreens{get; private set;}

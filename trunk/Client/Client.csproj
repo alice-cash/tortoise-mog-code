@@ -61,6 +61,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedCode\Collection\LimitedList.cs">
+      <Link>Collection\LimitedList.cs</Link>
+    </Compile>
     <Compile Include="..\SharedCode\Collection\SortedList.cs">
       <Link>Collection\SortedList.cs</Link>
     </Compile>
@@ -115,7 +118,6 @@
     <Compile Include="..\SharedCode\Threading\ThreadSafetyEnforcer.cs">
       <Link>Threading\ThreadSafetyEnforcer.cs</Link>
     </Compile>
-    <Compile Include="Collection\LimitedList.cs" />
     <Compile Include="Console.cs" />
     <Compile Include="Exceptions\ConsoleException.cs" />
     <Compile Include="Exceptions\GUIException.cs" />
@@ -129,6 +131,7 @@
     <Compile Include="Module\GUI\FrameBuilder\FrameBuilder.cs" />
     <Compile Include="Module\Login.cs" />
     <Compile Include="Module\MainMenu.cs" />
+    <Compile Include="Net\ServerConnection.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\Delegates.cs" />

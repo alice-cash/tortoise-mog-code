@@ -45,11 +45,12 @@ namespace Tortoise.Shared.Net
 	
 	static class MessageIDHelper
 	{
-		public static bool TryParse(this MessageID mID, ushort value)
+        public static bool TryParse(ushort value, out MessageID parsed)
 		{
+            parsed = MessageID.Null;
 			if(!Enum.IsDefined(typeof(MessageID), value))
 				return false;
-			mID = (MessageID)value;
+            parsed = (MessageID)value;
 			return true;
 		}
 		public static ushort Value(this MessageID mID)

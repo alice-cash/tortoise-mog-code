@@ -101,6 +101,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedCode\Collection\LimitedList.cs">
+      <Link>Collection\LimitedList.cs</Link>
+    </Compile>
     <Compile Include="..\SharedCode\Collection\SortedList.cs">
       <Link>Collection\SortedList.cs</Link>
     </Compile>

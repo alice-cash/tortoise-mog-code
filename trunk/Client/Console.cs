@@ -37,7 +37,7 @@ using System.Linq;
 using System.Text;
 using C5;
 using Tortoise.Client.Exceptions;
-using Tortoise.Client.Collection;
+using Tortoise.Shared.Collection;
 
 namespace Tortoise.Client
 {
