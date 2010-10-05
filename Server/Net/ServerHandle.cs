@@ -100,7 +100,7 @@ namespace Tortoise.Server.Connections
 				if (_listiner.Pending() || (_secondaryListinerActive && _secondaryListiner.Pending()))
 				{
 					//If the main listiner didn't trigger this, then it has to have been the secondary one.
-					TcpClient Request = _listiner.Pending() ? _listiner.AcceptTcpClient() : _secondaryListiner.AcceptTcpClient();
+                    Socket Request = _listiner.Pending() ? _listiner.AcceptSocket() : _secondaryListiner.AcceptSocket();
 					Connection Conn = new Connection(Request);
 
 					//Check that its an accepted IP
@@ -108,7 +108,7 @@ namespace Tortoise.Server.Connections
 					{
 						foreach (var address in ServerConfig.Instance.ConvertedAcceptedServerAddresses)
 						{
-							if (((IPEndPoint)Request.Client.RemoteEndPoint).Address.Equals(address))
+							if (((IPEndPoint)Request.RemoteEndPoint).Address.Equals(address))
 							{
 								_clients.Add(Conn);
 							}
@@ -134,7 +134,7 @@ namespace Tortoise.Server.Connections
 			}
 		}
 		
-		private void AcceptConnection(TcpClient client)
+		private void AcceptConnection(Socket client)
 		{
 			Connection Conn = new Connection(client);
 			_clients.Add(Conn);

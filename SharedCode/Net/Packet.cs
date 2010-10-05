@@ -37,7 +37,7 @@ namespace Tortoise.Shared.Net
 {
 	struct Packet
 	{
-		public byte[] Data;
+        public byte[] Data;
 		public int Priority;
 		
 		public Packet(byte[] data, int priority)

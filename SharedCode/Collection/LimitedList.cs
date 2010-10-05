@@ -1,8 +1,8 @@
 ﻿/*
  * Created by SharpDevelop.
  * User: Matthew
- * Date: 8/129/2010
- * Time: 3:45 AM
+ * Date: 8/1/2010
+ * Time: 7:51 PM
  * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
@@ -33,77 +33,58 @@
 using System;
 using C5;
 
-
 namespace Tortoise.Shared.Collection
 {
 	/// <summary>
-	/// A sorted LinkedList.
+	/// This stores a limited number of items, De-queuing them automatically once the limit has been met.
 	/// </summary>
-	class SortedList<T>:LinkedList<T>
+	public class LimitedList<T> : ArrayBase<T>
 	{
-		System.Collections.Generic.IComparer<T> _comparer;
-		public SortedList(System.Collections.Generic.IComparer<T> comparer)
-		{
-			_comparer = comparer;
-			base.FIFO = false;
-		}
-		
-		public override void Enqueue(T item)
-		{
-			int pos = 0;
-			while(pos+1 <= Count && _comparer.Compare(this[pos], item) < 0)pos++;
-			base.Insert(pos, item);
-		}
-		
-		public override bool Add(T item)
-		{
-			Enqueue(item);
-			return true;
-		}
-		
-		public override void AddAll<U>(System.Collections.Generic.IEnumerable<U> items)
-		{
-			foreach(U item in items)
-				Enqueue(item);
-		}
-		
-        public override void Insert(int i, T item)
-        {
-            throw new NotSupportedException();
+		private int _limit;
+        private T _default;
+		public int Limit{
+            get{return _limit;}
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException("Value must be greater than 0");
+                if (value == _limit)
+                    return;
+                if (value < _limit)
+                {
+                    Array.Copy(base.array, 0, base.array, 0, value);
+                }
+                else
+                {
+                    T[] newArray = new T[value];
+                    Array.Copy(base.array, 0, newArray, 0, _limit);
+                    for (int i = _limit; i < value; i++)
+                        newArray[i] = _default;
+
+                    base.array = newArray;
+                }
+                _limit = value;
+                return;
+            }
         }
-		public override void InsertAll<U>(int i, System.Collections.Generic.IEnumerable<U> items)
+		public LimitedList(int limit, T fillWith): base(limit - 1, EqualityComparer<T>.Default)
 		{
-			throw new NotSupportedException();
+			_limit = limit;
+            _default = fillWith;
+			for(int i = 0; i < limit; i++)
+				base.array[i] = fillWith;
+			base.size = limit;
 		}
 		
-		public override void InsertFirst(T item)
+		public void Add(T item)
 		{
-			throw new NotSupportedException();
-		}
-		
-		public override void InsertLast(T item)
-		{
-			throw new NotSupportedException();
-		}
-		
-		public override void Shuffle()
-		{
-			throw new NotSupportedException();
-		}
-		
-		public override void Shuffle(Random rnd)
-		{
-			throw new NotSupportedException();
-		}
-		
-		public override void Sort()
-		{
-			base.Sort(_comparer);
-		}
-		
-		public override bool FIFO {
-			get { return base.FIFO; }
-			set { /*do nothing as it should always be false*/ }
+			if (this.isReadOnlyBase)
+			{
+				throw new ReadOnlyCollectionException();
+			}
+			//Shift it down one, cutting off the last item
+			Array.Copy(base.array, 0, base.array, 1, _limit - 1);
+			base.array[0] = item;
 		}
 	}
 }
