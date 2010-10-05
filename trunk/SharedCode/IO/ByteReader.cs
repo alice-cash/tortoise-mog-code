@@ -164,6 +164,8 @@ namespace Tortoise.Shared.IO
             return result;
         }
 
+
+
         public ExecutionState<float> ReadSingle()
         {
             if (!EnforceLength(sizeof(float))) return ExecutionState<float>.Failed();
