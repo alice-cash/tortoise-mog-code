@@ -54,8 +54,10 @@ namespace Tortoise.Client.Rendering
 			AvailableScreens = new Dictionary<string, Screen>();
             
 		}
-		
-		public static Dictionary<string, Screen> AvailableScreens{get; private set;}
+
+        public const int ScreenHeight = 600, ScreenWidth = 800;
+        
+        public static Dictionary<string, Screen> AvailableScreens { get; private set; }
 		public static DisplayWindow MainWindow{get; private set;}
 		public static Window Instance {get; private set;}
 		
@@ -94,7 +96,7 @@ namespace Tortoise.Client.Rendering
 				return;
 			
 			// Resizing is broken in the current agatelib revision.
-			MainWindow = DisplayWindow.CreateWindowed ("Tortoise MOG",  Program.ScreenWidth,  Program.ScreenHeight, false);
+			MainWindow = DisplayWindow.CreateWindowed ("Tortoise MOG",  Window.ScreenWidth,  Window.ScreenHeight, false);
 			
 			MainWindow.Resize += delegate(object sender, EventArgs e)
 			{

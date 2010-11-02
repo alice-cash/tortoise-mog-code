@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DE88CD33-60DD-4DE3-9FEE-BA5F2EFBCE0D}</ProjectGuid>
+    <ProjectGuid>{1AE34340-5833-4B89-B84E-2592C4A251C4}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Network_Test</RootNamespace>
-    <AssemblyName>Network Test</AssemblyName>
+    <RootNamespace>NetworkTest_Client</RootNamespace>
+    <AssemblyName>NetworkTest Client</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -47,7 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedCode\Collection\LimitedList.cs">
+    <Compile Include="..\sharedcode\collection\LimitedList.cs">
       <Link>Collection\LimitedList.cs</Link>
     </Compile>
     <Compile Include="..\sharedcode\collection\SortedList.cs">

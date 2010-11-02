@@ -45,6 +45,11 @@ namespace Tortoise.Shared.IO
 		List<byte> _data;
 		Encoding _encoder ;
 
+        public int Length
+        {
+            get { return _data.Count; }
+        }
+
 		public ByteWriter()
 		{
 			_data = new List<byte>();

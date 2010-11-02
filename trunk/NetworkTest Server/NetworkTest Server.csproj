@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DE88CD33-60DD-4DE3-9FEE-BA5F2EFBCE0D}</ProjectGuid>
+    <ProjectGuid>{E58A904A-B80A-46AD-9A23-80FA8B79B3CF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Network_Test</RootNamespace>
-    <AssemblyName>Network Test</AssemblyName>
+    <RootNamespace>NetworkTest_Server</RootNamespace>
+    <AssemblyName>NetworkTest Server</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -47,7 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedCode\Collection\LimitedList.cs">
+    <Compile Include="..\sharedcode\collection\LimitedList.cs">
       <Link>Collection\LimitedList.cs</Link>
     </Compile>
     <Compile Include="..\sharedcode\collection\SortedList.cs">
@@ -95,6 +95,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Net\ClientHandle.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

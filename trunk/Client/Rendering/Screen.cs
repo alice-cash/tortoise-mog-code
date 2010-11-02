@@ -41,7 +41,7 @@ namespace Tortoise.Client.Rendering
     public class Screen : Container, IRender
     {
         public Screen()
-            : base("_Screen", 0, 0, Program.ScreenWidth, Program.ScreenHeight)
+            : base("_Screen", 0, 0, Window.ScreenWidth, Window.ScreenHeight)
         {
 
         }

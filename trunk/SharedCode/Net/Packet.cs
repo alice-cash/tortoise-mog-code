@@ -38,12 +38,10 @@ namespace Tortoise.Shared.Net
 	struct Packet
 	{
         public byte[] Data;
-		public int Priority;
 		
-		public Packet(byte[] data, int priority)
+		public Packet(byte[] data)
 		{
 			Data = data;
-			Priority = priority;
 		}
 	}
 	
