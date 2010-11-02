@@ -34,7 +34,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using MySql.Data.MySqlClient;
-using SharedServerLib.Exceptions;
+using Tortoise.Server.Exceptions;
 namespace LoginServer.Data
 {
 	/// <summary>
