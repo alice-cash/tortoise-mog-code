@@ -123,7 +123,7 @@ namespace Tortoise.Client.Module
         public override void Init()
         {
             BackgroundColor = Color.Wheat;
-            Label cointents = new Label("_contents", "", new Point(0, 0), new Size(Program.ScreenWidth, Program.ScreenHeight), FontSurface.AgateSans10);
+            Label cointents = new Label("_contents", "", new Point(0, 0), new Size(Window.ScreenWidth, Window.ScreenHeight), FontSurface.AgateSans10);
             cointents.TextAlignement = TextAlignement.Center;
             Controls.Add(10, cointents);
 

@@ -99,12 +99,12 @@ namespace Tortoise.Client.Module
 
             BackgroundColor = Color.Wheat;
 
-            Label title = new Label("_title", Program.GameName, new Point(10, 10), new Size(Program.ScreenWidth - 20, 40), FontSurface.AgateSans24);
+            Label title = new Label("_title", Program.GameName, new Point(10, 10), new Size(Window.ScreenWidth - 20, 40), FontSurface.AgateSans24);
             title.TextAlignement = TextAlignement.Center;
             title.BackgroundColor = Color.Transparent;
 
             string aboutText = localization.Default.Strings.GetFormatedString("Main_Menu_Credits");
-            Point aboutPos = new Point(Program.ScreenWidth - 60, Program.ScreenHeight - 25);
+            Point aboutPos = new Point(Window.ScreenWidth - 60, Window.ScreenHeight - 25);
 
             Surface aboutBackground = FrameBuilder.Frame1.CreateFrame(new Size(60, 25));
             Surface aboutOver = FrameBuilder.Frame4.CreateFrame(new Size(60, 25));
@@ -125,7 +125,7 @@ namespace Tortoise.Client.Module
 
 
             string exitText = localization.Default.Strings.GetFormatedString("Main_Menu_Exit");
-            Point exitPos = new Point(Program.ScreenWidth / 2 - 30, 500);
+            Point exitPos = new Point(Window.ScreenWidth / 2 - 30, 500);
 
             Surface exitBackground = FrameBuilder.Frame1.CreateFrame(new Size(60, 25));
             Surface exitOver = FrameBuilder.Frame4.CreateFrame(new Size(60, 25));
@@ -146,7 +146,7 @@ namespace Tortoise.Client.Module
 
 
             string loginText = localization.Default.Strings.GetFormatedString("Main_Menu_Login");
-            Point loginPos = new Point(Program.ScreenWidth / 2 - 30, 400);
+            Point loginPos = new Point(Window.ScreenWidth / 2 - 30, 400);
 
             Surface loginBackground = FrameBuilder.Frame1.CreateFrame(new Size(60, 25));
             Surface loginOver = FrameBuilder.Frame4.CreateFrame(new Size(60, 25));
@@ -160,9 +160,9 @@ namespace Tortoise.Client.Module
 
             login.BackgroundColor = Color.Transparent;
 
-            Point usernamePos = new Point(Program.ScreenWidth / 2 - 100, 300);
+            Point usernamePos = new Point(Window.ScreenWidth / 2 - 100, 300);
             TextBox username = new TextBox("_username", usernamePos, new Size(200, 25));
-            Point passwordPos = new Point(Program.ScreenWidth / 2 - 100, 350);
+            Point passwordPos = new Point(Window.ScreenWidth / 2 - 100, 350);
             TextBox password = new TextBox("_password", passwordPos, new Size(200, 25));
             password.PasswordCharacter = '*';
             password.UsePasswordCharacter = true;
@@ -232,12 +232,12 @@ namespace Tortoise.Client.Module
 
             BackgroundColor = Color.Wheat;
 
-            Label title = new Label("_title", Program.GameName, new Point(10, 10), new Size(Program.ScreenWidth - 20, 40), FontSurface.AgateSans24);
+            Label title = new Label("_title", Program.GameName, new Point(10, 10), new Size(Window.ScreenWidth - 20, 40), FontSurface.AgateSans24);
 
             string creditText = localization.Default.Strings.GetFormatedString("Credits_Text");
-            Label cointents = new Label("_contents", creditText, new Point(0, 0), new Size(Program.ScreenWidth, Program.ScreenHeight), FontSurface.AgateSans10);
+            Label cointents = new Label("_contents", creditText, new Point(0, 0), new Size(Window.ScreenWidth, Window.ScreenHeight), FontSurface.AgateSans10);
 
-            Point returnPos = new Point(Program.ScreenWidth - 250, Program.ScreenHeight - 25);
+            Point returnPos = new Point(Window.ScreenWidth - 250, Window.ScreenHeight - 25);
             Surface returnBackground = FrameBuilder.Frame1.CreateFrame(new Size(250, 25));
             Surface returnOver = FrameBuilder.Frame4.CreateFrame(new Size(250, 25));
             Surface returnDown = FrameBuilder.Frame5.CreateFrame(new Size(250, 25));

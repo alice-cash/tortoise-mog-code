@@ -103,9 +103,6 @@
     <Compile Include="..\SharedCode\Net\PacketID.cs">
       <Link>Net\PacketID.cs</Link>
     </Compile>
-    <Compile Include="..\SharedCode\Net\PacketSorter.cs">
-      <Link>Net\PacketSorter.cs</Link>
-    </Compile>
     <Compile Include="..\SharedCode\Threading\IInvokable.cs">
       <Link>Threading\IInvokable.cs</Link>
     </Compile>
@@ -137,12 +134,14 @@
     <Compile Include="Rendering\Delegates.cs" />
     <Compile Include="Rendering\GUI\Button.cs" />
     <Compile Include="Rendering\GUI\ControlSorter.cs" />
+    <Compile Include="Rendering\GUI\ImageDrawMode.cs" />
     <Compile Include="Rendering\GUI\KeyPressed.cs" />
     <Compile Include="Rendering\GUI\Label.cs" />
     <Compile Include="Rendering\GUI\Container.cs" />
     <Compile Include="Rendering\GUI\Control.cs" />
     <Compile Include="Rendering\GUI\ControlContainer.cs" />
     <Compile Include="Rendering\GUI\MovedEventArgs.cs" />
+    <Compile Include="Rendering\GUI\Picturebox.cs" />
     <Compile Include="Rendering\GUI\ResizeEventArgs.cs" />
     <Compile Include="Rendering\GUI\TextAlignement.cs" />
     <Compile Include="Rendering\GUI\TextBox.cs" />

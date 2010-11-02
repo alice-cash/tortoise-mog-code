@@ -54,7 +54,7 @@ namespace Tortoise.Server.Connections
 		}
 
 		private List<Connection> _clients;
-		private Queue<TcpClient> _requests;
+		private Queue<Socket> _requests;
 		
 		private Thread _listenThread;
 		private bool _threadRunning;
@@ -65,7 +65,7 @@ namespace Tortoise.Server.Connections
 		private ServerHandle()
 		{
 			_clients = new List<Connection>();
-			_requests = new Queue<TcpClient>();
+			_requests = new Queue<Socket>();
 
 			_listenThread = new Thread(WorkThread);
 			_listenThread.Start();
@@ -84,7 +84,7 @@ namespace Tortoise.Server.Connections
 
 		private void WorkThread()
 		{
-			//If the Listen address is IPv6Any, then we possibly need to create a second listiner for IPv4
+			//If the Listen address is IPv6Any, then we possibly need to create a second listener for IPv4
 			if (ServerConfig.Instance.ConvertedServerListenAddress == IPAddress.IPv6Any)
 			{
 				_secondaryListinerActive = true;
@@ -100,7 +100,7 @@ namespace Tortoise.Server.Connections
 				if (_listiner.Pending() || (_secondaryListinerActive && _secondaryListiner.Pending()))
 				{
 					//If the main listener didn't trigger this, then it has to have been the secondary one.
-                    TcpClient Request = _listiner.Pending() ? _listiner.AcceptTcpClient() : _secondaryListiner.AcceptTcpClient();
+                    Socket Request = _listiner.Pending() ? _listiner.AcceptSocket() : _secondaryListiner.AcceptSocket();
 					Connection Conn = new Connection(Request);
 
 					//Check that its an accepted IP
@@ -108,7 +108,7 @@ namespace Tortoise.Server.Connections
 					{
 						foreach (var address in ServerConfig.Instance.ConvertedAcceptedServerAddresses)
 						{
-							if (((IPEndPoint)Request.Client.RemoteEndPoint).Address.Equals(address))
+							if (((IPEndPoint)Request.RemoteEndPoint).Address.Equals(address))
 							{
 								_clients.Add(Conn);
 							}
@@ -134,7 +134,7 @@ namespace Tortoise.Server.Connections
 			}
 		}
 
-        private void AcceptConnection(TcpClient client)
+        private void AcceptConnection(Socket client)
 		{
 			Connection Conn = new Connection(client);
 			_clients.Add(Conn);

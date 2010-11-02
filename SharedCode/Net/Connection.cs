@@ -60,7 +60,7 @@ namespace Tortoise.Shared.Net
             _moduleActions.Add(ID, module);
         }
 
-        private Tortoise.Shared.Collection.SortedList<Packet> _packetQue = new Tortoise.Shared.Collection.SortedList<Packet>(new PacketSorter());
+        private Queue<Packet> _packetQue = new Queue<Packet>();
 
 
         public System.EventHandler<MessageEventArgs> MessageEvent;
@@ -74,9 +74,12 @@ namespace Tortoise.Shared.Net
             get { return _readyForData; }
         }
 
-        protected TcpClient _client;
-        protected BinaryReader _sr;
-        protected BinaryWriter _sw;
+        protected NetworkStream _ns;
+        protected Socket _sock;
+
+        //  protected BinaryReader _br;
+        //  protected BinaryWriter _bw;
+
         //private byte[] _data;
         protected ushort _length;
         protected DateTime _recived;
@@ -94,14 +97,18 @@ namespace Tortoise.Shared.Net
 
         private bool _DisconnectedEventCalled;
 
-        private bool _endRecived;
-        private bool _writeRecived;
+        // private bool _endRecived;
+        // private bool _writeRecived;
+
+        private bool _isasync;
 
 
         private DateTime _dataRecivedTime = DateTime.Now;
         private ulong _dataRecivedCount = 0;
         private ulong _lastCount;
         private LimitedList<ulong> _last15Seconds;
+
+        byte[] _bf = new byte[MTU];
 
         public ulong Last15PacketSpeed
         {
@@ -115,7 +122,7 @@ namespace Tortoise.Shared.Net
 
         public bool Connected
         {
-            get { return _client == null ? false : _client.Connected; }
+            get { return _sock == null ? false : _sock.Connected; }
         }
 
         public int PacketQueSize
@@ -123,18 +130,19 @@ namespace Tortoise.Shared.Net
             get { return _packetQue.Count; }
         }
 
-        public Connection(TcpClient connection)
+        public Connection(Socket connection)
         {
-            _client = connection;
+            _sock = connection;
             Init();
         }
 
         public Connection(IPAddress dest, int port)
         {
-            _client = new TcpClient();
-            _client.Connect(dest, port);
+            _sock = new Socket(dest.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            _sock.Connect(dest, port);
             Init();
         }
+
 
         public Connection(IPAddress dest, int port, byte[] passkey)
             : this(dest, port)
@@ -148,7 +156,7 @@ namespace Tortoise.Shared.Net
 
         }
 
-        public Connection(TcpClient connection, byte[] passkey)
+        public Connection(Socket connection, byte[] passkey)
             : this(connection)
         {
             _passKey = passkey;
@@ -157,13 +165,13 @@ namespace Tortoise.Shared.Net
 
         private void Init()
         {
-            _sr = new BinaryReader(_client.GetStream());
-            _sw = new BinaryWriter(_client.GetStream());
+            _ns = new NetworkStream(_sock);
             _DisconnectedEventCalled = false;
             _authKey = "";
-            _endRecived = true;
             _last15Seconds = new LimitedList<ulong>(15, 0);
             _dataRecivedTime = DateTime.Now;
+            _isasync = false;
+
         }
 
 
@@ -194,102 +202,106 @@ namespace Tortoise.Shared.Net
 
         private void Poll_Read()
         {
-            //If we are waiting for data.
-            int avalable = _client.Available;
 
-            if (_length >= avalable)
+            int count = 0;
+            
+            int available = _sock.Available;
+            do
             {
-                //if its been more than a second, call a sync error.
-                //Snippets of data should not take more than a second to receive.
-                if (_recived + TimeSpan.FromMilliseconds(1000) >= DateTime.Now)
-                {
-                    SyncError();
-                }
-                return;
-            }
-            //if enough data is available to read the ushort
-            if (avalable > 2)
-            {
-                //If its 0, then we are not waiting.
-                //If it isn't 0, then we are waiting for data, and reading
-                //bytes will break stuff.
-
                 if (_length == 0)
                 {
-                    _length = _sr.ReadUInt16();
-                    if (_length > MTU)
+                    if (available >= 2)
                     {
-                        SyncError("MTU");
-                        return;
+                        _ns.Read(_bf, 0, 2);
+                        _length = BitConverter.ToUInt16(_bf, 0);
+
                     }
                 }
-                ByteReader br = new ByteReader(_sr, _length);
+                available = _sock.Available;
+                if (_length > 0 && available >= _length)
+                {
+                    _ns.Read(_bf, 0, _length);
+                    ByteReader br = new ByteReader(_bf, 0, _length);
 
-                //this should succeed, always....
-                var pTempID = br.ReadUShort();
-                if (!pTempID.Sucess)
-                {
-                    SyncError();
-                    return;
-                }
-                PacketID pID;
-                if (!PacketIDHelper.TryParse(pTempID.Result, out pID))
-                {
-                    SyncError();
-                    return;
-                }
+                    //this should succeed, always....
+                    var pTempID = br.ReadUShort();
+                    if (!pTempID.Sucess)
+                    {
+                        SyncError();
+                        return;
+                    }
+                    PacketID pID;
+                    if (!PacketIDHelper.TryParse(pTempID.Result, out pID))
+                    {
+                        SyncError();
+                        return;
+                    }
 
-                if (pID == PacketID.EndRecived)
-                {
-                    _endRecived = true;
-                }
-                else
-                {
                     //remove 2 from the length that we just read from
                     HandleInput(br, Convert.ToUInt16(_length - 2), pID);
-                    _writeRecived = true;
+
                     _dataRecivedCount += 1;
+                    _length = 0;
                 }
-            }
-            _length = 0;
+                count++;
+                if (count >= 20)
+                    break;
+            } while (_length != 0);
+            /*
+            var asyncResult = _ns.BeginRead(_bf, 0, 2, (IAsyncResult result) =>
+                 {
+
+                     var subsAyncResult = _ns.BeginRead(_bf, 0, _length, (IAsyncResult subresult) =>
+                       {
+                          
+                           _isasync = false;
+
+                       }, null);
+
+                     
+                 }, null);*/
         }
 
         private void Poll_Write()
         {
-            if (_writeRecived)
-            {
-                ByteWriter bw = new ByteWriter();
-                //2 for ID
-                bw.Write(Convert.ToUInt16(2));
-                bw.Write(PacketID.EndRecived.Value());
-                byte[] data = bw.GetArray();
-                _sw.Write(data);
-                _writeRecived = false;
-
-            }
-            //  if (_endRecived)
             lock (_packetQue)
-                if (_packetQue.Count > 0)
+            {
+                int count = 0;
+                ByteWriter bw = new ByteWriter();
+                int length = 0;
+                while (_packetQue.Count > 0)
                 {
+
                     Packet p;
 
-                    p = _packetQue.Dequeue();
+                    p = _packetQue.Peek();
 
                     if (p.Data.Length > MTU)
                         //We throw an Exception here because this is clearly a logic error on our end.
                         //Some @#$%&^* didn't implement something right, somewhere, probably me.
                         throw new Exception("PACKETS MUST BE SMALLER THAN THE MTU!!!!!!!!");
-                    _sw.Write(p.Data);
-                    _endRecived = false;
+                    if (p.Data.Length + length < MTU)
+                    {
+                        //Dequeue it here
+                    }
+                    else
+                        break;
+                    length += p.Data.Length;
+                    bw.Write(p.Data);
+                    count++;
                 }
+                byte[] data = bw.GetArray();
+                _ns.Write(data, 0, data.Length);
+
+            }
 
         }
 
-        private void AddPacket(byte[] data, int priority)
+        private void AddPacket(byte[] data)
         {
             lock (_packetQue)
             {
-                _packetQue.Enqueue(new Packet(data, priority));
+                _packetQue.Enqueue(new Packet(data));
             }
         }
 
@@ -373,11 +385,6 @@ namespace Tortoise.Shared.Net
 
         public void Write_ModulePacket(byte[] data, ushort moduleID)
         {
-            Write_ModulePacket(data, moduleID, 0);
-        }
-
-        public void Write_ModulePacket(byte[] data, ushort moduleID, int priority)
-        {
             //2 for ID, 2 for module ID, x for data length
             ushort length = Convert.ToUInt16(4 + data.Length);
             ByteWriter bw = new ByteWriter();
@@ -386,7 +393,7 @@ namespace Tortoise.Shared.Net
             bw.Write(PacketID.ModulePacket.Value());
             bw.Write(moduleID);
             bw.Write(data);
-            AddPacket(bw.GetArray(), priority);
+            AddPacket(bw.GetArray());
         }
 
         public void Write_Message(MessageID reason)
@@ -399,8 +406,7 @@ namespace Tortoise.Shared.Net
             bw.Write(PacketID.Message.Value());
             bw.Write(reason.Value());
 
-            //Messages are generally important, so slight priority change.
-            AddPacket(bw.GetArray(), -1);
+            AddPacket(bw.GetArray());
         }
 
         /// <summary>
@@ -408,7 +414,7 @@ namespace Tortoise.Shared.Net
         /// </summary>
         public void Disconnect()
         {
-            _client.Close();
+            _sock.Close();
             Disconnected();
         }
 
@@ -449,7 +455,7 @@ namespace Tortoise.Shared.Net
 
 
         /// <summary>
-        /// Calls a Sync Error, Usually when the reciving datastream contains data the program isn't expecting.
+        /// Calls a Sync Error, Usually when the receiving DataStream contains data the program isn't expecting.
         /// </summary>
         public void SyncError()
         {

@@ -40,7 +40,7 @@ namespace Network_Test
 
             Side1 = new Connection(IPAddress.Parse("10.255.255.1"), 9999);
 
-            Side2 = new Connection(tmpl.AcceptTcpClient());
+            Side2 = new Connection(tmpl.AcceptSocket());
 
             tmpl.Stop();
 
@@ -90,7 +90,7 @@ namespace Network_Test
                     bw.Write(DateTime.Now.ToBinary());
                     bw.Write(randomBytes());
                     for (int i = 0; i < numericUpDown3.Value; i++)
-                        Side1.Write_ModulePacket(bw.GetArray(), 101, Convert.ToInt32(numericUpDown1.Value));
+                        Side1.Write_ModulePacket(bw.GetArray(), 101);
                 }
             }
         }
@@ -158,8 +158,9 @@ namespace Network_Test
             bw.Write(Convert.ToInt32(numericUpDown1.Value));
             bw.Write(DateTime.Now.ToBinary());
             bw.Write(randomBytes());
+            byte[] bar = bw.GetArray();
             for (int i = 0; i < numericUpDown3.Value; i++)
-                Side1.Write_ModulePacket(bw.GetArray(), 101, Convert.ToInt32(numericUpDown1.Value));
+                Side1.Write_ModulePacket(bar, 101);
         }
 
         protected void reciveds1(int priority, DateTime Time)
@@ -199,8 +200,9 @@ namespace Network_Test
             bw.Write(Convert.ToInt32(numericUpDown2.Value));
             bw.Write(DateTime.Now.ToBinary());
             bw.Write(randomBytes());
+            byte[] bar = bw.GetArray();
             for (int i = 0; i < numericUpDown4.Value; i++)
-                Side2.Write_ModulePacket(bw.GetArray(), 101, Convert.ToInt32(numericUpDown2.Value));
+                Side2.Write_ModulePacket(bar, 101);
         }
 
 

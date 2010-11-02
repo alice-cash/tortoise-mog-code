@@ -143,9 +143,6 @@
     <Compile Include="..\SharedCode\Net\PacketID.cs">
       <Link>Net\PacketID.cs</Link>
     </Compile>
-    <Compile Include="..\SharedCode\Net\PacketSorter.cs">
-      <Link>Net\PacketSorter.cs</Link>
-    </Compile>
     <Compile Include="..\SharedCode\Threading\IInvokable.cs">
       <Link>Threading\IInvokable.cs</Link>
     </Compile>

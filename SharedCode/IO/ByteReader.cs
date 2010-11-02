@@ -47,6 +47,11 @@ namespace Tortoise.Shared.IO
         private ByteConverter _bc;
         private Encoding _encoder;
 
+        public int Avaliable
+        {
+            get { return _array.Length - _pos; }
+        }
+
 
         public ByteReader(byte[] array, int offset, int length)
         {
@@ -79,6 +84,12 @@ namespace Tortoise.Shared.IO
             _array = new byte[length];
             _array = stream.ReadBytes(length);
             init();
+        }
+
+        public void LoadNewArray(byte[] array)
+        {
+            _pos = 0;
+            _array = array;
         }
 
         private void init()

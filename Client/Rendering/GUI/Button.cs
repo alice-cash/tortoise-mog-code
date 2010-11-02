@@ -37,7 +37,7 @@ using AgateLib.Geometry;
 namespace Tortoise.Client.Rendering.GUI
 {
     /// <summary>
-    /// Desctiption of Button.
+    /// Description of Button.
     /// </summary>
     public class Button : Label
     {

@@ -41,7 +41,6 @@ namespace Tortoise.Client
 	class Program
 	{
 		public const string GameName = "Tortoise Demo";
-		public const int ScreenHeight = 600, ScreenWidth = 800;
 		static Window MainWindow = null;
 
         public static void Main(string[] args)
