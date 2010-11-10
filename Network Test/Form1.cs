@@ -90,7 +90,7 @@ namespace Network_Test
                     bw.Write(DateTime.Now.ToBinary());
                     bw.Write(randomBytes());
                     for (int i = 0; i < numericUpDown3.Value; i++)
-                        Side1.Write_ModulePacket(bw.GetArray(), 101);
+                        Side1.WriteModulePacket(bw.GetArray(), 101);
                 }
             }
         }
@@ -160,7 +160,7 @@ namespace Network_Test
             bw.Write(randomBytes());
             byte[] bar = bw.GetArray();
             for (int i = 0; i < numericUpDown3.Value; i++)
-                Side1.Write_ModulePacket(bar, 101);
+                Side1.WriteModulePacket(bar, 101);
         }
 
         protected void reciveds1(int priority, DateTime Time)
@@ -202,7 +202,7 @@ namespace Network_Test
             bw.Write(randomBytes());
             byte[] bar = bw.GetArray();
             for (int i = 0; i < numericUpDown4.Value; i++)
-                Side2.Write_ModulePacket(bar, 101);
+                Side2.WriteModulePacket(bar, 101);
         }
 
 

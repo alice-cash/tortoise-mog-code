@@ -73,7 +73,7 @@ namespace NetworkTest_Client
                     ByteWriter bw = new ByteWriter();
                     bw.Write(randomBytes());
                     for (int i = 0; i < numericUpDown3.Value; i++)
-                        Side1.Write_ModulePacket(bw.GetArray(), 101);
+                        Side1.WriteModulePacket(bw.GetArray(), 101);
                 }
             }
         }
@@ -83,7 +83,7 @@ namespace NetworkTest_Client
             ByteWriter bw = new ByteWriter();
             bw.Write(randomBytes());
             for (int i = 0; i < numericUpDown3.Value; i++)
-                Side1.Write_ModulePacket(bw.GetArray(), 101);
+                Side1.WriteModulePacket(bw.GetArray(), 101);
         }
 
     }

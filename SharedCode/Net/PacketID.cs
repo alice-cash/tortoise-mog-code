@@ -47,7 +47,7 @@ namespace Tortoise.Shared.Net
 
 
 
-
+        EndRequest = 0xFFFA,
         EndRecived = 0xFFFF
     }
 

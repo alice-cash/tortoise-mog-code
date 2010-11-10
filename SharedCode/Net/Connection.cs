@@ -36,6 +36,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using System.Diagnostics;
+
 using C5;
 
 using Tortoise.Shared.Module;
@@ -50,22 +51,52 @@ namespace Tortoise.Shared.Net
     /// </summary>
     class Connection
     {
-        public const int MTU = 1337;
+        /// <summary>
+        /// The maximum size a packet should be.
+        /// There isn't much of a speed advantage if this is increased past an actual
+        /// network packets maximum size, but it could increase latency slightly as 
+        /// streams of data are not sent and received in 1 packet. If this is larger than 
+        /// the OS's buffer, then it can also cause issues due to my faulty logic.
+        /// </summary>
+        public const int MTU = 1200;
 
+        /// <summary>
+        /// We store module information here. Module packets are sent and received via IDs.
+        /// This stores that ID and a pointer to a class that handles that data. 
+        /// </summary>
         protected static Dictionary<ushort, IComModule> _moduleActions = new Dictionary<ushort, IComModule>();
+
+        /// <summary>
+        /// Add a Packet ID and handler to the connection. 
+        /// </summary>
+        /// <param name="ID">A unique ID that identifies the Module.</param>
+        /// <param name="module">A class that contains methods to call when data is received.</param>
         public static void AddModuleHandle(ushort ID, IComModule module)
         {
+            //Because the basis of the Module system is on unique IDs, we
+            //need to check that it IS unique. Also because its a logic error
+            //we throw a generic Exception.
+            if (module == null)
+                throw new ArgumentNullException("module");
             if (_moduleActions.ContainsKey(ID))
                 throw new Exception("ID already exists!");
             _moduleActions.Add(ID, module);
         }
 
-        private Queue<Packet> _packetQue = new Queue<Packet>();
+        /// <summary>
+        /// This is our buffer for packets. 
+        /// </summary>
+        /// 
 
+        private SortedDictionary<int, Queue<Packet>> _packetQue;
+        //private Queue<Packet> _packetQue = new Queue<Packet>();
 
+        /// <summary>
+        /// An event that fires when a core Message is received.
+        /// </summary>
         public System.EventHandler<MessageEventArgs> MessageEvent;
 
-        public static ConnectionState ConnectionState = ConnectionState.NotConnected;
+        //public static ConnectionState ConnectionState = ConnectionState.NotConnected;
 
         private bool _readyForData;
 
@@ -74,33 +105,48 @@ namespace Tortoise.Shared.Net
             get { return _readyForData; }
         }
 
+        /// <summary>
+        /// The class we use to read and write to the Socket.
+        /// </summary>
         protected NetworkStream _ns;
+        /// <summary>
+        /// The main socket used for the remote connection.
+        /// </summary>
         protected Socket _sock;
 
         //  protected BinaryReader _br;
         //  protected BinaryWriter _bw;
 
         //private byte[] _data;
+
+        /// <summary>
+        /// Stores the length of the data we need to read on the network, used by
+        /// the read function to know if it needs to read a length or read data off
+        /// the network.
+        /// </summary>
         protected ushort _length;
-        protected DateTime _recived;
+
+        //protected DateTime _recived;
 
         protected byte[] _passKey = null;
 
-        protected string _authKey;
+        //protected string _authKey;
 
-        public string AuthKey
+        public byte[] PassKey
         {
-            get { return _authKey; }
+            get { return _passKey; }
         }
 
         public EventHandler DisconnectedEvent;
 
+        public EventHandler PassKeyRecivedEvent;
+
         private bool _DisconnectedEventCalled;
 
-        // private bool _endRecived;
-        // private bool _writeRecived;
+        private bool _endRecived;
+        private bool _writeRecived;
 
-        private bool _isasync;
+        //private bool _isasync;
 
 
         private DateTime _dataRecivedTime = DateTime.Now;
@@ -109,6 +155,8 @@ namespace Tortoise.Shared.Net
         private LimitedList<ulong> _last15Seconds;
 
         byte[] _bf = new byte[MTU];
+
+
 
         public ulong Last15PacketSpeed
         {
@@ -127,8 +175,16 @@ namespace Tortoise.Shared.Net
 
         public int PacketQueSize
         {
-            get { return _packetQue.Count; }
+            get
+            {
+                int count = 0;
+                foreach (var list in _packetQue)
+                    count += list.Value.Count;
+                return count;
+            }
         }
+
+
 
         public Connection(Socket connection)
         {
@@ -167,11 +223,16 @@ namespace Tortoise.Shared.Net
         {
             _ns = new NetworkStream(_sock);
             _DisconnectedEventCalled = false;
-            _authKey = "";
+            //_authKey = "";
             _last15Seconds = new LimitedList<ulong>(15, 0);
             _dataRecivedTime = DateTime.Now;
-            _isasync = false;
+            _packetQue = new SortedDictionary<int, Queue<Packet>>(new PacketSorter());
+            // _isasync = false;
+            _endRecived = true;
+            _writeRecived = false;
 
+            if (_passKey != null)
+                WritePasskey(_passKey);
         }
 
 
@@ -182,14 +243,15 @@ namespace Tortoise.Shared.Net
                 Disconnected();
                 return;
             }
-            Poll_Read();
+
+            PollRead();
             //Check incase a read kicked us.
             if (!Connected)
             {
                 Disconnected();
                 return;
             }
-            Poll_Write();
+            PollWrite();
 
             if (DateTime.Now - _dataRecivedTime >= TimeSpan.FromSeconds(1))
             {
@@ -200,11 +262,11 @@ namespace Tortoise.Shared.Net
             }
         }
 
-        private void Poll_Read()
+        private void PollRead()
         {
 
             int count = 0;
-            
+            //TODO: check for erros!
             int available = _sock.Available;
             do
             {
@@ -228,88 +290,165 @@ namespace Tortoise.Shared.Net
                     if (!pTempID.Sucess)
                     {
                         SyncError();
-                        return;
+                        break;
                     }
                     PacketID pID;
                     if (!PacketIDHelper.TryParse(pTempID.Result, out pID))
                     {
                         SyncError();
-                        return;
+                        break;
                     }
 
-                    //remove 2 from the length that we just read from
-                    HandleInput(br, Convert.ToUInt16(_length - 2), pID);
+                    if (pID == PacketID.EndRecived)
+                    {
+                        _endRecived = true;
+                    }
+                    else if (pID == PacketID.EndRequest)
+                    {
+                        _writeRecived = true;
+                    }
+                    else
+                    {
+                        //remove 2 from the length that we just read from
+                        HandleInput(br, Convert.ToUInt16(_length - 2), pID);
+                        _dataRecivedCount += 1;
+                    }
 
-                    _dataRecivedCount += 1;
                     _length = 0;
                 }
+
                 count++;
                 if (count >= 20)
                     break;
+
             } while (_length != 0);
-            /*
-            var asyncResult = _ns.BeginRead(_bf, 0, 2, (IAsyncResult result) =>
-                 {
-
-                     var subsAyncResult = _ns.BeginRead(_bf, 0, _length, (IAsyncResult subresult) =>
-                       {
-                          
-                           _isasync = false;
-
-                       }, null);
-
-                     
-                 }, null);*/
         }
 
-        private void Poll_Write()
+        private void PollWrite()
         {
-            lock (_packetQue)
+            ExecutionState<Packet> packet, dpacket;
+            if (_writeRecived)
             {
-                int count = 0;
                 ByteWriter bw = new ByteWriter();
-                int length = 0;
-                while (_packetQue.Count > 0)
-                {
-
-                    Packet p;
-
-                    p = _packetQue.Peek();
-
-                    if (p.Data.Length > MTU)
-                        //We throw an Exception here because this is clearly a logic error on our end.
-                        //Some @#$%&^* didn't implement something right, somewhere, probably me.
-                        throw new Exception("PACKETS MUST BE SMALLER THAN THE MTU!!!!!!!!");
-                    if (p.Data.Length + length < MTU)
-                    {
-                        //Dequeue it here
-                    }
-                    else
-                        break;
-                    length += p.Data.Length;
-                    bw.Write(p.Data);
-                    count++;
-                }
+                //2 for ID
+                bw.Write(Convert.ToUInt16(2));
+                bw.Write(PacketID.EndRecived.Value());
                 byte[] data = bw.GetArray();
-                _ns.Write(data, 0, data.Length);
+                WriteData(data, 0, data.Length);
+                _writeRecived = false;
 
             }
 
+            
+            if (_endRecived)
+               lock (_packetQue)
+                    if (_packetQue.Count > 0)
+                    {
+
+                        int count = 0;
+                        ByteWriter bw = new ByteWriter();
+                        int length = 0;
+                        while (_packetQue.Count > 0)
+                        {
+
+                            packet = PeekPacketFromQue();
+
+
+                            if (!packet)
+                                return;
+
+                            //We throw an Exception here because this is clearly a logic error on our end.
+                            //Some @#$%&^* didn't implement something right, somewhere, probably me.
+                            if (packet.Result.Data.Length > MTU)
+                                throw new Exception("PACKETS MUST BE SMALLER THAN THE MTU!!!!!!!!");
+
+                            if (packet.Result.Data.Length + length < MTU)
+                            {
+                                //because it it locked, the queue should not have changed.                
+                                dpacket = DequeuePacketFromQue();
+
+                                if (!dpacket)
+                                    throw new Exception("Logic Error! Peeked packet successfully but failed to dequeue it!");
+                                if (!dpacket.Result.Equals(packet.Result))
+                                    throw new Exception("Logic Error! Peeked packet different from dequeue packet!");
+                                //derp
+                            }
+                            else
+                                break;
+                            
+                            length += packet.Result.Data.Length;
+                            bw.Write(packet.Result.Data);
+                            count++;
+                        }
+                        //2 for ID
+                        bw.Write(Convert.ToUInt16(2));
+                        bw.Write(PacketID.EndRequest.Value());
+
+                        byte[] data = bw.GetArray();
+                        //_ns.BeginWrite(data, 0, data.Length, (IAsyncResult) => { if (IAsyncResult.IsCompleted) _isasync = false; }, null);
+                        //_ns.Write(data, 0, data.Length);
+                        WriteData(data, 0, data.Length);
+                        _endRecived = false;
+
+                    }
+
         }
 
-        private void AddPacket(byte[] data)
+        private ExecutionState<Packet> DequeuePacketFromQue()
         {
             lock (_packetQue)
             {
-                _packetQue.Enqueue(new Packet(data));
+                foreach (var list in _packetQue)
+                {
+                    if (list.Value.Count > 0)
+                        return new ExecutionState<Packet>(true, list.Value.Dequeue());
+                }
+            }
+            return new ExecutionState<Packet>(false, default(Packet));
+        }
+
+        private ExecutionState<Packet> PeekPacketFromQue()
+        {
+            lock (_packetQue)
+            {
+                foreach (var list in _packetQue)
+                {
+                    if (list.Value.Count > 0)
+                        return new ExecutionState<Packet>(true, list.Value.Peek());
+                }
+            }
+            return new ExecutionState<Packet>(false, default(Packet));
+        }
+
+
+
+
+
+        private void WriteData(byte[] data, int start, int length)
+        {
+            _ns.Write(data, 0, data.Length);
+        }
+
+        private void AddPacket(byte[] data, int priority)
+        {
+            lock (_packetQue)
+            {
+                if (_packetQue.ContainsKey(priority))
+                {
+                    if (_packetQue[priority] == null)
+                        _packetQue[priority] = new Queue<Packet>();
+                    _packetQue[priority].Enqueue(new Packet(data, priority));
+                }
             }
         }
+
+
 
         protected void HandleInput(ByteReader br, ushort length, PacketID pID)
         {
 
             //Switch through all of the items, even if we need to throw a SyncError.
-            //Otherwise each ID should call a Read_{DescritiveInfo}()
+            //Otherwise each ID should call a Rea{DescritiveInfo}()
             //The reason for the empty SyncError() for a release is we don't care about
             //reasons. We can assume the end developer has
             Dictionary<String, Object> debugData;
@@ -322,18 +461,18 @@ namespace Tortoise.Shared.Net
 
                     break;
                 case PacketID.Message:
-                    Read_Message(br);
+                    ReadMessage(br);
                     break;
                 case PacketID.Key:
                     break;
                 case PacketID.ModulePacket:
-                    Read_ModulePacket(br);
+                    ReadModulePacket(br);
                     break;
             }
         }
 
 
-        void Read_Key(ByteReader br)
+        void ReadKey(ByteReader br)
         {
             var tmp = br.ReadString();
             if (!tmp.Sucess)
@@ -344,7 +483,7 @@ namespace Tortoise.Shared.Net
             //finish?
         }
 
-        void Read_Message(ByteReader br)
+        void ReadMessage(ByteReader br)
         {
             //(MessageID reason)
             //Check for a valid Enum Item.
@@ -365,7 +504,7 @@ namespace Tortoise.Shared.Net
                 MessageEvent(this, new MessageEventArgs(mID));
         }
 
-        void Read_ModulePacket(ByteReader br)
+        void ReadModulePacket(ByteReader br)
         {
             var moduleID = br.ReadUShort();
             if (!moduleID.Sucess)
@@ -383,7 +522,19 @@ namespace Tortoise.Shared.Net
             _moduleActions[moduleID.Result].Communication(this, br);
         }
 
-        public void Write_ModulePacket(byte[] data, ushort moduleID)
+        private void WritePasskey(byte[] data)
+        {
+            //2 for ID, x for length
+            ushort length = Convert.ToUInt16(2 + data.Length);
+            ByteWriter bw = new ByteWriter();
+
+            bw.Write(length);
+            bw.Write(PacketID.ModulePacket.Value());
+            bw.Write(data);
+            AddPacket(bw.GetArray(), Packet.PriorityHighest);
+        }
+
+        public void WriteModulePacket(byte[] data, ushort moduleID, int priority = Packet.PriorityNormal)
         {
             //2 for ID, 2 for module ID, x for data length
             ushort length = Convert.ToUInt16(4 + data.Length);
@@ -393,10 +544,10 @@ namespace Tortoise.Shared.Net
             bw.Write(PacketID.ModulePacket.Value());
             bw.Write(moduleID);
             bw.Write(data);
-            AddPacket(bw.GetArray());
+            AddPacket(bw.GetArray(), priority);
         }
 
-        public void Write_Message(MessageID reason)
+        public void WriteMessage(MessageID reason, int priority = Packet.PriorityNormal)
         {
             //2 for ID, 2 for message ID
             ushort length = 4;
@@ -406,7 +557,7 @@ namespace Tortoise.Shared.Net
             bw.Write(PacketID.Message.Value());
             bw.Write(reason.Value());
 
-            AddPacket(bw.GetArray());
+            AddPacket(bw.GetArray(), priority);
         }
 
         /// <summary>
@@ -449,7 +600,7 @@ namespace Tortoise.Shared.Net
         /// </summary>
         public void Disconnect(MessageID reason)
         {
-            Write_Message(reason);
+            WriteMessage(reason);
             Disconnect();
         }
 
@@ -485,7 +636,7 @@ namespace Tortoise.Shared.Net
                 System.Diagnostics.Debug.WriteLine(stackTrace.ToString());
             }
 
-            Write_Message(MessageID.SyncError);
+            WriteMessage(MessageID.SyncError);
             Disconnect();
         }
 

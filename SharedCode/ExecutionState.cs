@@ -3,7 +3,8 @@
 namespace Tortoise.Shared
 {
     /// <summary>
-    /// This class is used for Returned Functions or Methods, when the possibility of failure is there. This class represents a Void Type.
+    /// This class is used for the Return value Functions or Methods, when the possibility of failure is there. 
+    /// This class represents a Void Type.
     /// </summary>
     public struct ExecutionState
     {
@@ -56,7 +57,8 @@ namespace Tortoise.Shared
     }
 
     /// <summary>
-    /// This class is used for Returned Functions or Methods, when the possibility of failure is there. This class allows a Result to be passed through it so it may replace non void types.
+    /// This class is used for the Return value of Functions or Methods, when the possibility of failure is there.
+    /// This class allows a Result to be passed through it so it may replace non void types.
     /// </summary>
     public struct ExecutionState<T>
     {
