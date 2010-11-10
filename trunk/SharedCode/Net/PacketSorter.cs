@@ -38,15 +38,15 @@ namespace Tortoise.Shared.Net
 	/// <summary>
 	/// Description of PacketSorter.
 	/// </summary>
-	class PacketSorter : Comparer<Packet>
+	class PacketSorter : Comparer<int>
 	{
 		public PacketSorter()
 		{
 		}
 		
-		public override int Compare(Packet x, Packet y)
+		public override int Compare(int x, int y)
 		{
-			return x.Priority - y.Priority;
+			return x - y;
 		}
 	}
 }

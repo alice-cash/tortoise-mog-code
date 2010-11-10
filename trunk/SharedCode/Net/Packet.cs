@@ -37,11 +37,20 @@ namespace Tortoise.Shared.Net
 {
 	struct Packet
 	{
+        public const int PriorityHighest = -10;
+        public const int PriorityHigh = -5;
+        public const int PriorityNormal = 0;
+        public const int PriorityLow = 5;
+        public const int PriorityLowest = 10;
+
+
+        public int Priority;
         public byte[] Data;
 		
-		public Packet(byte[] data)
+		public Packet(byte[] data, int priority)
 		{
 			Data = data;
+            Priority = priority;
 		}
 	}
 	

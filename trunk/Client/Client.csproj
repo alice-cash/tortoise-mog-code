@@ -9,13 +9,14 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Tortoise.Client</RootNamespace>
     <AssemblyName>Client</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <FileAlignment>512</FileAlignment>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -103,6 +104,9 @@
     <Compile Include="..\SharedCode\Net\PacketID.cs">
       <Link>Net\PacketID.cs</Link>
     </Compile>
+    <Compile Include="..\SharedCode\Net\PacketSorter.cs">
+      <Link>Net\PacketSorter.cs</Link>
+    </Compile>
     <Compile Include="..\SharedCode\Threading\IInvokable.cs">
       <Link>Threading\IInvokable.cs</Link>
     </Compile>
@@ -152,8 +156,8 @@
     <Compile Include="Rendering\TickEventArgs.cs" />
     <Compile Include="Rendering\Window.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Localization\EN-US.lang">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
