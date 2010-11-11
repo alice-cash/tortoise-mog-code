@@ -30,6 +30,13 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
+
+/*
+ * TODO: Impliment Timeout Features on waiting for data or waiting for the remote party to return a Flow Control request.
+ * 
+ * 
+ * */
+
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -128,51 +135,125 @@ namespace Tortoise.Shared.Net
 
         //protected DateTime _recived;
 
+        /// <summary>
+        /// Used to verify and identify a connection when connecting to a second connection.
+        /// </summary>
         protected byte[] _passKey = null;
 
         //protected string _authKey;
 
+        /// <summary>
+        /// Used to verify and identify a connection when connecting to a second connection
+        /// </summary>
         public byte[] PassKey
         {
             get { return _passKey; }
         }
 
+        /// <summary>
+        /// Fired when the connects disconnects due to the remote 
+        /// </summary>
         public EventHandler DisconnectedEvent;
 
-        public EventHandler PassKeyRecivedEvent;
+        /// <summary>
+        /// When we receive a key.
+        /// </summary>
+        public EventHandler<PassKeyRecivedEventArgs> PassKeyRecivedEvent;
 
+        /// <summary>
+        /// Keeps track if we have already disconnected.
+        /// </summary>
         private bool _DisconnectedEventCalled;
 
+        /// <summary>
+        /// Keeps track of when the remote client has told us it received the flow control packet
+        /// we sent it. Signaling that we can send more data.
+        /// </summary>
+        /// 
         private bool _endRecived;
+        /// <summary>
+        /// Keeps track of when we receive a request to tell the remote party that we received their
+        /// flow control packet.
+        /// </summary>
         private bool _writeRecived;
 
         //private bool _isasync;
 
-
+        /// <summary>
+        /// Used to track the time for counting the number of data packets we have received.
+        /// </summary>
         private DateTime _dataRecivedTime = DateTime.Now;
+
+        /// <summary>
+        /// Used to track the number of data packets we have received in the past second.
+        /// </summary>
         private ulong _dataRecivedCount = 0;
-        private ulong _lastCount;
+
+        /// <summary>
+        /// Used to track the total number of data packets in the previous second.
+        /// </summary>
+        private ulong _lastCount = 0;
+
+        /// <summary>
+        /// Tracks the past 15 seconds worth of packets.
+        /// </summary>
         private LimitedList<ulong> _last15Seconds;
 
-        byte[] _bf = new byte[MTU];
+        /// <summary>
+        /// One second, might not be much of a performance issue, but we run it allot, 
+        /// and it will always be the same.
+        /// </summary>
+        private TimeSpan OneSecondTimespan = TimeSpan.FromSeconds(1);
+
+        /// <summary>
+        /// Reusable buffer used to read data off the network.
+        /// </summary>
+        private byte[] _bf = new byte[MTU];
 
 
-
-        public ulong Last15PacketSpeed
+        /// <summary>
+        /// Returns the Average number of packets over the last 15 seconds.
+        /// </summary>
+        public ulong Last15PacketAverage
         {
             get { return CalculateAverage(_last15Seconds); }
         }
 
+        /// <summary>
+        /// Returns the total number of packets over the past 15 seconds.
+        /// </summary>
+        public ulong Last15PacketTotal
+        {
+            get
+            {
+                ulong total = 0;
+                foreach (var p in _last15Seconds)
+                {
+                    total += p;
+                }
+                return total;
+            }
+        }
+
+        /// <summary>
+        /// Returns the number of packets received in the past second.
+        /// </summary>
         public ulong LastPacketSpeed
         {
             get { return _lastCount; }
         }
 
+        /// <summary>
+        /// Returns if the socket is connected or not.
+        /// </summary>
         public bool Connected
         {
-            get { return _sock == null ? false : _sock.Connected; }
+            get { return _sock == null ? false : CheckForError() ? false : _sock.Connected; }
         }
 
+        /// <summary>
+        /// Returns the length of the packet queue waiting to send to the remote socket.
+        /// </summary>
         public int PacketQueSize
         {
             get
@@ -184,114 +265,222 @@ namespace Tortoise.Shared.Net
             }
         }
 
-
-
+        /// <summary>
+        /// Uses an existing Socket to create a Connection class.
+        /// </summary>
+        /// <param name="connection">A socket that must already be open.</param>
         public Connection(Socket connection)
         {
             _sock = connection;
             Init();
         }
 
+        /// <summary>
+        /// Uses an existing Socket to create a Connection class using a passkey.
+        /// </summary>
+        /// <param name="connection">A socket that must already be open.</param>
+        /// <param name="passkey">The passkey to use to connect with.</param>
+        public Connection(Socket connection, byte[] passkey)
+            : this(connection)
+        {
+            _passKey = passkey;
+        }
+
+        /// <summary>
+        /// Creates a Connection class and connects to the remote server.
+        /// </summary>
+        /// <param name="dest">The IP to connect to.</param>
+        /// <param name="port">The port to connect to.</param>
         public Connection(IPAddress dest, int port)
         {
-            _sock = new Socket(dest.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            _sock.Connect(dest, port);
+            Connect(dest, port);
             Init();
         }
 
-
+        /// <summary>
+        /// Creates a Connection class and connects to the remote server using a passkey.
+        /// </summary>
+        /// <param name="dest">The IP to connect to.</param>
+        /// <param name="port">The port to connect to.</param>
+        /// <param name="passkey">The passkey to use to connect with.</param>
         public Connection(IPAddress dest, int port, byte[] passkey)
             : this(dest, port)
         {
             _passKey = passkey;
         }
 
+        /// <summary>
+        /// Creates a Connection class and connects to the remote server.
+        /// </summary>
+        /// <param name="dest">The IP or Host to connect to.</param>
+        /// <param name="port">The port to connect to.</param>
         public Connection(string dest, int port)
-            : this(IPAddress.Parse(dest), port)
         {
+            IPAddress destAddress;
+            if (!IPAddress.TryParse(dest, out destAddress))
+            {
+                //Maybe its a hostname
+                System.Net.IPAddress[] Addresses;
 
+                Addresses = Dns.GetHostEntry(dest).AddressList;
+
+                if (Addresses.Length == 0)
+                {
+                    throw new Exception("DNS Host did not resolve to an IP address");
+                }
+                destAddress = Addresses[0];
+            }
+            Connect(destAddress, port);
+            Init();
         }
 
-        public Connection(Socket connection, byte[] passkey)
-            : this(connection)
+        /// <summary>
+        /// Creates a Connection class and connects to the remote server using a passkey.
+        /// </summary>
+        /// <param name="dest">The IP or Host to connect to.</param>
+        /// <param name="port">The port to connect to.</param>
+        /// <param name="passkey">The passkey to use to connect with.</param>
+        public Connection(string dest, int port, byte[] passkey)
+            : this(dest, port)
         {
             _passKey = passkey;
-
         }
 
+
+        /// <summary>
+        /// Connects to a remote host.
+        /// </summary>
+        private void Connect(IPAddress dest, int port)
+        {
+            _sock = new Socket(dest.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            _sock.Connect(dest, port);
+        }
+
+        /// <summary>
+        /// Initializes variables used by the class.
+        /// </summary>
         private void Init()
         {
+            //First we create and set up the network stream, this is what we
+            //do all the reading and writing to.
             _ns = new NetworkStream(_sock);
             _DisconnectedEventCalled = false;
             //_authKey = "";
+            //We initialize it and it fills with 0s.
             _last15Seconds = new LimitedList<ulong>(15, 0);
             _dataRecivedTime = DateTime.Now;
+            //This stores the packets we send. We use the PacketSorter class that
+            //sorts lower numbers first.
             _packetQue = new SortedDictionary<int, Queue<Packet>>(new PacketSorter());
             // _isasync = false;
             _endRecived = true;
             _writeRecived = false;
 
+            //If the passkey isn't null, we want to send it out right away.
             if (_passKey != null)
                 WritePasskey(_passKey);
         }
 
-
+        /// <summary>
+        /// Polls the Socket, Checking for data and sending out any waiting to get sent.
+        /// </summary>
         public void Poll()
         {
-            if (!Connected)
+            //we don't want any socket errors to travel back up to the caller.
+            //This class should function Exception free, though if one does happen,
+            //it is most likely due to a module not properly handling issues
+            //or a socket error, either way the caller doesn't need to know.
+            try
             {
-                Disconnected();
-                return;
-            }
+                //the Connected attribute also checks for errors on the socket
+                //So either way, we want to make sure the disconnect code is properly run.
+                if (!Connected)
+                {
+                    Disconnected();
+                    return;
+                }
 
-            PollRead();
-            //Check incase a read kicked us.
-            if (!Connected)
-            {
-                Disconnected();
-                return;
-            }
-            PollWrite();
+                PollRead();
 
-            if (DateTime.Now - _dataRecivedTime >= TimeSpan.FromSeconds(1))
+                //Check incase a read kicked us or some kind of socket error.
+                if (!Connected)
+                {
+                    Disconnected();
+                    return;
+                }
+                PollWrite();
+
+                //after 1 second, we do our packet count stuff.
+                if (DateTime.Now - _dataRecivedTime >= OneSecondTimespan)
+                {
+                    _last15Seconds.Add(_dataRecivedCount);
+                    _lastCount = _dataRecivedCount;
+                    _dataRecivedCount = 0;
+                    _dataRecivedTime = DateTime.Now;
+                }
+            }
+            catch
             {
-                _last15Seconds.Add(_dataRecivedCount);
-                _lastCount = _dataRecivedCount;
-                _dataRecivedCount = 0;
-                _dataRecivedTime = DateTime.Now;
+                //Any exception is probably due to a socket issue.
+                Disconnect();
             }
         }
 
+        /// <summary>
+        /// Reads data off the network.
+        /// </summary>
         private void PollRead()
         {
-
+            //The number of items we have read off the network.
+            //We do this so we can keep track of them the number we have read
+            //and we want to limit the number we let the system read at once.
             int count = 0;
-            //TODO: check for erros!
+            //read the number of bytes available
+            //there used to be a race condition in older designs if we just rely
+            //on _sock.Available as the socket state can update between here and  
+            //later, we can break a bunch of stuff. This may not exist now but i
+            //still prefer to guard against it.
             int available = _sock.Available;
+
+            if (available == 0) return;
+
+            //this is our main loop, it allows us to keep reading stuff off the network
             do
             {
+                //The core of the network send and receive resoles around sending byte arrays like
+                //most games. We prefix a length to the front of these arrays, so if we are not
+                //waiting for the rest of some data, we simply look for 2 bytes being available
+                //When we are not waiting for data, we check to see if there are 2 bytes.
                 if (_length == 0)
                 {
+                    //If its more than or equal to 2(someone sends 1 byte? that's got to be odd???)
                     if (available >= 2)
                     {
+                        //read 2 bytes into the buffer then convert it, so we know what to look for.
                         _ns.Read(_bf, 0, 2);
                         _length = BitConverter.ToUInt16(_bf, 0);
 
                     }
                 }
+                //recheck the length
                 available = _sock.Available;
+                //when we are waiting for data and there's enough
                 if (_length > 0 && available >= _length)
                 {
+                    //we read it and create a byteReader for it,
                     _ns.Read(_bf, 0, _length);
                     ByteReader br = new ByteReader(_bf, 0, _length);
 
                     //this should succeed, always....
+                    //all pieces of data should have a 2 byte ID
+                    //if not something bad happened somewhere,
                     var pTempID = br.ReadUShort();
                     if (!pTempID.Sucess)
                     {
                         SyncError();
                         break;
                     }
+                    //if its not a valid ID, throw an error as it shouldn't happen.
                     PacketID pID;
                     if (!PacketIDHelper.TryParse(pTempID.Result, out pID))
                     {
@@ -301,32 +490,42 @@ namespace Tortoise.Shared.Net
 
                     if (pID == PacketID.EndRecived)
                     {
+                        //when we receive a response to a flow control packet, we can send more data
                         _endRecived = true;
                     }
                     else if (pID == PacketID.EndRequest)
                     {
+                        //we receive a request for flow-control
                         _writeRecived = true;
                     }
                     else
                     {
-                        //remove 2 from the length that we just read from
-                        HandleInput(br, Convert.ToUInt16(_length - 2), pID);
+                        //process the data and increase the packet count.
+                        HandleInput(br, pID);
                         _dataRecivedCount += 1;
                     }
-
+                    //we processed the data so reset the length to 0 so we can look for a length again
                     _length = 0;
                 }
+                available = _sock.Available;
 
+                //increase the counter and stop when we get to 20 processed items
                 count++;
                 if (count >= 20)
                     break;
-
-            } while (_length != 0);
+                //or until the available data is 0.
+            } while (available != 0);
         }
 
+        /// <summary>
+        /// Write any available data to the network.
+        /// </summary>
         private void PollWrite()
         {
+            //Used for storing data from the packet queue
             ExecutionState<Packet> packet, dpacket;
+            //If we need to respond to a Flow Control request
+            //we simply write it now instead of trying to queue it somewhere else
             if (_writeRecived)
             {
                 ByteWriter bw = new ByteWriter();
@@ -336,24 +535,27 @@ namespace Tortoise.Shared.Net
                 byte[] data = bw.GetArray();
                 WriteData(data, 0, data.Length);
                 _writeRecived = false;
-
             }
 
-            
+            //If we can send data, then we lock _packetQue so another thread can't 
+            //add a packet while we are sending them out. After we lock it, we then check
+            //if data is available to send.
             if (_endRecived)
-               lock (_packetQue)
-                    if (_packetQue.Count > 0)
+                lock (_packetQue)
+                    if (PacketQueCount() > 0)
                     {
+                        //We try to fit as many packets into 1 write to speed it up, as writing to the network is a very slow process.
 
                         int count = 0;
                         ByteWriter bw = new ByteWriter();
                         int length = 0;
+
                         while (_packetQue.Count > 0)
                         {
-
+                            //There should be a packet in the queue, but we never know what happens.
                             packet = PeekPacketFromQue();
 
-
+                            //The ExecutionState lets us directly use a Boolean to see if it succeeded or not
                             if (!packet)
                                 return;
 
@@ -362,7 +564,8 @@ namespace Tortoise.Shared.Net
                             if (packet.Result.Data.Length > MTU)
                                 throw new Exception("PACKETS MUST BE SMALLER THAN THE MTU!!!!!!!!");
 
-                            if (packet.Result.Data.Length + length < MTU)
+                            //If the packet will fit in and be under the MTU
+                            if (packet.Result.Data.Length + length <= MTU)
                             {
                                 //because it it locked, the queue should not have changed.                
                                 dpacket = DequeuePacketFromQue();
@@ -374,26 +577,45 @@ namespace Tortoise.Shared.Net
                                 //derp
                             }
                             else
+                                //done adding to the queue as it won't fit
                                 break;
-                            
+
+                            //increase the length and write it to our buffer.
                             length += packet.Result.Data.Length;
                             bw.Write(packet.Result.Data);
                             count++;
                         }
-                        //2 for ID
-                        bw.Write(Convert.ToUInt16(2));
-                        bw.Write(PacketID.EndRequest.Value());
+
 
                         byte[] data = bw.GetArray();
                         //_ns.BeginWrite(data, 0, data.Length, (IAsyncResult) => { if (IAsyncResult.IsCompleted) _isasync = false; }, null);
                         //_ns.Write(data, 0, data.Length);
+
+                        //write the data
                         WriteData(data, 0, data.Length);
+
+                        //then a flow control request
+                        //2 for ID
+                        bw.Write(Convert.ToUInt16(2));
+                        bw.Write(PacketID.EndRequest.Value());
                         _endRecived = false;
 
                     }
 
         }
 
+        /// <summary>
+        /// Simply returns true or false if the socket has an error.
+        /// </summary>
+        private bool CheckForError()
+        {
+            return _sock.Poll(10, SelectMode.SelectError);
+        }
+
+        /// <summary>
+        /// Dequeue a packet from the network queue
+        /// </summary>
+        /// <returns></returns>
         private ExecutionState<Packet> DequeuePacketFromQue()
         {
             lock (_packetQue)
@@ -407,6 +629,9 @@ namespace Tortoise.Shared.Net
             return new ExecutionState<Packet>(false, default(Packet));
         }
 
+        /// <summary>
+        /// Peek a packet from the network queue
+        /// </summary>
         private ExecutionState<Packet> PeekPacketFromQue()
         {
             lock (_packetQue)
@@ -420,31 +645,55 @@ namespace Tortoise.Shared.Net
             return new ExecutionState<Packet>(false, default(Packet));
         }
 
+        /// <summary>
+        /// Counts the number of packets in the que.
+        /// </summary>
+        private int PacketQueCount()
+        {
+            int count = 0;
+            foreach (var list in _packetQue)
+                count += list.Value.Count;
+            return count;
+        }
 
 
 
-
+        /// <summary>
+        /// Writes data to the network. Used for profiling and to lazy to remove it.
+        /// </summary>
+        /// <param name="data">The data to write.</param>
+        /// <param name="start">The start of the array.</param>
+        /// <param name="length">The length to write.</param>
         private void WriteData(byte[] data, int start, int length)
         {
             _ns.Write(data, 0, data.Length);
         }
 
+        /// <summary>
+        /// Adds a packet to the network queue.
+        /// </summary>
+        /// <param name="data">The data to write.</param>
+        /// <param name="priority">The priority of the data.</param>
         private void AddPacket(byte[] data, int priority)
         {
+            //As this can get called from multiple threads, we must practice safe sex...
+            //err um, i mean practice safe cross-threading calls.
             lock (_packetQue)
             {
-                if (_packetQue.ContainsKey(priority))
-                {
-                    if (_packetQue[priority] == null)
-                        _packetQue[priority] = new Queue<Packet>();
-                    _packetQue[priority].Enqueue(new Packet(data, priority));
-                }
+                //If we don't have this priority in the list, just create it.
+                if (!_packetQue.ContainsKey(priority))
+                    _packetQue.Add(priority, new Queue<Packet>());
+                _packetQue[priority].Enqueue(new Packet(data, priority));
             }
         }
 
 
-
-        protected void HandleInput(ByteReader br, ushort length, PacketID pID)
+        /// <summary>
+        /// Handles input from the PollRead function.
+        /// </summary>
+        /// <param name="br">The ByteReader with data.</param>
+        /// <param name="pID">The ID read off.</param>
+        protected void HandleInput(ByteReader br, PacketID pID)
         {
 
             //Switch through all of the items, even if we need to throw a SyncError.
@@ -454,6 +703,7 @@ namespace Tortoise.Shared.Net
             Dictionary<String, Object> debugData;
             switch (pID)
             {
+                //Null is some relic of early testing. No reason to remove it
                 case PacketID.Null:
                     debugData = new Dictionary<String, Object>();
                     debugData.Add("PacketID", PacketID.Null);
@@ -463,7 +713,18 @@ namespace Tortoise.Shared.Net
                 case PacketID.Message:
                     ReadMessage(br);
                     break;
-                case PacketID.Key:
+                case PacketID.Passkey:
+                    var result = br.ReadBytes(br.Avaliable);
+                    if (!result)
+                    {   //???????????
+                        Debug.Write("?????????? Could not read Passkey from bytereader");
+                        return;
+                    }
+                    byte[] buffer = result.Result;
+
+                    if (PassKeyRecivedEvent != null)
+                        PassKeyRecivedEvent(this, new PassKeyRecivedEventArgs(buffer));
+
                     break;
                 case PacketID.ModulePacket:
                     ReadModulePacket(br);
@@ -471,18 +732,21 @@ namespace Tortoise.Shared.Net
             }
         }
 
+        //Originally was going to do a key for encryption.
+        //void ReadKey(ByteReader br)
+        //{
+        //    var tmp = br.ReadString();
+        //    if (!tmp.Sucess)
+        //    {
+        //        SyncError();
+        //        return;
+        //    }
+        //    //finish?
+        //}
 
-        void ReadKey(ByteReader br)
-        {
-            var tmp = br.ReadString();
-            if (!tmp.Sucess)
-            {
-                SyncError();
-                return;
-            }
-            //finish?
-        }
-
+        /// <summary>
+        /// Reads a message.
+        /// </summary>
         void ReadMessage(ByteReader br)
         {
             //(MessageID reason)
@@ -494,7 +758,7 @@ namespace Tortoise.Shared.Net
                 SyncError();
                 return;
             }
-            MessageID mID = MessageID.Null;
+            MessageID mID;
             if (!MessageIDHelper.TryParse(rTmp.Result, out mID))
             {
                 Disconnect(MessageID.SyncError);
@@ -504,6 +768,10 @@ namespace Tortoise.Shared.Net
                 MessageEvent(this, new MessageEventArgs(mID));
         }
 
+        /// <summary>
+        /// Reads a module packet and sends it to the handler.
+        /// </summary>
+        /// <param name="br"></param>
         void ReadModulePacket(ByteReader br)
         {
             var moduleID = br.ReadUShort();
@@ -515,13 +783,26 @@ namespace Tortoise.Shared.Net
             if (!_moduleActions.ContainsKey(moduleID.Result))
             {
                 SyncError();
-                throw new Exception("moduleID not registered!");
+                //throw new Exception("moduleID not registered!");
+                return;
             }
 
-            //remove 2 from the length because we just read 2 off
-            _moduleActions[moduleID.Result].Communication(this, br);
+            //this directly calls the method the delicate calls. We use the
+            //try to catch any bad modules who don't handle errors correctly
+            try
+            {
+                _moduleActions[moduleID.Result].Communication(this, br);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(string.Format("EXCEPTION! {0}", ex.ToString()));
+            }
         }
 
+        /// <summary>
+        /// Sends the given passkey to the remote connection.
+        /// </summary>
+        /// <param name="data"></param>
         private void WritePasskey(byte[] data)
         {
             //2 for ID, x for length
@@ -534,6 +815,12 @@ namespace Tortoise.Shared.Net
             AddPacket(bw.GetArray(), Packet.PriorityHighest);
         }
 
+        /// <summary>
+        /// Sends module data to the remote connection, with the given priority.
+        /// </summary>
+        /// <param name="data">A byte array of data.</param>
+        /// <param name="moduleID">The ID of the remote module.</param>
+        /// <param name="priority">The priority of the packet.</param>
         public void WriteModulePacket(byte[] data, ushort moduleID, int priority = Packet.PriorityNormal)
         {
             //2 for ID, 2 for module ID, x for data length
@@ -547,7 +834,12 @@ namespace Tortoise.Shared.Net
             AddPacket(bw.GetArray(), priority);
         }
 
-        public void WriteMessage(MessageID reason, int priority = Packet.PriorityNormal)
+        /// <summary>
+        /// Sends a message to the remote connection.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="priority">The priority of the packet.</param>
+        public void WriteMessage(MessageID message, int priority = Packet.PriorityNormal)
         {
             //2 for ID, 2 for message ID
             ushort length = 4;
@@ -555,7 +847,7 @@ namespace Tortoise.Shared.Net
 
             bw.Write(length);
             bw.Write(PacketID.Message.Value());
-            bw.Write(reason.Value());
+            bw.Write(message.Value());
 
             AddPacket(bw.GetArray(), priority);
         }
@@ -565,10 +857,20 @@ namespace Tortoise.Shared.Net
         /// </summary>
         public void Disconnect()
         {
-            _sock.Close();
+            if (_sock != null)
+            {
+                if (_sock.Connected)
+                    _sock.Disconnect(false);
+                _sock.Close();
+            }
             Disconnected();
         }
 
+        /// <summary>
+        /// Calculates the average of a list of numbers.
+        /// </summary>
+        /// <param name="items"></param>
+        /// <returns></returns>
         private ulong CalculateAverage(LimitedList<ulong> items)
         {
             double count = 0, total = 0, result = 0;
@@ -586,13 +888,18 @@ namespace Tortoise.Shared.Net
             return Convert.ToUInt64(result);
         }
 
-
+        /// <summary>
+        /// Runs commands after the connection has been closed.
+        /// </summary>
         private void Disconnected()
         {
             if (Connected || _DisconnectedEventCalled) return; //UUh, we are not disconnected or this has been called already.
             if (DisconnectedEvent != null)
                 DisconnectedEvent(this, EventArgs.Empty);
             _DisconnectedEventCalled = true;
+            foreach (var group in _packetQue)
+                group.Value.Clear();
+            _packetQue.Clear();
         }
 
         /// <summary>
@@ -613,6 +920,10 @@ namespace Tortoise.Shared.Net
             SyncError(new Dictionary<String, Object>());
         }
 
+        /// <summary>
+        /// Calls a Sync Error, Usually when the receiving DataStream contains data the program isn't expecting.
+        /// </summary>
+        /// <param name="debugData">Debug information which is logged.</param>
         public void SyncError(string debugData)
         {
             Dictionary<String, Object> d = new Dictionary<String, Object>();
@@ -620,14 +931,21 @@ namespace Tortoise.Shared.Net
             SyncError(new Dictionary<String, Object>());
         }
 
+        /// <summary>
+        /// Calls a Sync Error, Usually when the receiving DataStream contains data the program isn't expecting.
+        /// </summary>
+        /// <param name="debugData">Debug information which is logged.</param>
         public void SyncError(Dictionary<String, Object> data)
         {
             StackTrace stackTrace = new StackTrace();
 
+            //If a debugger is attached, chances are we are debugging, so we want to stop and let us
+            //and figure out why we got a sync error.
             if (System.Diagnostics.Debugger.IsAttached)
                 System.Diagnostics.Debugger.Break();
             else
             {
+                //Otherwise we want to write the data to the Debug Log.
                 System.Diagnostics.Debug.WriteLine(String.Format("SyncError!"));
                 foreach (var kvp in data)
                     System.Diagnostics.Debug.WriteLine(String.Format("{0} = {1}", kvp.Key, kvp.Value));
@@ -640,5 +958,24 @@ namespace Tortoise.Shared.Net
             Disconnect();
         }
 
+    }
+
+    /// <summary>
+    /// EventArgs Class used for PassKeyRecivedEvent
+    /// </summary>
+    public class PassKeyRecivedEventArgs : EventArgs
+    {
+        /// <summary>
+        /// The PassKey Received
+        /// </summary>
+        public byte[] PassKey;
+        /// <summary>
+        /// Creates a new instance of the PassKeyRecivedEventArgs class with the given Key.
+        /// </summary>
+        /// <param name="data">The key received.</param>
+        public PassKeyRecivedEventArgs(byte[] data)
+        {
+            PassKey = data;
+        }
     }
 }
