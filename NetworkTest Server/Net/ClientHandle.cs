@@ -63,7 +63,7 @@ namespace Tortoise.Server.Connections
             {
                 ulong count = 0;
                 foreach (var c in _clients)
-                    count += c.Last15PacketSpeed;
+                    count += c.Last15PacketAverage;
                 return count;
             }
         }
