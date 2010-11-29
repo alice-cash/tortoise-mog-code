@@ -63,11 +63,6 @@ namespace Tortoise.Server.Module
 			
 		}
 	}
-	
-	struct PlayerData
-	{
-		
-	}
 
 
 	/// <summary>
@@ -75,7 +70,6 @@ namespace Tortoise.Server.Module
 	/// </summary>
 	class Login : IComModule
 	{
-		public static Dictionary<Connection, PlayerData> PlayerData = new System.Collections.Generic.Dictionary<Connection, PlayerData>();
 
 		//These are IDs used by the packet. The random numbers
 		//should help catch sync issues.
@@ -89,6 +83,12 @@ namespace Tortoise.Server.Module
 		{
 
 		}
+	
+		public void Communication(Connection Sender, Tortoise.Shared.IO.ByteReader data)
+		{
+
+		}
+
 		
 		/*
 		void Read_ClientInfo()
@@ -143,9 +143,6 @@ namespace Tortoise.Server.Module
 			_sw.Flush();
 		}*/
 		
-		public void Communication(Connection Sender, Tortoise.Shared.IO.ByteReader data)
-		{
 
-		}
 	}
 }

@@ -1,29 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.0.0.6842
+# SharpDevelop 4.0.0.5949
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SharedCode", "SharedCode", "{DF44B900-3E66-4601-9267-BDBC81A61723}"
 	ProjectSection(SolutionItems) = preProject
 		SharedCode\ExecutionState.cs = SharedCode\ExecutionState.cs
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Collection", "Collection", "{38D4C6D7-76CC-46FF-A8D9-5734844451B9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Threading", "Threading", "{91FB6C9F-7072-4030-B00E-5801E8EAFD5C}"
 	ProjectSection(SolutionItems) = preProject
-		SharedCode\Collection\LimitedList.cs = SharedCode\Collection\LimitedList.cs
-		SharedCode\Collection\SortedList.cs = SharedCode\Collection\SortedList.cs
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IO", "IO", "{19A1D559-95EF-4775-A7E9-AD20CF40F1BC}"
-	ProjectSection(SolutionItems) = preProject
-		SharedCode\IO\ByteReader.cs = SharedCode\IO\ByteReader.cs
-		SharedCode\IO\ByteWriter.cs = SharedCode\IO\ByteWriter.cs
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Module", "Module", "{1BF8CF8B-FF16-4210-AAE9-C71E9D26034C}"
-	ProjectSection(SolutionItems) = preProject
-		SharedCode\Module\IComModule.cs = SharedCode\Module\IComModule.cs
-		SharedCode\Module\ModuleInfo.cs = SharedCode\Module\ModuleInfo.cs
-		SharedCode\Module\ModuleLoader.cs = SharedCode\Module\ModuleLoader.cs
+		SharedCode\Threading\IInvokable.cs = SharedCode\Threading\IInvokable.cs
+		SharedCode\Threading\InvokeItem.cs = SharedCode\Threading\InvokeItem.cs
+		SharedCode\Threading\Invoker.cs = SharedCode\Threading\Invoker.cs
+		SharedCode\Threading\ThreadSafetyEnforcer.cs = SharedCode\Threading\ThreadSafetyEnforcer.cs
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Net", "Net", "{B2151312-57FD-47AF-825D-59AE1BCA8B5F}"
@@ -37,12 +26,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Net", "Net", "{B2151312-57F
 		SharedCode\Net\PacketSorter.cs = SharedCode\Net\PacketSorter.cs
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Threading", "Threading", "{91FB6C9F-7072-4030-B00E-5801E8EAFD5C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Module", "Module", "{1BF8CF8B-FF16-4210-AAE9-C71E9D26034C}"
 	ProjectSection(SolutionItems) = preProject
-		SharedCode\Threading\IInvokable.cs = SharedCode\Threading\IInvokable.cs
-		SharedCode\Threading\InvokeItem.cs = SharedCode\Threading\InvokeItem.cs
-		SharedCode\Threading\Invoker.cs = SharedCode\Threading\Invoker.cs
-		SharedCode\Threading\ThreadSafetyEnforcer.cs = SharedCode\Threading\ThreadSafetyEnforcer.cs
+		SharedCode\Module\IComModule.cs = SharedCode\Module\IComModule.cs
+		SharedCode\Module\ModuleInfo.cs = SharedCode\Module\ModuleInfo.cs
+		SharedCode\Module\ModuleLoader.cs = SharedCode\Module\ModuleLoader.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IO", "IO", "{19A1D559-95EF-4775-A7E9-AD20CF40F1BC}"
+	ProjectSection(SolutionItems) = preProject
+		SharedCode\IO\ByteReader.cs = SharedCode\IO\ByteReader.cs
+		SharedCode\IO\ByteWriter.cs = SharedCode\IO\ByteWriter.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Collection", "Collection", "{38D4C6D7-76CC-46FF-A8D9-5734844451B9}"
+	ProjectSection(SolutionItems) = preProject
+		SharedCode\Collection\LimitedList.cs = SharedCode\Collection\LimitedList.cs
+		SharedCode\Collection\SortedList.cs = SharedCode\Collection\SortedList.cs
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{7E8CCA61-1E2B-4399-B2A3-220EB04B3C4C}"
@@ -166,10 +166,10 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{91FB6C9F-7072-4030-B00E-5801E8EAFD5C} = {DF44B900-3E66-4601-9267-BDBC81A61723}
-		{B2151312-57FD-47AF-825D-59AE1BCA8B5F} = {DF44B900-3E66-4601-9267-BDBC81A61723}
-		{1BF8CF8B-FF16-4210-AAE9-C71E9D26034C} = {DF44B900-3E66-4601-9267-BDBC81A61723}
-		{19A1D559-95EF-4775-A7E9-AD20CF40F1BC} = {DF44B900-3E66-4601-9267-BDBC81A61723}
 		{38D4C6D7-76CC-46FF-A8D9-5734844451B9} = {DF44B900-3E66-4601-9267-BDBC81A61723}
+		{19A1D559-95EF-4775-A7E9-AD20CF40F1BC} = {DF44B900-3E66-4601-9267-BDBC81A61723}
+		{1BF8CF8B-FF16-4210-AAE9-C71E9D26034C} = {DF44B900-3E66-4601-9267-BDBC81A61723}
+		{B2151312-57FD-47AF-825D-59AE1BCA8B5F} = {DF44B900-3E66-4601-9267-BDBC81A61723}
+		{91FB6C9F-7072-4030-B00E-5801E8EAFD5C} = {DF44B900-3E66-4601-9267-BDBC81A61723}
 	EndGlobalSection
 EndGlobal
