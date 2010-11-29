@@ -429,7 +429,7 @@ namespace Tortoise.Client.Rendering.GUI
 
 
 		/// <summary>
-		/// Redraws the PreRenderd Surface, recomended to override this instead of Render.
+		/// Redraws the PreRenderd Surface, recommended to override this instead of Render.
 		/// </summary>
 		protected virtual void Redraw_PreRenderd()
 		{

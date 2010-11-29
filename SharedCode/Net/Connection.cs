@@ -32,7 +32,7 @@
  */
 
 /*
- * TODO: Impliment Timeout Features on waiting for data or waiting for the remote party to return a Flow Control request.
+ * TODO: Implement Timeout Features on waiting for data or waiting for the remote party to return a Flow Control request.
  * 
  * 
  * */
@@ -59,7 +59,7 @@ namespace Tortoise.Shared.Net
     class Connection
     {
         /// <summary>
-        /// The maximum size a packet should be.
+        /// The maximum size out packet should be. It isn't at all related to the Operating system's MTU
         /// There isn't much of a speed advantage if this is increased past an actual
         /// network packets maximum size, but it could increase latency slightly as 
         /// streams of data are not sent and received in 1 packet. If this is larger than 
@@ -94,7 +94,6 @@ namespace Tortoise.Shared.Net
         /// This is our buffer for packets. 
         /// </summary>
         /// 
-
         private SortedDictionary<int, Queue<Packet>> _packetQue;
         //private Queue<Packet> _packetQue = new Queue<Packet>();
 
@@ -244,10 +243,11 @@ namespace Tortoise.Shared.Net
         }
 
         /// <summary>
-        /// Returns if the socket is connected or not.
+        /// Returns if the socket is connected or not. 
         /// </summary>
         public bool Connected
         {
+            //Also checks for an error which is useful for the Poll method, 2 birds with 1 stone.
             get { return _sock == null ? false : CheckForError() ? false : _sock.Connected; }
         }
 
@@ -587,6 +587,11 @@ namespace Tortoise.Shared.Net
                         }
 
 
+                        //then a flow control request
+                        //2 for ID
+                        bw.Write(Convert.ToUInt16(2));
+                        bw.Write(PacketID.EndRequest.Value()); 
+                        
                         byte[] data = bw.GetArray();
                         //_ns.BeginWrite(data, 0, data.Length, (IAsyncResult) => { if (IAsyncResult.IsCompleted) _isasync = false; }, null);
                         //_ns.Write(data, 0, data.Length);
@@ -594,10 +599,8 @@ namespace Tortoise.Shared.Net
                         //write the data
                         WriteData(data, 0, data.Length);
 
-                        //then a flow control request
-                        //2 for ID
-                        bw.Write(Convert.ToUInt16(2));
-                        bw.Write(PacketID.EndRequest.Value());
+
+
                         _endRecived = false;
 
                     }
