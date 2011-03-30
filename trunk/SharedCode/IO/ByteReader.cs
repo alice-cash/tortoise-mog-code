@@ -31,6 +31,7 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
@@ -92,6 +93,14 @@ namespace Tortoise.Shared.IO
             _array = array;
         }
 
+        public byte[] DumpDebugInfo()
+        {
+            List<byte> debug = new List<byte>();
+            debug.AddRange(BitConverter.GetBytes(_pos));
+            debug.AddRange(_array);
+            return debug.ToArray();            
+        }
+
         private void init()
         {
             _encoder = Encoding.Unicode;
@@ -108,13 +117,13 @@ namespace Tortoise.Shared.IO
 
         public ExecutionState<byte> ReadByte()
         {
-            if (!EnforceLength(sizeof(byte))) return ExecutionState<byte>.Failed();
+            if (!EnforceLength(sizeof(byte))) return ExecutionState<byte>.Failed("Failed to enforce length of byte");
             return ExecutionState<byte>.Succeeded(_array[_pos++]);
         }
 
         public ExecutionState<byte[]> ReadBytes(int length)
         {
-            if (!EnforceLength(sizeof(byte) * length)) return ExecutionState<byte[]>.Failed();
+            if (!EnforceLength(sizeof(byte) * length)) return ExecutionState<byte[]>.Failed("Failed to enforce length of byte[]");
             byte[] returnValue = new byte[length];
             Array.Copy(_array, _pos, returnValue, 0, length);
             _pos++;
@@ -123,13 +132,13 @@ namespace Tortoise.Shared.IO
 
         public ExecutionState<sbyte> ReadSByte()
         {
-            if (!EnforceLength(sizeof(sbyte))) return ExecutionState<sbyte>.Failed();
+            if (!EnforceLength(sizeof(sbyte))) return ExecutionState<sbyte>.Failed("Failed to enforce length of sbyte");
             return ExecutionState<sbyte>.Succeeded(Convert.ToSByte(_array[_pos++]));
         }
 
         public ExecutionState<short> ReadShort()
         {
-            if (!EnforceLength(sizeof(ushort))) return ExecutionState<short>.Failed();
+            if (!EnforceLength(sizeof(ushort))) return ExecutionState<short>.Failed("Failed to enforce length of short");
             var result = ExecutionState<short>.Succeeded(BitConverter.ToInt16(_array, _pos));
             _pos += sizeof(ushort);
             return result;
@@ -137,7 +146,7 @@ namespace Tortoise.Shared.IO
 
         public ExecutionState<ushort> ReadUShort()
         {
-            if (!EnforceLength(sizeof(ushort))) return ExecutionState<ushort>.Failed();
+            if (!EnforceLength(sizeof(ushort))) return ExecutionState<ushort>.Failed("Failed to enforce length of ushort");
             var result = ExecutionState<ushort>.Succeeded(BitConverter.ToUInt16(_array, _pos));
             _pos += sizeof(ushort);
             return result;
@@ -145,7 +154,7 @@ namespace Tortoise.Shared.IO
 
         public ExecutionState<int> ReadInt()
         {
-            if (!EnforceLength(sizeof(int))) return ExecutionState<int>.Failed();
+            if (!EnforceLength(sizeof(int))) return ExecutionState<int>.Failed("Failed to enforce length of int");
             var result = ExecutionState<int>.Succeeded(BitConverter.ToInt32(_array, _pos));
             _pos += sizeof(int);
             return result;
@@ -153,7 +162,7 @@ namespace Tortoise.Shared.IO
 
         public ExecutionState<uint> ReadUInt()
         {
-            if (!EnforceLength(sizeof(uint))) return ExecutionState<uint>.Failed();
+            if (!EnforceLength(sizeof(uint))) return ExecutionState<uint>.Failed("Failed to enforce length of uint");
             var result = ExecutionState<uint>.Succeeded(BitConverter.ToUInt32(_array, _pos));
             _pos += sizeof(uint);
             return result;
@@ -161,7 +170,7 @@ namespace Tortoise.Shared.IO
 
         public ExecutionState<long> ReadLong()
         {
-            if (!EnforceLength(sizeof(long))) return ExecutionState<long>.Failed();
+            if (!EnforceLength(sizeof(long))) return ExecutionState<long>.Failed("Failed to enforce length of long");
             var result = ExecutionState<long>.Succeeded(BitConverter.ToInt64(_array, _pos));
             _pos += sizeof(long);
             return result;
@@ -169,7 +178,7 @@ namespace Tortoise.Shared.IO
 
         public ExecutionState<ulong> ReadULong()
         {
-            if (!EnforceLength(sizeof(ulong))) return ExecutionState<ulong>.Failed();
+            if (!EnforceLength(sizeof(ulong))) return ExecutionState<ulong>.Failed("Failed to enforce length of ulong");
             var result = ExecutionState<ulong>.Succeeded(BitConverter.ToUInt64(_array, _pos));
             _pos += sizeof(ulong);
             return result;
@@ -179,7 +188,7 @@ namespace Tortoise.Shared.IO
 
         public ExecutionState<float> ReadSingle()
         {
-            if (!EnforceLength(sizeof(float))) return ExecutionState<float>.Failed();
+            if (!EnforceLength(sizeof(float))) return ExecutionState<float>.Failed("Failed to enforce length of float");
             var result = ExecutionState<float>.Succeeded(BitConverter.ToSingle(_array, _pos));
             _pos += sizeof(float);
             return result;
@@ -187,19 +196,27 @@ namespace Tortoise.Shared.IO
 
         public ExecutionState<double> ReadDouble()
         {
-            if (!EnforceLength(sizeof(double))) return ExecutionState<double>.Failed();
+            if (!EnforceLength(sizeof(double))) return ExecutionState<double>.Failed("Failed to enforce length of double");
             var result = ExecutionState<double>.Succeeded(BitConverter.ToDouble(_array, _pos));
             _pos += sizeof(double);
+            return result;
+        }
+
+        public ExecutionState<bool> ReadBoolean()
+        {
+            if (!EnforceLength(sizeof(bool))) return ExecutionState<bool>.Failed("Failed to enforce length of bool");
+            var result = ExecutionState<bool>.Succeeded(BitConverter.ToBoolean(_array, _pos));
+            _pos += sizeof(bool);
             return result;
         }
 
         public ExecutionState<string> ReadString()
         {
             var stateLen = ReadUShort();
-            if (!stateLen) return ExecutionState<string>.Failed();
+            if (!stateLen) return ExecutionState<string>.Failed("Failed to read Length");
             ushort length = stateLen.Result;
             var stateData = ReadBytes(length);
-            if (!stateData) return ExecutionState<string>.Failed();
+            if (!stateData) return ExecutionState<string>.Failed("Failed to read Data off of length");
             return ExecutionState<string>.Succeeded(_encoder.GetString(stateData.Result));
         }
     }

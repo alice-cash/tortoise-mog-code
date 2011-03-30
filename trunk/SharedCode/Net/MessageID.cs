@@ -36,7 +36,7 @@ namespace Tortoise.Shared.Net
 	/// <summary>
 	/// Message IDs. All text shown to the user should be client side for localization.
 	/// </summary>
-	enum MessageID:ushort
+	public enum MessageID:ushort
 	{
 		Null,
    		SyncError,

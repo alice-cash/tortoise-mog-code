@@ -37,7 +37,7 @@ namespace Tortoise.Shared.Net
 	/// <summary>
 	/// Description of ServerMessageEventArgs.
 	/// </summary>
-	class MessageEventArgs: EventArgs
+	public class MessageEventArgs: EventArgs
 	{
 		public MessageID Message {get;set;}
 		public MessageEventArgs(MessageID mID)

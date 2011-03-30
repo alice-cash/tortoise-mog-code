@@ -90,12 +90,14 @@ namespace Tortoise.Client.Rendering
 			
 			//Display, Sound, Input
 			AS.Initialize(true, true, true);
+			
 			//If they run the "--choose" command, and cancel their selection
 			//then we just quit.
 			if (AS.WasCanceled)
 				return;
 			
 			// Resizing is broken in the current agatelib revision.
+			// Name, Width, Height, Resizeable
 			MainWindow = DisplayWindow.CreateWindowed ("Tortoise MOG",  Window.ScreenWidth,  Window.ScreenHeight, false);
 			
 			MainWindow.Resize += delegate(object sender, EventArgs e)

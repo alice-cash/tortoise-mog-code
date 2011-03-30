@@ -56,7 +56,7 @@ namespace Tortoise.Shared.Net
     /// <summary>
     /// Base connection for connectivity between 2 hosts.
     /// </summary>
-    class Connection
+    public class Connection
     {
         /// <summary>
         /// The maximum size out packet should be. It isn't at all related to the Operating system's MTU
@@ -104,12 +104,12 @@ namespace Tortoise.Shared.Net
 
         //public static ConnectionState ConnectionState = ConnectionState.NotConnected;
 
-        private bool _readyForData;
+        //private bool _readyForData;
 
-        public bool ReadyForData
-        {
-            get { return _readyForData; }
-        }
+        //public bool ReadyForData
+        //{
+        //    get { return _readyForData; }
+        //}
 
         /// <summary>
         /// The class we use to read and write to the Socket.
@@ -960,7 +960,6 @@ namespace Tortoise.Shared.Net
             WriteMessage(MessageID.SyncError);
             Disconnect();
         }
-
     }
 
     /// <summary>
