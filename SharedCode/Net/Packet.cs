@@ -35,7 +35,7 @@ using System;
 
 namespace Tortoise.Shared.Net
 {
-	struct Packet
+	public struct Packet
 	{
         public const int PriorityHighest = -10;
         public const int PriorityHigh = -5;

@@ -17,7 +17,12 @@ namespace Tortoise.Shared
         /// <summary>
         /// This returns a Failed result.
         /// </summary>
-        public static ExecutionState Failed() { return new ExecutionState(false); }
+        public static ExecutionState Failed()
+        {
+            if (System.Diagnostics.Debugger.IsAttached)
+                System.Diagnostics.Debugger.Break();
+            return new ExecutionState(false);
+        }
         /// <summary>
         /// This returns a Succeeded result. It allows for a human readable string to be passed along.
         /// </summary
@@ -25,7 +30,12 @@ namespace Tortoise.Shared
         /// <summary>
         /// This returns a Failed result. It allows for a human readable string to be passed along.
         /// </summary>
-        public static ExecutionState Failed(string reason) { return new ExecutionState(false, reason); }
+        public static ExecutionState Failed(string reason)
+        {
+            if (System.Diagnostics.Debugger.IsAttached)
+                System.Diagnostics.Debugger.Break();
+            return new ExecutionState(false, reason);
+        }
 
         public bool Sucess;
         public string Reason;
@@ -69,7 +79,12 @@ namespace Tortoise.Shared
         /// <summary>
         /// This returns a Failed result, using the default of T as the result's value.
         /// </summary>
-        public static ExecutionState<T> Failed() { return new ExecutionState<T>(false, default(T)); }
+        public static ExecutionState<T> Failed()
+        {
+            if (System.Diagnostics.Debugger.IsAttached)
+                System.Diagnostics.Debugger.Break();
+            return new ExecutionState<T>(false, default(T));
+        }
         /// <summary>
         /// This returns a Succeeded result. It allows for a human readable string to be passed along.
         /// </summary>
@@ -77,7 +92,12 @@ namespace Tortoise.Shared
         /// <summary>
         /// This returns a Failed result, using the default of T as the result's value. It allows for a human readable string to be passed along.
         /// </summary>
-        public static ExecutionState<T> Failed(string reason) { return new ExecutionState<T>(false, default(T), reason); }
+        public static ExecutionState<T> Failed(string reason)
+        {
+            if (System.Diagnostics.Debugger.IsAttached)
+                System.Diagnostics.Debugger.Break();
+            return new ExecutionState<T>(false, default(T), reason);
+        }
 
         public bool Sucess;
         public T Result;

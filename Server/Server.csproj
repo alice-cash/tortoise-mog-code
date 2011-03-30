@@ -175,10 +175,12 @@
     <Compile Include="Exceptions\TortoiseFormatException.cs" />
     <Compile Include="Exceptions\TortoiseGeneralException.cs" />
     <Compile Include="Exceptions\TortoiseMissingResourceException .cs" />
+    <Compile Include="Module\Debugging.cs" />
     <Compile Include="Module\Login.cs" />
     <Compile Include="Module\PlayerData.cs" />
     <Compile Include="Net\ClientHandle.cs" />
     <Compile Include="Net\ServerHandle.cs" />
+    <Compile Include="Object.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

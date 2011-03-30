@@ -35,7 +35,7 @@ using Tortoise.Shared.Net;
 
 namespace Tortoise.Shared.Module
 {
-	interface IComModule
+	public interface IComModule
 	{
 		void Communication(Connection Sender, ByteReader data);
 	}

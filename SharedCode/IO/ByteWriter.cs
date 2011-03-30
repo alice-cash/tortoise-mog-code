@@ -65,13 +65,13 @@ namespace Tortoise.Shared.IO
 		{
 			_data.AddRange(data);
 		}
-		
-		public void Write(sbyte data)
-		{
-			_data.Add(Convert.ToByte(data));
-		}
-		
-		public void Write(short data)
+
+        public void Write(sbyte data)
+        {
+            _data.Add(Convert.ToByte(data));
+        }
+	
+        public void Write(short data)
 		{
 			_data.AddRange(BitConverter.GetBytes(data));
 		}
@@ -109,7 +109,11 @@ namespace Tortoise.Shared.IO
 			Write(Convert.ToUInt16(data.Length));
 			Write(_encoder.GetBytes(data));
 		}
-		
+        public void Write(bool data)
+        {
+            _data.Add(Convert.ToByte(data));
+        }
+
 		public byte[] GetArray()
 		{
 			return _data.ToArray();
