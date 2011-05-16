@@ -4,7 +4,7 @@
  * Date: 7/29/2010
  * Time: 10:45 PM
  * 
- * Copyright 2010 Matthew Cash. All rights reserved.
+ * Copyright 2011 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -56,7 +56,7 @@ namespace Tortoise.Client.Rendering
 
         public new void OnKeyboardUp(KeyEventArgs e) { base.OnKeyboardUp(e); }
 
-        public void OnResize() { this.Size = Window.MainWindow.Size; }
+        public virtual void OnResize() { this.Size = Window.MainWindow.Size; }
 
         public new void Tick(TickEventArgs e) { base.Tick(e); }
 

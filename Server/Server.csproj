@@ -94,9 +94,6 @@
     <Reference Include="System.Data.DataSetExtensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data.SQLite">
-      <HintPath>..\..\..\Program Files %28x86%29\SQLite.NET\bin\System.Data.SQLite.dll</HintPath>
-    </Reference>
     <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86" />
     <Reference Include="System.Data.SQLite.Linq">
       <HintPath>..\..\..\Program Files %28x86%29\SQLite.NET\bin\System.Data.SQLite.Linq.dll</HintPath>
@@ -108,60 +105,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedCode\Collection\LimitedList.cs">
-      <Link>Collection\LimitedList.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\Collection\SortedList.cs">
-      <Link>Collection\SortedList.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\ExecutionState.cs">
-      <Link>ExecutionState.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\IO\ByteReader.cs">
-      <Link>IO\ByteReader.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\IO\ByteWriter.cs">
-      <Link>IO\ByteWriter.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\Module\IComModule.cs">
-      <Link>Module\IComModule.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\Module\ModuleInfo.cs">
-      <Link>Module\ModuleInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\Module\ModuleLoader.cs">
-      <Link>Module\ModuleLoader.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\Net\Connection.cs">
-      <Link>Net\Connection.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\Net\ConnectionState.cs">
-      <Link>Net\ConnectionState.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\Net\MessageEventArgs.cs">
-      <Link>Net\MessageEventArgs.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\Net\MessageID.cs">
-      <Link>Net\MessageID.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\Net\Packet.cs">
-      <Link>Net\Packet.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\Net\PacketID.cs">
-      <Link>Net\PacketID.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\Net\PacketSorter.cs">
-      <Link>Net\PacketSorter.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\Threading\IInvokable.cs">
-      <Link>Threading\IInvokable.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\Threading\InvokeItem.cs">
-      <Link>Threading\InvokeItem.cs</Link>
-    </Compile>
-    <Compile Include="..\SharedCode\Threading\ThreadSafetyEnforcer.cs">
-      <Link>Threading\ThreadSafetyEnforcer.cs</Link>
-    </Compile>
     <Compile Include="Collection\CachedData.cs" />
     <Compile Include="Collection\CachedDictionary.cs" />
     <Compile Include="Console.cs" />
@@ -175,6 +118,7 @@
     <Compile Include="Exceptions\TortoiseFormatException.cs" />
     <Compile Include="Exceptions\TortoiseGeneralException.cs" />
     <Compile Include="Exceptions\TortoiseMissingResourceException .cs" />
+    <Compile Include="Module\Dbg.StaticLogin.cs" />
     <Compile Include="Module\Debugging.cs" />
     <Compile Include="Module\Login.cs" />
     <Compile Include="Module\PlayerData.cs" />
@@ -232,5 +176,15 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\Shared.csproj">
+      <Project>{2A94627E-C52D-417B-BED8-4FB534BED6DD}</Project>
+      <Name>Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="IO\" />
+    <Folder Include="Threading\" />
   </ItemGroup>
 </Project>

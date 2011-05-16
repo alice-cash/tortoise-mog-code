@@ -1,10 +1,5 @@
 ﻿/*
- * Created by SharpDevelop.
- * User: Matthew
- * Date: 9/11/2010
- * Time: 10:04 PM
- * 
- * Copyright 2010 Matthew Cash. All rights reserved.
+ * Copyright 2011 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -39,40 +34,41 @@ using C5;
 namespace Tortoise.Server.Collection
 {
     //TODO: Totally screwed up, fix
-    class CachedDictionary<K, X> : DictionaryBase<K, CachedData<X>>
-    {
-        int _position;
-        Type _default;
+ 
+    //class CachedDictionary<K, X> : DictionaryBase<K, CachedData<X>>
+    //{
+    //    int _position = 0;
+    //    Type _default;
 
-        public CachedDictionary(Type defaultType)
-            : base(C5.EqualityComparer<K>.Default)
-        {
-            _position = 0;
+    //    public CachedDictionary(Type defaultType)
+    //        : base(C5.EqualityComparer<K>.Default)
+    //    {
+    //        _position = 0;
 
-        }
+    //    }
 
 
-        public void Poll(int count = 100)
-        {
-            //If the count is greater than number of items in the que, we are just going to check them all.
-            if (count >= Count)
-            {
-                foreach (var cd in this)
-                {
-                    cd.Value.Poll();
-                }
-            }
-            else
-            {
+    //    public void Poll(int count = 100)
+    //    {
+    //        //If the count is greater than number of items in the que, we are just going to check them all.
+    //        if (count >= Count)
+    //        {
+    //            foreach (var cd in this)
+    //            {
+    //                cd.Value.Poll();
+    //            }
+    //        }
+    //        else
+    //        {
 
-            }
-        }
+    //        }
+    //    }
 
-        public override object Clone()
-        {
-            CachedDictionary<K, X> clone = new CachedDictionary<K, X>(_default);
-            clone.AddAll(this);
-            return clone;
-        }
-    }
+    //    public override object Clone()
+    //    {
+    //        CachedDictionary<K, X> clone = new CachedDictionary<K, X>(_default);
+    //        clone.AddAll(this);
+    //        return clone;
+    //    }
+    //}
 }

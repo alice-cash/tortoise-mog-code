@@ -1,20 +1,15 @@
 ﻿/*
- * Created by SharpDevelop.
- * User: Matthew
- * Date: 8/3/2010
- * Time: 5:22 PM
- * 
- * Copyright 2010 Matthew Cash. All rights reserved.
+ * Copyright 2011 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
  * 
- *    1. Redistributions of source code must retain the above copyright notice, this list of
- *       conditions and the following disclaimer.
+ *	1. Redistributions of source code must retain the above copyright notice, this list of
+ *	   conditions and the following disclaimer.
  * 
- *    2. Redistributions in binary form must reproduce the above copyright notice, this list
- *       of conditions and the following disclaimer in the documentation and/or other materials
- *       provided with the distribution.
+ *	2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *	   of conditions and the following disclaimer in the documentation and/or other materials
+ *	   provided with the distribution.
  * 
  * THIS SOFTWARE IS PROVIDED BY Matthew Cash ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -30,18 +25,22 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
+
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using C5;
-using Tortoise.Client.Exceptions;
+using Tortoise.Shared;
 using Tortoise.Shared.Collection;
+using Tortoise.Shared.Localization;
+using Tortoise.Shared.Exceptions;
 
-namespace Tortoise.Client
+namespace Tortoise.Shared
 {
-    public enum ConsoleCommandSucess
+        public enum ConsoleCommandSucess
     {
         Sucess,
         Failure
@@ -54,31 +53,51 @@ namespace Tortoise.Client
     public struct ConsoleVarable
     {
         public string Value;
-        public Func<string, bool> ValidCheck;
-        public string ToString()
+        public Func<string, ExecutionState> ValidCheck;
+        public override string ToString()
         {
             return Value;
         }
     }
-
     /// <summary>
-    /// This is the backend for a Console.
+    /// This is the backend for the Console system.
     /// </summary>
-    public class Console
+    public static class TConsole
     {
-        private HashDictionary<string, ConsoleVarable> _varables;
-        private HashDictionary<string, System.Func<string[], ConsoleResponce>> _functions;
 
-        private LimitedList<string> _consoleBacklog;
+        private static HashDictionary<string, ConsoleVarable> _varables;
+        private static HashDictionary<string, System.Func<string[], ConsoleResponce>> _functions;
 
-        public Console(int backlogLength = 500)
+        private static LimitedList<string> _consoleBacklog;
+        private static string _backlogLine;
+
+        static TConsole()
+        {
+            Init();
+        }
+
+        public static void Init(int backlogLength = 500)
         {
             _varables = new HashDictionary<string, ConsoleVarable>();
             _functions = new HashDictionary<string, System.Func<string[], ConsoleResponce>>();
             _consoleBacklog = new LimitedList<string>(backlogLength, string.Empty);
+            _backlogLine = "";
         }
 
-        public ConsoleVarable GetValue(string name)
+        public static void WriteToBacklog(string message, bool newline)
+        {
+            if (!newline)
+                _backlogLine += message;
+            if (newline && _backlogLine == "")
+                _consoleBacklog.Add(message);
+            else
+            {
+                _consoleBacklog.Add(_backlogLine + message);
+                _backlogLine = "";
+            }
+        }
+
+        public static ConsoleVarable GetValue(string name)
         {
             lock (_varables)
                 if (ValueContains(name))
@@ -90,7 +109,7 @@ namespace Tortoise.Client
         }
 
 
-        public void SetValue(string name, ConsoleVarable value)
+        public static void SetValue(string name, ConsoleVarable value)
         {
             lock (_varables)
                 if (_varables.Contains(name))
@@ -103,13 +122,13 @@ namespace Tortoise.Client
                 }
         }
 
-        public bool ValueContains(string name)
+        public static bool ValueContains(string name)
         {
             lock (_varables)
                 return _varables.Contains(name);
         }
 
-        public ConsoleResponce ExecuteFunc(string name, params string[] args)
+        public static ConsoleResponce ExecuteFunc(string name, params string[] args)
         {
             lock (_varables)
             {
@@ -125,7 +144,7 @@ namespace Tortoise.Client
                 }
                 catch (ConsoleException ex)
                 {
-                    cr.Value = localization.Default.Strings.GetFormatedString("Console_Function_Exception", ex);
+                    cr.Value = DefaultLanguage.Strings.GetFormatedString("Console_Function_Exception", ex);
                 }
                 return cr;
             }
@@ -133,7 +152,7 @@ namespace Tortoise.Client
 
 
 
-        public void SetFunc(string name, System.Func<string[], ConsoleResponce> func)
+        public static void SetFunc(string name, System.Func<string[], ConsoleResponce> func)
         {
             lock (_varables)
                 if (_varables.Contains(name))
@@ -146,13 +165,13 @@ namespace Tortoise.Client
                 }
         }
 
-        public bool FuncContains(string name)
+        public static bool FuncContains(string name)
         {
             lock (_varables)
                 return _functions.Contains(name);
         }
 
-        public ConsoleResponce ProcessLine(string line)
+        public static ConsoleResponce ProcessLine(string line)
         {
 
             lock (_varables)
@@ -188,7 +207,7 @@ namespace Tortoise.Client
                     else
                     {
                         cr.Sucess = ConsoleCommandSucess.Failure;
-                        cr.Value = localization.Default.Strings.GetFormatedString("Console_Validation_Failure", name, value);
+                        cr.Value = DefaultLanguage.Strings.GetFormatedString("Console_Validation_Failure", name, value);
                         return cr;
                     }
                 }
@@ -201,7 +220,7 @@ namespace Tortoise.Client
             }
         }
 
-        public void ProcessFile(string fileName)
+        public static void ProcessFile(string fileName)
         {
             lock (_varables)
             {
@@ -229,7 +248,7 @@ namespace Tortoise.Client
                     VarableArguments = VarableArguments.Trim();
                     if (_varables.Contains(varableName))
                     {
-                        if (_varables[varableName].ValidCheck != null && _varables[varableName].ValidCheck(VarableArguments))
+                        if (_varables[varableName].ValidCheck != null && _varables[varableName].ValidCheck(VarableArguments).Sucess)
                         {
                             ConsoleVarable cv = _varables[varableName];
                             cv.Value = VarableArguments;
@@ -241,7 +260,7 @@ namespace Tortoise.Client
                     {
                         var result = ExecuteFunc(varableName, ArgSplit(VarableArguments, true));
                         if (result.Sucess == ConsoleCommandSucess.Failure)
-                            System.Console.WriteLine(result.Value);
+                            System.Diagnostics.Debug.WriteLine(result.Value);
                     }
                 }
 
@@ -290,7 +309,7 @@ namespace Tortoise.Client
         }
 
 
-        public string GetBacklog(bool IncludeEmptyLines = true)
+        public static string GetBacklog(bool IncludeEmptyLines = true)
         {
             StringBuilder sb = new StringBuilder(_consoleBacklog.Limit);
             foreach (string s in _consoleBacklog)

@@ -4,7 +4,7 @@
  * Date: 7/26/2010
  * Time: 9:36 PM
  * 
- * Copyright 2010 Matthew Cash. All rights reserved.
+ * Copyright 2011 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -52,7 +52,6 @@ namespace Tortoise.Client.Rendering
 		static Window()
 		{
 			AvailableScreens = new Dictionary<string, Screen>();
-            
 		}
 
         public const int ScreenHeight = 600, ScreenWidth = 800;
@@ -115,7 +114,7 @@ namespace Tortoise.Client.Rendering
 			
 			
 			//This catches and sends Input events to the current screen.
-			//We filter mouse and keybord events into 2 logical classes
+			//We filter mouse and Keyboard events into 2 logical classes
 			//as we should not check for mouse values in a keyboard event
 			Mouse.MouseDown += delegate(InputEventArgs e)
 			{

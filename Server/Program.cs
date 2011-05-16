@@ -4,7 +4,7 @@
  * Date: 5/2/2010
  * Time: 12:21 AM
  * 
- * Copyright 2010 Matthew Cash. All rights reserved.
+ * Copyright 2011 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -34,6 +34,9 @@ using System;
 using System.Diagnostics;
 using Tortoise.Server.Exceptions;
 using Tortoise.Shared.Module;
+using System.Reflection;
+using Tortoise.Shared.Diagnostics;
+
 #if LINUX
 using System.Threading;
 using Mono.Unix;
@@ -76,37 +79,40 @@ namespace Tortoise.Server
 			signal_thread.Start();
 			#endif
 			//add the diagnostic debug output to console.
-			Debug.Listeners.Add(new ConsoleTraceListener());
-			//Load up the configuration file
+            Debug.Listeners.Add(new ConsoleTraceListener());
+            Debug.Listeners.Add(new TortoiseConsoleTraceListiner());
+            //Trace.Listeners.Add(new ConsoleTraceListener());
+            //Trace.Listeners.Add(new TortoiseConsoleTraceListiner());
+            //Load up the configuration file
 			try{
 				XML.ServerConfig.LoadConfig();
 			} catch(TortoiseMissingResourceException ex)
 			{
-				Console.WriteLine("The server could not load the embedded resource. Please check following embedded resource: {0}", ex.Data["ResourceName"]);
+				Debug.WriteLine(string.Format("The server could not load the embedded resource. Please check following embedded resource: {0}", ex.Data["ResourceName"]));
 				return;
 			}
 			catch (TortoiseFileException ex)
 			{
-				Console.WriteLine("The server could not load or create the configuration file. More information: {0}", ex.InnerException.ToString());
+                Debug.WriteLine(string.Format("The server could not load or create the configuration file. More information: {0}", ex.InnerException.ToString()));
 				return;
 			}
 			catch (InvalidOperationException ex)
 			{
-				Console.WriteLine("An unknown error occurred during deserialization. More information: {0}", ex.InnerException.ToString());
+                Debug.WriteLine(string.Format("An unknown error occurred during deserialization. More information: {0}", ex.InnerException.ToString()));
 				return;
 			}
 			if(XML.ServerConfig.Instance.MysqlUser == "{EDIT ME}" ||
 			   XML.ServerConfig.Instance.MysqlPass == "{EDIT ME}")
 			{
-				Console.WriteLine("Edit the LoginConfig.xml file");
+                Debug.WriteLine("Edit the LoginConfig.xml file");
 				return;
 			}
 			if (XML.ServerConfig.Instance.AcceptAnyAddress)
 			{
-				Console.WriteLine("Warning: This server is set to accept server connections from any IP address. ANY server with the secrets can connect.");
+                Debug.WriteLine("Warning: This server is set to accept server connections from any IP address. ANY server with the secrets can connect.");
 			}
-			
-			ModuleInfo.LoadModules();
+
+            ModuleInfo.LoadModules(Assembly.GetExecutingAssembly(), true);
 			
 			//Start the various Listeners.
 			Server.Connections.ServerHandle.CreateInstance();
