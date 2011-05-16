@@ -4,7 +4,7 @@
  * Date: 8/3/2010
  * Time: 7:26 PM
  * 
- * Copyright 2010 Matthew Cash. All rights reserved.
+ * Copyright 2011 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -32,10 +32,10 @@
  */
 using System;
 
-namespace Tortoise.Client.Exceptions
+namespace Tortoise.Shared.Exceptions
 {
 	/// <summary>
-	/// Desctiption of ConsoleException.
+	/// Description of ConsoleException.
 	/// </summary>
 	public class ConsoleException : Exception
 	{

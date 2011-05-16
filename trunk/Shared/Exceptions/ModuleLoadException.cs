@@ -1,10 +1,5 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Matthew
- * Date: 8/6/2010
- * Time: 12:02 AM
- * 
- * Copyright 2010 Matthew Cash. All rights reserved.
+/*
+ * Copyright 2011 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -33,28 +28,31 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Tortoise.Client.Exceptions
+namespace Tortoise.Shared.Exceptions
 {
-	/// <summary>
-	/// Desctiption of ModuleLoadException.
-	/// </summary>
-	public class ModuleLoadException : Exception, ISerializable
-	{
-		public ModuleLoadException()
-		{
-		}
+    /// <summary>
+    /// Desctiption of ModuleLoadException.
+    /// </summary>
+    public class ModuleLoadException : Exception, ISerializable
+    {
+        public ModuleLoadException()
+        {
+        }
 
-	 	public ModuleLoadException(string message) : base(message)
-		{
-		}
+        public ModuleLoadException(string message)
+            : base(message)
+        {
+        }
 
-		public ModuleLoadException(string message, Exception innerException) : base(message, innerException)
-		{
-		}
+        public ModuleLoadException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
 
-		// This constructor is needed for serialization.
-		protected ModuleLoadException(SerializationInfo info, StreamingContext context) : base(info, context)
-		{
-		}
-	}
+        // This constructor is needed for serialization.
+        protected ModuleLoadException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+    }
 }

@@ -1,10 +1,5 @@
 ﻿/*
- * Created by SharpDevelop.
- * User: Matthew
- * Date: 5/2/2010
- * Time: 1:58 AM
- * 
- * Copyright 2010 Matthew Cash. All rights reserved.
+ * Copyright 2011 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -34,7 +29,11 @@ using System;
 using System.Diagnostics;
 using Tortoise.Client.Rendering;
 using Tortoise.Client.Module;
+using Tortoise.Client.Net;
 using Tortoise.Shared.Module;
+using Tortoise.Shared.Localization;
+using Tortoise.Shared.Diagnostics;
+using System.Reflection;
 
 namespace Tortoise.Client
 {
@@ -46,12 +45,21 @@ namespace Tortoise.Client
         public static void Main(string[] args)
 		{
 
-			Debug.Listeners.Add(new ConsoleTraceListener());
+            Debug.Listeners.Clear();
+            Trace.Listeners.Clear();
+
+
+            Debug.Listeners.Add(new ConsoleTraceListener());
+            Debug.Listeners.Add(new TortoiseConsoleTraceListiner());
+            //Trace.Listeners.Add(new ConsoleTraceListener());
+            //Trace.Listeners.Add(new TortoiseConsoleTraceListiner());
+            
 			//we are cheap and we just going to set it to the first language file for now
 			//TODO: Make it select based on either a default or the systems current language.
-			localization.Default.Strings = localization.LanguageStrings.GetAvalableLanguages()[0];
-			ModuleInfo.LoadModules();
-			
+			DefaultLanguage.Strings = LanguageStrings.GetAvalableLanguages()[0];
+            ModuleInfo.LoadModules(Assembly.GetExecutingAssembly(), true);
+
+            ServerConnection.Init();
 			
 			MainWindow = new Window();
 			//This blocks until the window is closed.

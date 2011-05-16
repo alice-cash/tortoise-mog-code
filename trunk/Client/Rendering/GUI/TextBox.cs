@@ -4,7 +4,7 @@
  * Date: 8/3/2010
  * Time: 8:24 PM
  * 
- * Copyright 2010 Matthew Cash. All rights reserved.
+ * Copyright 2011 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ namespace Tortoise.Client.Rendering.GUI
         private struct KeysLastPressed
         {
             public KeyCode Key { get; set; }
-            public int TimeSinceLast;
+            //public int TimeSinceLast;
         }
 
         private string _text = "";
@@ -215,7 +215,7 @@ namespace Tortoise.Client.Rendering.GUI
         internal override bool OnKeyboardDown(KeyEventArgs e)
         {
             if (!HasFocus) return false;
-            return doKeybordDown(e);
+            return doKeyboardDown(e);
         }
 
         internal override bool OnKeyboardUp(KeyEventArgs e)
@@ -227,7 +227,7 @@ namespace Tortoise.Client.Rendering.GUI
             _flasherTimer.Reset();
             _showMarker = true;
 
-            doKeybordDown(e);
+            doKeyboardDown(e);
             return true;
         }
 
@@ -264,6 +264,7 @@ namespace Tortoise.Client.Rendering.GUI
                     if (_cursorPosition < Text.Length)
                         _cursorPosition += 1;
                     break;
+
                 default:
 
                     //TODO: Messy, make more readable.
@@ -271,8 +272,9 @@ namespace Tortoise.Client.Rendering.GUI
 
                     if (newChars.Contains("\n") && !_allowNewLines)
                         return;
-
-                    if (newChars == "") return;
+					
+                    //tab breaks shit. I'll fix it somehow later.
+                    if (newChars == "" || newChars == "\t") return;
 
                     //Check for any KeyWasPressed events
                     //Then check if Cancel was set to true

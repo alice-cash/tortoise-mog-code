@@ -8,8 +8,12 @@ namespace Tortoise.Server.Collection
     abstract class CachedData<T>
     {
         protected DateTime _lastUse;
+        protected TimeSpan _timeout;
         protected bool _indefinite;
         public bool Loaded { get; private set; }
+        public bool Indefinite { get { return _indefinite; } set { _indefinite = value; } }
+        public TimeSpan Timeout { get { return _timeout; } set { _timeout = value; } }
+
         protected T _value;
         public virtual T Value
         {
@@ -29,7 +33,9 @@ namespace Tortoise.Server.Collection
 
         public virtual void Poll()
         {
-            if ((DateTime.Now - _lastUse).TotalSeconds > 60)
+            if (_indefinite) return;
+
+            if ((DateTime.Now - _lastUse) > _timeout)
             {
                 Unload();
             }

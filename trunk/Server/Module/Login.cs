@@ -4,7 +4,7 @@
  * Date: 8/8/2010
  * Time: 3:55 PM
  * 
- * Copyright 2010 Matthew Cash. All rights reserved.
+ * Copyright 2011 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -129,9 +129,10 @@ namespace Tortoise.Server.Module
                     break;
                 default:
                     Sender.SyncError("Invalid Packet ID");
-                    return;
+                    break;
             }
-
+            
+            
 
         }
 

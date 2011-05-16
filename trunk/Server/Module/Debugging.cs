@@ -10,7 +10,7 @@ namespace Tortoise.Server.Module
     {
         public static void SyncError(Connection Sender, Dictionary<String, Object> ErrorLog0, Dictionary<String, Object> ErrorLog1, Dictionary<String, Object> ErrorLog2)
         {
-            string level = Console.GetValue("Debugging_Level").Value;
+            string level = TConsole.GetValue("Debugging_Level").Value;
             switch (level)
             {
                 default:
@@ -43,7 +43,7 @@ namespace Tortoise.Server.Module
 
         public override void Load()
         {
-            Console.SetValue("Debugging_Level", new ConsoleVarable() { ValidCheck = CheckConsoleInput, Value = "0" });
+            TConsole.SetValue("Debugging_Level", new ConsoleVarable() { ValidCheck = CheckConsoleInput, Value = "0" });
         }
 
         ExecutionState CheckConsoleInput(string input)

@@ -4,7 +4,7 @@
  * Date: 8/5/2010
  * Time: 11:46 PM
  * 
- * Copyright 2010 Matthew Cash. All rights reserved.
+ * Copyright 2011 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -41,7 +41,9 @@ using Tortoise.Client.Rendering;
 using Tortoise.Client.Rendering.GUI;
 using Tortoise.Shared.Module;
 using Tortoise.Shared.IO;
+using Tortoise.Shared.Exceptions;
 using Tortoise.Client.Module.GUI.FrameBuilder;
+using Tortoise.Shared.Localization;
 
 namespace Tortoise.Client.Module
 {
@@ -103,7 +105,7 @@ namespace Tortoise.Client.Module
             title.TextAlignement = TextAlignement.Center;
             title.BackgroundColor = Color.Transparent;
 
-            string aboutText = localization.Default.Strings.GetFormatedString("Main_Menu_Credits");
+            string aboutText = DefaultLanguage.Strings.GetFormatedString("Main_Menu_Credits");
             Point aboutPos = new Point(Window.ScreenWidth - 60, Window.ScreenHeight - 25);
 
             Surface aboutBackground = FrameBuilder.Frame1.CreateFrame(new Size(60, 25));
@@ -124,7 +126,7 @@ namespace Tortoise.Client.Module
 
 
 
-            string exitText = localization.Default.Strings.GetFormatedString("Main_Menu_Exit");
+            string exitText = DefaultLanguage.Strings.GetFormatedString("Main_Menu_Exit");
             Point exitPos = new Point(Window.ScreenWidth / 2 - 30, 500);
 
             Surface exitBackground = FrameBuilder.Frame1.CreateFrame(new Size(60, 25));
@@ -145,7 +147,7 @@ namespace Tortoise.Client.Module
 
 
 
-            string loginText = localization.Default.Strings.GetFormatedString("Main_Menu_Login");
+            string loginText = DefaultLanguage.Strings.GetFormatedString("Main_Menu_Login");
             Point loginPos = new Point(Window.ScreenWidth / 2 - 30, 400);
 
             Surface loginBackground = FrameBuilder.Frame1.CreateFrame(new Size(60, 25));
@@ -189,7 +191,7 @@ namespace Tortoise.Client.Module
 
         }
 
-        public void OnResize()
+        public override void OnResize()
         {
             Size = Window.MainWindow.Size;
         }
@@ -234,14 +236,14 @@ namespace Tortoise.Client.Module
 
             Label title = new Label("_title", Program.GameName, new Point(10, 10), new Size(Window.ScreenWidth - 20, 40), FontSurface.AgateSans24);
 
-            string creditText = localization.Default.Strings.GetFormatedString("Credits_Text");
+            string creditText = DefaultLanguage.Strings.GetFormatedString("Credits_Text");
             Label cointents = new Label("_contents", creditText, new Point(0, 0), new Size(Window.ScreenWidth, Window.ScreenHeight), FontSurface.AgateSans10);
 
             Point returnPos = new Point(Window.ScreenWidth - 250, Window.ScreenHeight - 25);
             Surface returnBackground = FrameBuilder.Frame1.CreateFrame(new Size(250, 25));
             Surface returnOver = FrameBuilder.Frame4.CreateFrame(new Size(250, 25));
             Surface returnDown = FrameBuilder.Frame5.CreateFrame(new Size(250, 25));
-            string returnText = localization.Default.Strings.GetFormatedString("Credits_Return");
+            string returnText = DefaultLanguage.Strings.GetFormatedString("Credits_Return");
             Button returnButton = new Button("_return", returnText, returnPos, new Size(250, 25), FontSurface.AgateSans10);
             returnButton.BackgroundImage = returnBackground;
             returnButton.TextAlignement = TextAlignement.Center;
@@ -266,7 +268,7 @@ namespace Tortoise.Client.Module
             Controls.Add(10, returnButton);
         }
 
-        public void OnResize()
+        public override void OnResize()
         {
             Size = Window.MainWindow.Size;
         }

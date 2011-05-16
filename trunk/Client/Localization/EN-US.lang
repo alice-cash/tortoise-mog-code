@@ -1,4 +1,4 @@
-﻿# Copyright 2010 Matthew Cash. All rights reserved.
+﻿# Copyright 2011 Matthew Cash. All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without modification, are
 # permitted provided that the following conditions are met:
@@ -57,3 +57,5 @@ Credits_Text				Made with the Tortoise MOG Framework.\nCopyright Matthew Cash 20
 Login_Status_Connecting		Connecting...
 Login_Status_Connected		Connected!
 Login_Status_Authenticating	Authenticating...
+Login_Status_Sucess			Successful Login!
+Login_Status_Failure		Failed to Login. Check your username and password and try again.

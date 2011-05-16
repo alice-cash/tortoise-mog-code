@@ -4,7 +4,7 @@
  * Date: 8/1/2010
  * Time: 3:37 PM
  * 
- * Copyright 2010 Matthew Cash. All rights reserved.
+ * Copyright 2011 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -80,8 +80,8 @@ namespace Tortoise.Client.Rendering.GUI
 		public event EventHandler<MouseEventArgs> MouseDown;
 		public event EventHandler<MouseEventArgs> MouseUp;
 		public event EventHandler<MouseEventArgs> MouseMove;
-		public event EventHandler<MouseEventArgs> KeybordDown;
-		public event EventHandler<MouseEventArgs> KeybordUp;
+		public event EventHandler<MouseEventArgs> KeyboardDown;
+		public event EventHandler<MouseEventArgs> KeyboardUp;
 		public event EventHandler<ResizeEventArgs> Resized;
 		public event EventHandler<MovedEventArgs> Moved;
 		public event EventHandler FocusChanged;
@@ -106,21 +106,21 @@ namespace Tortoise.Client.Rendering.GUI
 				MouseMove(this, e);
 			return MouseMove != null;
 		}
-		protected bool doKeybordDown(KeyEventArgs e)
+		protected bool doKeyboardDown(KeyEventArgs e)
 		{
-			//Keybord events should never be triggerd in the base control event.
+			//Keyboard events should never be triggered in the base control event.
 			return false;
-			//if (KeybordDown != null)
-			//    KeybordDown(this, e);
-			//return KeybordDown != null;
+			//if (KeyboardDown != null)
+			//    KeyboardDown(this, e);
+			//return KeyboardDown != null;
 		}
-		protected bool doKeybordUp(KeyEventArgs e)
+		protected bool doKeyboardUp(KeyEventArgs e)
 		{
-			//Keybord events should never be triggerd in the base control event.
+			//Keyboard events should never be triggered in the base control event.
 			return false;
-			//if (KeybordUp != null)
-			//    KeybordUp(this, e);
-			//return KeybordUp != null;
+			//if (KeyboardUp != null)
+			//    KeyboardUp(this, e);
+			//return KeyboardUp != null;
 		}
 		protected void doResize(ResizeEventArgs e)
 		{
@@ -485,8 +485,8 @@ namespace Tortoise.Client.Rendering.GUI
 		internal virtual bool OnKeyboardDown(KeyEventArgs e)
 		{
 			_threadSafety.EnforceThreadSafety();
-			//Keybord events should never be triggerd in the base control event.
-			return false; //doKeybordDown(e);
+			//Keyboard events should never be triggerd in the base control event.
+			return false; //doKeyboardDown(e);
 		}
 		/// <summary>
 		/// A Keyboard Event, returns true if the event is used, and false if it isn't.
@@ -494,8 +494,8 @@ namespace Tortoise.Client.Rendering.GUI
 		internal virtual bool OnKeyboardUp(KeyEventArgs e)
 		{
 			_threadSafety.EnforceThreadSafety();
-			//Keybord events should never be triggerd in the base control event.
-			return false; //doKeybordUp(e);
+			//Keyboard events should never be triggerd in the base control event.
+			return false; //doKeyboardUp(e);
 		}
 		#endregion
 		

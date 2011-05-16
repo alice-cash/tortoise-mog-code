@@ -4,7 +4,7 @@
  * Date: 5/6/2010
  * Time: 12:38 PM
  * 
- * Copyright 2010 Matthew Cash. All rights reserved.
+ * Copyright 2011 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -85,10 +85,10 @@ namespace Tortoise.Server.Connections
 			if (ServerConfig.Instance.ConvertedClientListenAddress == IPAddress.IPv6Any)
 			{
 				_secondaryListinerActive = true;
-				_secondaryListiner = new TcpListener(IPAddress.Any, ServerConfig.Instance.ServerListenPort);
+                _secondaryListiner = new TcpListener(IPAddress.Any, ServerConfig.Instance.ClientListenPort);
 				_secondaryListiner.Start();
 			}
-			_listiner = new TcpListener(ServerConfig.Instance.ConvertedClientListenAddress, ServerConfig.Instance.ServerListenPort);
+			_listiner = new TcpListener(ServerConfig.Instance.ConvertedClientListenAddress, ServerConfig.Instance.ClientListenPort);
 			_listiner.Start();
 
 			_threadRunning = true;
