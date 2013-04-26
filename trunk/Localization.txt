@@ -1,4 +1,0 @@
-﻿General rules for localization:
-Any text that might be presented to the user(other than thrown errors that are stuck into a debug log for developers) should be put in a Localization File.
-Any text that will be used for debuging should be in english, as thats the standerd language for this project.
-
