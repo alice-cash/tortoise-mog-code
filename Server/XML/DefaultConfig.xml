@@ -67,9 +67,11 @@
 	
 	<!-- This is the Clients Major version number. -->
 	<ClientMajor>0</ClientMajor>
-	<!-- This is the Clients Minor version number. -->
-	<CLientMinor>1</CLientMinor>
-	<!-- This is the Clients Revision version number. -->
+  <!-- This is the Clients Minor version number. -->
+  <CLientMinor>1</CLientMinor>
+  <!-- This is the Clients Minor version number. -->
+  <CLientBuild>1</CLientBuild>
+  <!-- This is the Clients Revision version number. -->
 	<ClientRevision>0</ClientRevision>
   
 </Server>

@@ -4,7 +4,7 @@
  * Date: 5/6/2010
  * Time: 12:38 PM
  * 
- * Copyright 2011 Matthew Cash. All rights reserved.
+ * Copyright 2012 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -38,6 +38,7 @@ using System.Threading;
 
 using Tortoise.Server.XML;
 using Tortoise.Shared.Net;
+using Tortoise.Shared;
 
 namespace Tortoise.Server.Connections
 {
@@ -104,9 +105,9 @@ namespace Tortoise.Server.Connections
                     AcceptConnection(_secondaryListiner.AcceptSocket());
 				}
 
-				foreach (var c in _clients)
+				for(int i = 0; i < _clients.Count; i++)
 				{
-					c.Poll();
+                    _clients[i].Poll();
 				}
 			}
 
@@ -116,9 +117,11 @@ namespace Tortoise.Server.Connections
 		{
 			Connection Conn = new Connection(client);
 			_clients.Add(Conn);
+            TConsole.WriteLine("Connection Received from '{0}'.", Conn.RemoteAddress.ToString());
 			Conn.DisconnectedEvent += delegate(object sender, EventArgs e)
 			{
-				//If its not a sender item, then it will be null
+                TConsole.WriteLine("Client Disconnected.");
+                //If its not a sender item, then it will be null
 				//and a null should "NOT" be in the clients list
 				if(_clients.Contains(sender as Connection))
 					_clients.Remove(sender as Connection);

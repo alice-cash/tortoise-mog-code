@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2011 Matthew Cash. All rights reserved.
+ * Copyright 2012 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -79,7 +79,7 @@ namespace Tortoise.Server.Module
                 return ExecutionState<bool>.Succeeded(false);
 
             // For a standard user login system(mysql, etc) the password is an unsalted
-            // md5 hash. Yes yes, unsalted is venerable to rainbow tables but if someone have
+            // md5 hash. Yes yes, unsalted is venerable to rainbow tables but if someone has
             // a database dump, you have other things to worry about.
 
             string _hpwd;

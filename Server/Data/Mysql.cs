@@ -1,9 +1,4 @@
 ﻿/*
- * Created by SharpDevelop.
- * User: Matthew
- * Date: 7/19/2010
- * Time: 2:24 PM
- * 
  * Copyright 2010 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
@@ -174,10 +169,11 @@ namespace LoginServer.Data
 				_connection.Open();
 				}catch(MySqlException ex)
 				{
-					throw new TortusGeneralException("Error with MySql. See innerException.", ex);
+					throw new TortoiseGeneralException("Error with MySql. See innerException.", ex);
 				}
 				return;
 			}
+            
 		}
 		
 		public LoginsTable.LoginsDataTable Query_GetLoginInfo(string login)

@@ -43,7 +43,7 @@ namespace Tortoise.Server.Module
 
         public override void Load()
         {
-            TConsole.SetValue("Debugging_Level", new ConsoleVarable() { ValidCheck = CheckConsoleInput, Value = "0" });
+            TConsole.SetValue("Debugging_Level", new ConsoleVarable() { ValidCheck = CheckConsoleInput, Value = "0", HelpInfo = "Controls the ammount of information displayed for debugging" });
         }
 
         ExecutionState CheckConsoleInput(string input)

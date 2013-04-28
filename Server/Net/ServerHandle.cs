@@ -4,7 +4,7 @@
  * Date: 5/6/2010
  * Time: 12:38 PM
  * 
- * Copyright 2011 Matthew Cash. All rights reserved.
+ * Copyright 2012 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -87,9 +87,16 @@ namespace Tortoise.Server.Connections
 			//If the Listen address is IPv6Any, then we possibly need to create a second listener for IPv4
 			if (ServerConfig.Instance.ConvertedServerListenAddress == IPAddress.IPv6Any)
 			{
-				_secondaryListinerActive = true;
-				_secondaryListiner = new TcpListener(IPAddress.Any, ServerConfig.Instance.ServerListenPort);
-				_secondaryListiner.Start();
+                try
+                {
+                    _secondaryListinerActive = true;
+                    _secondaryListiner = new TcpListener(IPAddress.Any, ServerConfig.Instance.ServerListenPort);
+                    _secondaryListiner.Start();
+                }
+                catch (SocketException ex)
+                {
+                    _secondaryListinerActive = false;
+                }
 			}
 			_listiner = new TcpListener(ServerConfig.Instance.ConvertedServerListenAddress, ServerConfig.Instance.ServerListenPort);
 			_listiner.Start();

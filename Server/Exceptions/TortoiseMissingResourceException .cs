@@ -4,7 +4,7 @@
  * Date: 5/2/2010
  * Time: 2:56 AM
  * 
- * Copyright 2011 Matthew Cash. All rights reserved.
+ * Copyright 2012 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:

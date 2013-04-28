@@ -1,16 +1,16 @@
 ﻿/*
- * Copyright 2011 Matthew Cash. All rights reserved.
+ * Copyright 2012 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
  * 
- *	1. Redistributions of source code must retain the above copyright notice, this list of
- *	   conditions and the following disclaimer.
- * 
- *	2. Redistributions in binary form must reproduce the above copyright notice, this list
- *	   of conditions and the following disclaimer in the documentation and/or other materials
- *	   provided with the distribution.
- * 
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *          conditions and the following disclaimer.
+ *          
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *          of conditions and the following disclaimer in the documentation and/or other materials
+ *                provided with the distribution.
+ *                
  * THIS SOFTWARE IS PROVIDED BY Matthew Cash ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
  * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL Matthew Cash OR
@@ -24,7 +24,7 @@
  * The views and conclusions contained in the software and documentation are those of the
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
- */
+ * */
 
 using System;
 using System.Collections.Generic;
@@ -40,7 +40,7 @@ using Tortoise.Shared.Exceptions;
 
 namespace Tortoise.Shared
 {
-        public enum ConsoleCommandSucess
+    public enum ConsoleCommandSucess
     {
         Sucess,
         Failure
@@ -53,17 +53,39 @@ namespace Tortoise.Shared
     public struct ConsoleVarable
     {
         public string Value;
+        public string HelpInfo;
         public Func<string, ExecutionState> ValidCheck;
+
         public override string ToString()
         {
             return Value;
         }
+
+
+        public static ConsoleVarable OnOffVarable(string HelpInfo)
+        {
+            return new ConsoleVarable() { Value = "0", ValidCheck = ValidCheckMethod_0_1, HelpInfo = HelpInfo };
+        }
+
+        public static ExecutionState ValidCheckMethod_0_1(string t)
+        {
+            t = t.Trim();
+            if (t == "0" || t == "1")
+                return ExecutionState.Succeeded();
+            return ExecutionState.Failed("Value must be 0 or 1.");
+        }
+
     }
+
+
+
     /// <summary>
     /// This is the backend for the Console system.
     /// </summary>
     public static class TConsole
     {
+
+
 
         private static HashDictionary<string, ConsoleVarable> _varables;
         private static HashDictionary<string, System.Func<string[], ConsoleResponce>> _functions;
@@ -82,6 +104,32 @@ namespace Tortoise.Shared
             _functions = new HashDictionary<string, System.Func<string[], ConsoleResponce>>();
             _consoleBacklog = new LimitedList<string>(backlogLength, string.Empty);
             _backlogLine = "";
+
+            SetFunc("help", ConsoleHelpFunc);
+
+        }
+
+        static ConsoleResponce ConsoleHelpFunc(string[] data)
+        {
+            ConsoleResponce cr = new ConsoleResponce();
+            cr.Sucess = ConsoleCommandSucess.Sucess;
+            cr.Value = "";
+
+            if (data.Length == 0)
+            {
+                foreach (string s in _functions.Keys)
+                    cr.Value += s + "\n";
+                foreach (string s in _varables.Keys)
+                    cr.Value += s + "\n";
+            }
+            else
+            {
+                foreach (string s in _varables.Keys)
+                    if (s == data[0])
+                        cr.Value = s + "\nDescription: " + _varables[s].HelpInfo;
+            }
+            
+            return cr;
         }
 
         public static void WriteToBacklog(string message, bool newline)
@@ -117,6 +165,15 @@ namespace Tortoise.Shared
                     _varables[name] = value;
                 }
                 else
+                {
+                    _varables.Add(name, value);
+                }
+        }
+
+        public static void SetIfNotExsistValue(string name, ConsoleVarable value)
+        {
+            lock (_varables)
+                if (!_varables.Contains(name))
                 {
                     _varables.Add(name, value);
                 }
@@ -186,23 +243,38 @@ namespace Tortoise.Shared
 
                 string[] split = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 string name = split[0], value = "";
-                Array.Copy(split, 1, split, 0, split.Length - 1);
+                if (split.Length != 1)
+                {
+                    string[] sptmp = new string[split.Length - 1];
+                    Array.Copy(split, 1, sptmp, 0, split.Length - 1);
+                    split = sptmp;
+                }
+                else
+                {
+                    split = new string[0];
+                }
 
                 if (_varables.Contains(name) && split.Length == 0)
                 {
-                    cr.Value = string.Format("{0} = {1}\n", name, _varables[name]);
+                    cr.Value = string.Format("{0} = {1}", name, _varables[name]);
                     return cr;
                 }
                 value = String.Join(" ", split);
                 if (_varables.Contains(name))
                 {
                     if (value.StartsWith("=") || value.StartsWith("\\"))
-                        value.Remove(0, 1);
+                    {
+                        value = value.Remove(0, 1);
+                        value = value.Trim();
+                    }
                     if (_varables[name].ValidCheck(value))
                     {
                         ConsoleVarable cv = _varables[name];
                         cv.Value = value;
                         _varables[name] = cv;
+                        cr.Value = string.Format("{0} = {1}", name, _varables[name]);
+
+                        return cr;
                     }
                     else
                     {
@@ -215,6 +287,9 @@ namespace Tortoise.Shared
                 {
                     return ExecuteFunc(name, ArgSplit(value, true));
                 }
+
+                cr.Sucess = ConsoleCommandSucess.Failure;
+                cr.Value = DefaultLanguage.Strings.GetFormatedString("Console_Unknown_Varable", name);
 
                 return cr;
             }
@@ -319,5 +394,29 @@ namespace Tortoise.Shared
             }
             return sb.ToString();
         }
+
+        public static void Write(string s)
+        {
+            Trace.Write(s);
+        }
+
+        public static void Write(string s, params string[] format)
+        {
+            Trace.Write(string.Format(s, format));
+        }
+
+        public static void WriteLine(string s)
+        {
+            Trace.WriteLine(s);
+        }
+
+        public static void WriteLine(string s, params string[] format)
+        {
+            Trace.WriteLine(string.Format(s, format));
+        }
+
+
+
+
     }
 }

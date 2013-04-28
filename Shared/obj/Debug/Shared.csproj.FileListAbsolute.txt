@@ -1,0 +1,6 @@
+C:\Projects\Code\Multi\tortoise-mog-code\trunk\Shared\bin\Debug\Shared.exe
+C:\Projects\Code\Multi\tortoise-mog-code\trunk\Shared\bin\Debug\Shared.pdb
+C:\Projects\Code\Multi\tortoise-mog-code\trunk\Shared\obj\Debug\Shared.csprojResolveAssemblyReference.cache
+C:\Projects\Code\Multi\tortoise-mog-code\trunk\Shared\obj\Debug\Shared.exe
+C:\Projects\Code\Multi\tortoise-mog-code\trunk\Shared\obj\Debug\Shared.pdb
+C:\Projects\Code\Multi\tortoise-mog-code\trunk\Shared\bin\Debug\Shared.exe.config

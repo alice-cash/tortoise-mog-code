@@ -1,10 +1,5 @@
 ﻿/*
- * Created by SharpDevelop.
- * User: Matthew
- * Date: 5/2/2010
- * Time: 12:21 AM
- * 
- * Copyright 2011 Matthew Cash. All rights reserved.
+ * Copyright 2012 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -70,6 +65,7 @@ namespace Tortoise.Server
 		
 		public static void Main(string[] args)
 		{
+            
 			#if DEBUG
 			DEBUG = true;
 			#else
@@ -119,5 +115,13 @@ namespace Tortoise.Server
 
 			Server.Connections.ClientHandle.CreateInstance();
 		}
+
+        public static Version Version
+        {
+            get
+            {
+                return typeof(Program).Assembly.GetName().Version;
+            }
+        }
 	}
 }

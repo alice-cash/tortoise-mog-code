@@ -4,7 +4,7 @@
  * Date: 8/8/2010
  * Time: 3:55 PM
  * 
- * Copyright 2011 Matthew Cash. All rights reserved.
+ * Copyright 2012 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -116,16 +116,24 @@ namespace Tortoise.Server.Module
             switch (ComID.Result)
             {
                 case _packet_Version:
-                    if (!ReadClientInfo(Sender, data))
+                    var ClientInfoPassed = ReadClientInfo(Sender, data);
+                    if (!ClientInfoPassed)
+                        //read error
                         return;
-
-                    SendAuthKey(Sender);
+                    
+                    if(ClientInfoPassed.Result)
+                        SendAuthKey(Sender);
                     break;
                 case _packet_LoginRequest:
-
-                    if (!ReadLoginRequest(Sender, data))
-                        return;
-
+                    var LoginRequestPassed = ReadLoginRequest(Sender, data);
+                    if (!LoginRequestPassed)
+                       //read error
+                       return;
+                    if(LoginRequestPassed.Result)
+                    {
+                        //password was correct
+                        //response in ReadLoginRequest function
+                    }
                     break;
                 default:
                     Sender.SyncError("Invalid Packet ID");
@@ -137,7 +145,7 @@ namespace Tortoise.Server.Module
         }
 
 
-        ExecutionState ReadLoginRequest(Connection Sender, ByteReader data)
+        ExecutionState<bool> ReadLoginRequest(Connection Sender, ByteReader data)
         {
             if (LoginAttempt == null)
                 throw new Exception("LoginAttempt was never assigned!");
@@ -157,7 +165,7 @@ namespace Tortoise.Server.Module
                 dbglvl2.Add("ByteReader Dump", data.DumpDebugInfo());
 
                 Debugging.SyncError(Sender, dbglvl0, dbglvl1, dbglvl2);
-                return ExecutionState.Failed();
+                return ExecutionState<bool>.Failed();
             }
             var result = LoginAttempt(Sender, username.Result, password.Result);
             //Error point 2
@@ -171,8 +179,9 @@ namespace Tortoise.Server.Module
                 dbglvl2.Add("ByteReader Dump", data.DumpDebugInfo());
 
                 Debugging.SyncError(Sender, dbglvl0, dbglvl1, dbglvl2);
-                return ExecutionState.Failed();
+                return ExecutionState<bool>.Failed();
             }
+
             ByteWriter bw = new ByteWriter();
             bw.Write(_packet_LoginResponce);
             bw.Write(result.Result);
@@ -181,31 +190,39 @@ namespace Tortoise.Server.Module
             bw.Write(ConnectionData.GetPlayerData(Sender).UIntValues["UserID"]);
 
             Sender.WriteModulePacket(bw.GetArray(), LoginLoader.ClientModuleComID);
-            return ExecutionState.Succeeded();
+            return ExecutionState<bool>.Succeeded(result.Result);
         }
 
-        ExecutionState ReadClientInfo(Connection Sender, ByteReader data)
+        ExecutionState<bool> ReadClientInfo(Connection Sender, ByteReader data)
         {
             //(byte major, byte minor, ushort revision)
 
             var major = data.ReadByte();
             var minor = data.ReadByte();
+            var build = data.ReadUShort();
             var revision = data.ReadUShort();
-            if (!major || !minor || !revision)
+            if (!major || !minor || !build || !revision)
             {
                 Sender.SyncError("Version Data");
-                return ExecutionState.Failed();
+                return ExecutionState<bool>.Failed();
             }
 
+#if DEBUG
+            if (minor.Result != XML.ServerConfig.Instance.CLientMinor ||
+               major.Result != XML.ServerConfig.Instance.ClientMajor
+                )
+#else
             if (revision.Result != XML.ServerConfig.Instance.ClientRevision ||
+                build.Result != XML.ServerConfig.Instance.CLientBuild ||
                minor.Result != XML.ServerConfig.Instance.CLientMinor ||
-               major.Result != XML.ServerConfig.Instance.ClientMajor)
+               major.Result != XML.ServerConfig.Instance.ClientMajor
+                )
+#endif
             {
                 Sender.Disconnect(MessageID.OutOfDate);
-                return ExecutionState.Failed();
             }
             //Write_TempAuthKey(_authKey);
-            return ExecutionState.Succeeded();
+            return ExecutionState<bool>.Succeeded(true);
         }
 
         void SendAuthKey(Connection Sender)

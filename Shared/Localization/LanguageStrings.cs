@@ -1,10 +1,5 @@
 ﻿/*
- * Created by SharpDevelop.
- * User: Matthew
- * Date: 8/3/2010
- * Time: 6:04 PM
- * 
- * Copyright 2011 Matthew Cash. All rights reserved.
+ * Copyright 2012 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -59,7 +54,7 @@ namespace Tortoise.Shared.Localization
 		}
 		
 		private string _errorNoLocal = "No 'Error_No_Local' in language file!";
-		private string _languageName = "No 'Language_Name' in language file!";
+        private string _languageName = "No 'Language_Name' in language file!";
 		
 		public string ErrorNoLocal{get{return _errorNoLocal;}}
 		public string LanguageName{get{return _languageName;}}

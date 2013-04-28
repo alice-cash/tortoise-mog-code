@@ -4,7 +4,7 @@
  * Date: 5/2/2010
  * Time: 2:24 AM
  * 
- * Copyright 2011 Matthew Cash. All rights reserved.
+ * Copyright 2012 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -151,6 +151,8 @@ namespace Tortoise.Server.XML
         public int ClientMajor;
         ///<summary> This is the Clients Minor version number. </summary>
         public int CLientMinor;
+        ///<summary> This is the Clients Build version number. </summary>
+        public int CLientBuild;
         ///<summary> This is the Clients Revision version number. </summary>
         public int ClientRevision;
 

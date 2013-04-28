@@ -1,4 +1,0 @@
-This project relies on these Projects.
-Releases will include a copy of them, but for development, you need to download these sepertly:
-AgateLib 0.3.1 - https://sourceforge.net/projects/agate/
-C5 - http://www.itu.dk/research/c5/
