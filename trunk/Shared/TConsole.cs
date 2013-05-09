@@ -45,10 +45,25 @@ namespace Tortoise.Shared
         Sucess,
         Failure
     }
+
+    public struct ConsoleFunction
+    {
+        public System.Func<string[], ConsoleResponce> Function;
+        public string HelpInfo;
+    }
     public struct ConsoleResponce
     {
         public string Value;
         public ConsoleCommandSucess Sucess;
+
+        public static ConsoleResponce NewSucess(string data)
+        {
+            return new ConsoleResponce() { Sucess = ConsoleCommandSucess.Sucess, Value = data };
+        }
+        public static ConsoleResponce NewFailure(string data)
+        {
+            return new ConsoleResponce() { Sucess = ConsoleCommandSucess.Failure, Value = data };
+        }
     }
     public struct ConsoleVarable
     {
@@ -88,24 +103,23 @@ namespace Tortoise.Shared
 
 
         private static HashDictionary<string, ConsoleVarable> _varables;
-        private static HashDictionary<string, System.Func<string[], ConsoleResponce>> _functions;
+        private static HashDictionary<string, ConsoleFunction> _functions;
 
         private static LimitedList<string> _consoleBacklog;
         private static string _backlogLine;
 
-        static TConsole()
-        {
-            Init();
-        }
 
         public static void Init(int backlogLength = 500)
         {
             _varables = new HashDictionary<string, ConsoleVarable>();
-            _functions = new HashDictionary<string, System.Func<string[], ConsoleResponce>>();
+            _functions = new HashDictionary<string, ConsoleFunction>();
             _consoleBacklog = new LimitedList<string>(backlogLength, string.Empty);
             _backlogLine = "";
 
-            SetFunc("help", ConsoleHelpFunc);
+            ConsoleFunction ConsoleHelp = new ConsoleFunction();
+            ConsoleHelp.Function = ConsoleHelpFunc;
+            ConsoleHelp.HelpInfo = Shared.Localization.DefaultLanguage.Strings.GetString("Console_Help_Help");
+            SetFunc("help", ConsoleHelp);
 
         }
 
@@ -126,7 +140,10 @@ namespace Tortoise.Shared
             {
                 foreach (string s in _varables.Keys)
                     if (s == data[0])
-                        cr.Value = s + "\nDescription: " + _varables[s].HelpInfo;
+                        cr.Value = _varables[s].HelpInfo;
+                foreach (string s in _functions.Keys)
+                    if (s == data[0])
+                        cr.Value = _functions[s].HelpInfo;
             }
             
             return cr;
@@ -196,7 +213,7 @@ namespace Tortoise.Shared
                 {
                     if (_functions.Contains(name))
                     {
-                        return _functions[name](args);
+                        return _functions[name].Function(args);
                     }
                 }
                 catch (ConsoleException ex)
@@ -209,7 +226,7 @@ namespace Tortoise.Shared
 
 
 
-        public static void SetFunc(string name, System.Func<string[], ConsoleResponce> func)
+        public static void SetFunc(string name, ConsoleFunction func)
         {
             lock (_varables)
                 if (_varables.Contains(name))

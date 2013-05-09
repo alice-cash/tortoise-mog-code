@@ -38,10 +38,10 @@ using Mono.Unix;
 #endif
 namespace Tortoise.Server
 {
-	class Program
-	{
-		public static bool DEBUG;
-		#if LINUX
+    class Program
+    {
+        public static bool DEBUG;
+#if LINUX
 		static UnixSignal[] signals = new UnixSignal[] {
 			new UnixSignal (Mono.Unix.Native.Signum.SIGTERM)
 		};
@@ -59,62 +59,76 @@ namespace Tortoise.Server
 
          	}
          });
-		#endif
+#endif
 
-		public static bool RunServer{get;set;}
-		
-		public static void Main(string[] args)
-		{
-            
-			#if DEBUG
-			DEBUG = true;
-			#else
+        public static bool RunServer { get; set; }
+
+        public static void Main(string[] args)
+        {
+
+#if DEBUG
+            DEBUG = true;
+#else
 			DEBUG = false;
-			#endif
-			#if LINUX
+#endif
+#if LINUX
 			signal_thread.Start();
-			#endif
-			//add the diagnostic debug output to console.
+#endif
+            Shared.TConsole.Init();
+
+            //add the diagnostic debug output to console.
             Debug.Listeners.Add(new ConsoleTraceListener());
             Debug.Listeners.Add(new TortoiseConsoleTraceListiner());
             //Trace.Listeners.Add(new ConsoleTraceListener());
             //Trace.Listeners.Add(new TortoiseConsoleTraceListiner());
             //Load up the configuration file
-			try{
-				XML.ServerConfig.LoadConfig();
-			} catch(TortoiseMissingResourceException ex)
-			{
-				Debug.WriteLine(string.Format("The server could not load the embedded resource. Please check following embedded resource: {0}", ex.Data["ResourceName"]));
-				return;
-			}
-			catch (TortoiseFileException ex)
-			{
+            try
+            {
+                XML.ServerConfig.LoadConfig();
+            }
+            catch (TortoiseMissingResourceException ex)
+            {
+                Debug.WriteLine(string.Format("The server could not load the embedded resource. Please check following embedded resource: {0}", ex.Data["ResourceName"]));
+                return;
+            }
+            catch (TortoiseFileException ex)
+            {
                 Debug.WriteLine(string.Format("The server could not load or create the configuration file. More information: {0}", ex.InnerException.ToString()));
-				return;
-			}
-			catch (InvalidOperationException ex)
-			{
+                return;
+            }
+            catch (InvalidOperationException ex)
+            {
                 Debug.WriteLine(string.Format("An unknown error occurred during deserialization. More information: {0}", ex.InnerException.ToString()));
-				return;
-			}
-			if(XML.ServerConfig.Instance.MysqlUser == "{EDIT ME}" ||
-			   XML.ServerConfig.Instance.MysqlPass == "{EDIT ME}")
-			{
+                return;
+            }
+            if (XML.ServerConfig.Instance.MysqlUser == "{EDIT ME}" ||
+               XML.ServerConfig.Instance.MysqlPass == "{EDIT ME}")
+            {
                 Debug.WriteLine("Edit the LoginConfig.xml file");
-				return;
-			}
-			if (XML.ServerConfig.Instance.AcceptAnyAddress)
-			{
+               // return;
+            }
+            if (XML.ServerConfig.Instance.AcceptAnyAddress)
+            {
                 Debug.WriteLine("Warning: This server is set to accept server connections from any IP address. ANY server with the secrets can connect.");
-			}
+            }
+
+            
+            
 
             ModuleInfo.LoadModules(Assembly.GetExecutingAssembly(), true);
-			
-			//Start the various Listeners.
-			Server.Connections.ServerHandle.CreateInstance();
 
-			Server.Connections.ClientHandle.CreateInstance();
-		}
+            //Start the various Listeners.
+            Server.Connections.ServerHandle.CreateInstance();
+
+            Server.Connections.ClientHandle.CreateInstance();
+
+
+            while (true)
+            {
+                Console.Write("$$>");
+                Console.WriteLine(Shared.TConsole.ProcessLine(Console.ReadLine()).Value);
+            }
+        }
 
         public static Version Version
         {
@@ -123,5 +137,5 @@ namespace Tortoise.Server
                 return typeof(Program).Assembly.GetName().Version;
             }
         }
-	}
+    }
 }
