@@ -47,9 +47,17 @@ namespace Tortoise.Shared.Module
             LoadAssemblyModules(LookIn);
             if (SharedLibrary)
             {
+                
                 LoadAssemblyModules(Assembly.GetExecutingAssembly());
             }
 		}
+
+        public static void LoadModules()
+        {
+            var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (Assembly asp in loadedAssemblies)
+                LoadAssemblyModules(asp);
+        }
 
         private static void LoadAssemblyModules(Assembly target)
         {

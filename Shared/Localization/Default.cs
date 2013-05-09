@@ -27,13 +27,64 @@
  */
 using System;
 
+using System.Globalization;
+
+
+
 namespace Tortoise.Shared.Localization
 {
 	/// <summary>
-	/// Description of Default.
+    /// Attempts to load a language file based off of the current system culture, en-us, or the first one avalaible.
 	/// </summary>
 	public class DefaultLanguage
 	{
-		public static LanguageStrings Strings{get;set;}
+        private static  LanguageStrings _strings;
+		public static LanguageStrings Strings{
+            get
+            {
+                if (_strings == null)
+                {
+                    InitDefault();
+                }
+                return _strings; }
+        }
+
+        public static void InitDefault()
+        {
+            var languages = LanguageStrings.GetAvalableLanguages();
+            if (languages.Length == 0)
+                throw new Exception("No lanuage files found!");
+            if (languages.Length == 1)
+            {
+                _strings = languages[0];
+            }
+            InitAs(CultureInfo.InstalledUICulture, languages);
+        }
+
+        /// <summary>
+        /// Will attempt to load a language file based off of the provided culture, otherwise it will default to either the system culture, en-us, or the first one avalaible.
+        /// </summary>
+        public static void InitDefaultAs(CultureInfo ci)
+        {
+            var languages = LanguageStrings.GetAvalableLanguages();
+            if (languages.Length == 0)
+                throw new Exception("No lanuage files found!");
+            if (languages.Length == 1)
+            {
+                _strings = languages[0];
+            }
+            InitAs(ci, languages);
+            InitAs(CultureInfo.InstalledUICulture, languages);
+        }
+
+        private static void InitAs(CultureInfo ci, LanguageStrings[] languages)
+        {
+            foreach (LanguageStrings strings in languages)
+                if (strings.LanguageName == ci.Name)
+                {
+                    _strings = strings;
+                    return;
+                }
+        }
 	}
 }

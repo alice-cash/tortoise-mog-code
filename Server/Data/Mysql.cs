@@ -30,157 +30,157 @@ using System.Collections.Generic;
 using System.Data;
 using MySql.Data.MySqlClient;
 using Tortoise.Server.Exceptions;
-namespace LoginServer.Data
+namespace Tortoise.Server.Data
 {
-	/// <summary>
-	/// Description of Mysql.
-	/// </summary>
-	public class Mysql
-	{
-		private static Mysql _instance;
-		public static Mysql Instance
-		{
-			get
-			{
-				if(_instance != null)
-					_instance = new Mysql();
-				return _instance;
-			}
-		}
-		
-		private MySqlConnection _connection;
-		private MySqlCommand _command;
-		//private MySqlDataReader Reader;
+    /// <summary>
+    /// Description of Mysql.
+    /// </summary>
+    public class Mysql
+    {
+        private static Mysql _instance;
+        public static Mysql Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new Mysql();
+                return _instance;
+            }
+        }
 
-		// MyConString = "Database=spacetraders;Data Source=localhost;User=root;Password=";
-		string _myConString = "Database=Tortus;Data Source=localhost;User=Tortus;Password=BrCFWATJ7Z2uqvNS";
+        private MySqlConnection _connection;
+        private MySqlCommand _command;
+        //private MySqlDataReader Reader;
 
-
-		public Mysql()
-		{
-		}
-		
-		~Mysql()
-	   {
-			if (_connection != null && _connection.State != ConnectionState.Closed)
-			{
-				_connection.Close();
-			}
-	   }
-		 
-		private int RunCommnd(string query, params KeyValuePair<string, object>[] param)
-		{
-			//string FormatedQuery = string.Format(Query, param);
-
-			CheckConnection();
-			_command = _connection.CreateCommand();
-			_command.CommandText = query;
+        string _myConString = "server=localhost;User Id=root;Persist Security Info=True;database=tgameauth";
+        //string _myConString = "Database=Tortus;Data Source=localhost;User=Tortus;Password=BrCFWATJ7Z2uqvNS";
 
 
-			foreach (KeyValuePair<string, object> Obj in param)
-			{
-				MySqlParameter oParam = _command.Parameters.Add(Obj.Key, GetType(Obj.Value));
-				oParam.Value = Obj.Value;
-			}
+        public Mysql()
+        {
+        }
 
-			return _command.ExecuteNonQuery();
-		}
+        ~Mysql()
+        {
+            if (_connection != null && _connection.State != ConnectionState.Closed)
+            {
+                _connection.Close();
+            }
+        }
 
-		public MySqlDbType GetType(object obj)
-		{
+        public int RunCommnd(string query, params KeyValuePair<string, object>[] param)
+        {
+            //string FormatedQuery = string.Format(Query, param);
 
-			Type T = obj.GetType();
+            CheckConnection();
+            _command = _connection.CreateCommand();
+            _command.CommandText = query;
 
-			if (T == typeof(string))
-				return MySqlDbType.String;
 
-			if (T == typeof(byte))
-				return MySqlDbType.Byte;
+            foreach (KeyValuePair<string, object> Obj in param)
+            {
+                MySqlParameter oParam = _command.Parameters.Add(Obj.Key, GetType(Obj.Value));
+                oParam.Value = Obj.Value;
+            }
 
-			if (T == typeof(int))
-				return MySqlDbType.Int32;
+            return _command.ExecuteNonQuery();
+        }
 
-			if (T == typeof(short))
-				return MySqlDbType.Int16;
+        public MySqlDbType GetType(object obj)
+        {
 
-			if (T == typeof(long))
-				return MySqlDbType.Int64;
+            Type T = obj.GetType();
 
-			if (T == typeof(DateTime))
-				return MySqlDbType.DateTime;
+            if (T == typeof(string))
+                return MySqlDbType.String;
 
-			if (T == typeof(Enum))
-				return MySqlDbType.Enum;
+            if (T == typeof(byte))
+                return MySqlDbType.Byte;
 
-			if (T == typeof(byte[]))
-				return MySqlDbType.Blob;
+            if (T == typeof(int))
+                return MySqlDbType.Int32;
 
-			return MySqlDbType.String;
+            if (T == typeof(short))
+                return MySqlDbType.Int16;
 
-		}
+            if (T == typeof(long))
+                return MySqlDbType.Int64;
 
-		private System.Data.DataTable RunQuery(string query, params KeyValuePair<string, object>[] param)
-		{
+            if (T == typeof(DateTime))
+                return MySqlDbType.DateTime;
 
-			//string FormatedQuery = string.Format(Query, param);
+            if (T == typeof(Enum))
+                return MySqlDbType.Enum;
 
-			MySqlDataReader reader = null;
-			DataTable DT = new System.Data.DataTable();
-			CheckConnection();
+            if (T == typeof(byte[]))
+                return MySqlDbType.Blob;
 
-			_command = _connection.CreateCommand();
-			_command.CommandText = query;
+            return MySqlDbType.String;
 
-			foreach (KeyValuePair<string, object> Obj in param)
-			{
-				MySqlParameter oParam = _command.Parameters.Add(Obj.Key, GetType(Obj.Value));
-				oParam.Value = Obj.Value;
-			}
-			try
-			{
-				reader = _command.ExecuteReader();
+        }
 
-				DT.Load(reader);
-				_command.Dispose();
-				reader.Close();
-			}
-			finally
-			{
-				if (reader != null)
-					reader.Close();
+        public System.Data.DataTable RunQuery(string query, params KeyValuePair<string, object>[] param)
+        {
 
-				_command.Dispose();
+            //string FormatedQuery = string.Format(Query, param);
 
-			}
-			return DT;
-		}
-		
-		private static KeyValuePair<string, object> KVP(string Key, object obj)
-		{
-			return new KeyValuePair<string, object>(Key, obj);
-		}
-			 
-		public void CheckConnection()
-		{
-			if (_connection == null || _connection.State == ConnectionState.Closed)
-			{
-				_connection = new MySqlConnection(_myConString);
-				try{
-				_connection.Open();
-				}catch(MySqlException ex)
-				{
-					throw new TortoiseGeneralException("Error with MySql. See innerException.", ex);
-				}
-				return;
-			}
-            
-		}
-		
-		public LoginsTable.LoginsDataTable Query_GetLoginInfo(string login)
-		{
-			 string command = "SELECT * FROM  `Logins` WHERE `Login` = ?login;";
+            MySqlDataReader reader = null;
+            DataTable DT = new System.Data.DataTable();
+            CheckConnection();
 
-			 return new LoginsTable.LoginsDataTable(RunQuery(command, KVP("?login", login)));
-		}
-	}
+            _command = _connection.CreateCommand();
+            _command.CommandText = query;
+
+            foreach (KeyValuePair<string, object> Obj in param)
+            {
+                MySqlParameter oParam = _command.Parameters.Add(Obj.Key, GetType(Obj.Value));
+                oParam.Value = Obj.Value;
+            }
+            try
+            {
+                reader = _command.ExecuteReader();
+
+                DT.Load(reader);
+                _command.Dispose();
+                reader.Close();
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
+
+                _command.Dispose();
+
+            }
+            return DT;
+        }
+
+        private static KeyValuePair<string, object> KVP(string Key, object obj)
+        {
+            return new KeyValuePair<string, object>(Key, obj);
+        }
+
+        public void CheckConnection()
+        {
+            if (_connection == null || _connection.State == ConnectionState.Closed)
+            {
+
+                _myConString = string.Format("server={0};User Id={1};Persist Security Info=True;Password={2};database={3}",
+                    XML.ServerConfig.Instance.MysqlAddress, XML.ServerConfig.Instance.MysqlUser, XML.ServerConfig.Instance.MysqlPass,
+                     XML.ServerConfig.Instance.MysqlAccountDatabse);
+                _connection = new MySqlConnection(_myConString);
+                try
+                {
+                    _connection.Open();
+                }
+                catch (MySqlException ex)
+                {
+                    throw new TortoiseGeneralException("Error with MySql. See innerException.", ex);
+                }
+                return;
+            }
+
+        }
+
+    }
 }

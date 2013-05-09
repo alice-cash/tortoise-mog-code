@@ -1,9 +1,4 @@
 ﻿/*
- * Created by SharpDevelop.
- * User: Matthew
- * Date: 5/6/2010
- * Time: 12:38 PM
- * 
  * Copyright 2012 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are

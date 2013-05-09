@@ -26,6 +26,7 @@
  * or implied, of Matthew Cash.
  */
 using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using Tortoise.Server;
@@ -40,12 +41,10 @@ using Tortoise.Shared.Net;
 namespace Tortoise.Server.Module
 {
 	/// <summary>
-	/// A static username/password login for testing/debuging.
+	/// A username/password login module for testing/debuging.
 	/// </summary>
 	internal class Dbg_StaticLoginLoader : ModuleLoader
 	{
-		private string _uname = "test";
-		private string _pwd = "test123";
 		
 		public override Version Version {
 			get {
@@ -70,20 +69,26 @@ namespace Tortoise.Server.Module
 
         private ExecutionState<bool> testLogin(Connection Sender, string username, string HashedPassword)
         {
-            var data = ConnectionData.GetPlayerData(Sender);
-            if (!data.ByteArrayValues.ContainsKey("AuthKey"))
+            var accountdata = ConnectionData.GetPlayerData(Sender);
+            var data = Data.Tables.account.GetAccountByUsername(username);
+            if (!accountdata.ByteArrayValues.ContainsKey("AuthKey"))
                 return ExecutionState<bool>.Failed("Connection has no AuthKey! Cannot recompute hash!");
-            byte[] key = data.ByteArrayValues["AuthKey"];
+            byte[] key = accountdata.ByteArrayValues["AuthKey"];
 
-            if (_uname != username)
+            if(data.Sucess == false)
+                return ExecutionState<bool>.Succeeded(false);
+
+
+
+            if (data.Result.Username != username)
                 return ExecutionState<bool>.Succeeded(false);
 
             // For a standard user login system(mysql, etc) the password is an unsalted
-            // md5 hash. Yes yes, unsalted is venerable to rainbow tables but if someone has
+            // md5 hash. Yes yes, unsalted is vulnerable to rainbow tables but if someone has
             // a database dump, you have other things to worry about.
 
             string _hpwd;
-            _hpwd = MD5String(username + MD5String(_pwd), key);
+            _hpwd = MD5String(username + MD5String(data.Result.Password), key);
 
             if (_hpwd != HashedPassword)
                 return ExecutionState<bool>.Succeeded(false);
@@ -114,7 +119,6 @@ namespace Tortoise.Server.Module
 
 			return BitConverter.ToString(md5.ComputeHash(salted));
 		}
-		
-		
+
 	}
 }

@@ -60,18 +60,18 @@ namespace Tortoise.Shared.Collection
 			Enqueue(item);
 			return true;
 		}
-		
-		public override void AddAll<U>(System.Collections.Generic.IEnumerable<U> items)
+		/*
+		public void AddAll<U>(System.Collections.Generic.IEnumerable<U> items)
 		{
 			foreach(U item in items)
-				Enqueue(item);
-		}
+				Enqueue(item as T);
+		}*/
 		
         public override void Insert(int i, T item)
         {
             throw new NotSupportedException();
         }
-		public override void InsertAll<U>(int i, System.Collections.Generic.IEnumerable<U> items)
+		public void InsertAll<U>(int i, System.Collections.Generic.IEnumerable<U> items)
 		{
 			throw new NotSupportedException();
 		}

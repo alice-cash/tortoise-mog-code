@@ -43,7 +43,7 @@ namespace Tortoise.Shared.Localization
 			if(_languageStrings == null)
 			{
 				_languageStrings = new List<LanguageStrings>();
-				foreach(string locFile in Directory.GetFiles("./localization/"))
+				foreach(string locFile in Directory.GetFiles("./Localization/"))
 				{
 					if(locFile.EndsWith(".lang"))
 						_languageStrings.Add(new LanguageStrings(locFile));
@@ -55,18 +55,27 @@ namespace Tortoise.Shared.Localization
 		
 		private string _errorNoLocal = "No 'Error_No_Local' in language file!";
         private string _languageName = "No 'Language_Name' in language file!";
+        private string _languageDisplayName = "No 'Language_DisplayName' in language file!";
 		
 		public string ErrorNoLocal{get{return _errorNoLocal;}}
-		public string LanguageName{get{return _languageName;}}
+        public string LanguageName { get { return _languageName; } }
+        public string LanguageDisplayName { get { return _languageDisplayName; } }
 		
-		public HashDictionary<string, string> Language{get; protected set;}
-		
-		public string GetFormatedString(string name, params object[] args)
-		{
-			if(Language.Contains(name))
-				return string.Format(Language[name], args).Trim();
+		private HashDictionary<string, string> Language{get;  set;}
+
+        public string GetFormatedString(string name, params object[] args)
+        {
+            if (Language.Contains(name))
+                return string.Format(Language[name], args).Trim();
             return string.Format(ErrorNoLocal, name).Trim();
-		}
+        }
+
+        public string GetString(string name, params object[] args)
+        {
+            if (Language.Contains(name))
+                return string.Format(Language[name], args).Trim();
+            return string.Format(ErrorNoLocal, name).Trim();
+        }
 		
 
 		public LanguageStrings(string fileName)
@@ -92,12 +101,14 @@ namespace Tortoise.Shared.Localization
 
 				text = line.Substring(pos);
 				text = text.Trim();
-				text = text.Replace("\\n","\n");
-				Language.Add(type, text);
+                text = text.Replace("\\n", "\n");
+                text = text.Replace("\\t", "\t");
+                Language.Add(type, text);
 			}
 			
 			if(Language.Contains("Error_No_Local")) _errorNoLocal = Language["Error_No_Local"];
-			if(Language.Contains("Language_Name")) _languageName = Language["Language_Name"];
+            if (Language.Contains("Language_Name")) _languageName = Language["Language_Name"];
+            if (Language.Contains("Language_DisplayName")) _languageName = Language["Language_DisplayName"];
 			
 		}
 		

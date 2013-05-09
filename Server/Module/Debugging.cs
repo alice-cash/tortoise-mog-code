@@ -43,7 +43,32 @@ namespace Tortoise.Server.Module
 
         public override void Load()
         {
-            TConsole.SetValue("Debugging_Level", new ConsoleVarable() { ValidCheck = CheckConsoleInput, Value = "0", HelpInfo = "Controls the ammount of information displayed for debugging" });
+            TConsole.SetValue("Debugging_Level", new ConsoleVarable() { ValidCheck = CheckConsoleInput, Value = "0", HelpInfo = Shared.Localization.DefaultLanguage.Strings.GetString("DEBUGGING_LEVEL_HELP") });
+
+            Shared.TConsole.SetFunc("debug_db_grabusr", new ConsoleFunction()
+            {
+                Function = new Func<string[], Shared.ConsoleResponce>((string[] debug_args) =>
+                    {
+                        if (debug_args.Length == 0 || debug_args.Length > 1)
+                            return Shared.ConsoleResponce.NewFailure(Shared.Localization.DefaultLanguage.Strings.GetString("DEBUG_DB_GRABUSR_HELP"));
+                        if (debug_args.Length == 1)
+                        {
+                            var v = Data.Tables.account.GetAccountByUsername(debug_args[0]);
+                            if (v.Sucess == false)
+                                return Shared.ConsoleResponce.NewFailure(Shared.Localization.DefaultLanguage.Strings.GetFormatedString("DEBUG_DB_GRABUSR_NOFIND", debug_args[0]));
+
+                            return Shared.ConsoleResponce.NewSucess(Shared.Localization.DefaultLanguage.Strings.GetFormatedString("DEBUG_DB_GRABUSR_FIND", v.Result.ID, v.Result.Username, v.Result.Password));
+                        }
+                        else
+                        {
+
+                        }
+
+                        return Shared.ConsoleResponce.NewSucess("");
+                    }),
+                HelpInfo = Shared.Localization.DefaultLanguage.Strings.GetString("DEBUG_DB_GRABUSR_HELP")
+            });
+        
         }
 
         ExecutionState CheckConsoleInput(string input)
