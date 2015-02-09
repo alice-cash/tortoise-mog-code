@@ -30,76 +30,74 @@ using System.Threading;
 
 namespace Tortoise.Shared.Threading
 {
-	/// <summary>
-	/// Takes the thread ID used to create it and uses it when CheckThreadSafety and EnforceThreadSafety are called.
-	/// </summary>
-	public class ThreadSafetyEnforcer
-	{
-		//When this is false, this class is absoutly useless... Other than IsSameThread()
-		protected bool _enforceThreadSafeCalls;
-		protected int _safeThreadID;
-		protected string _identifier;
-		
-		public bool EnforcingThreadSafety
-		{
-			get{return _enforceThreadSafeCalls;}
-		}
+    /// <summary>
+    /// Manage and verify thread safety, throwing an exception when a violation has occurred.
+    /// </summary>
+    [ThreadSafe(ThreadSafeFlags.ThreadSafe)]
+    public sealed class ThreadSafetyEnforcer
+    {
+       
+        readonly  bool _enforceThreadSafeCalls;
+        int _safeThreadID;
+        string _identifier;
 
-		/// <summary>
-		/// Takes the thread ID used to create it and uses it when CheckThreadSafety and EnforceThreadSafety are called.
-		/// </summary>
-		public ThreadSafetyEnforcer(string identifier) : this(identifier, true)
-		{
-		}
-		
-		/// <summary>
-		/// Takes the thread ID used to create it and uses it when CheckThreadSafety and EnforceThreadSafety are called.
-		/// </summary>
-		/// <param name="identifier">This is used when throwing exceptions.</param>
-		/// <param name="enforceThreadSafety">
-		/// This enabled or disables checking of threads in CheckThreadSafety and EnforceThreadSafety.
-		/// When set to false, CheckThreadSafety and EnforceThreadSafety always return true.
-		/// </param>
-		public ThreadSafetyEnforcer(string identifier, bool enforceThreadSafety)
-		{
-			_enforceThreadSafeCalls = enforceThreadSafety;
-			_safeThreadID = GetManagedThreadId();
-			_identifier = identifier;
+        /// <summary>
+        /// Returns if the instance is enforcing safe calls.
+        /// </summary>
+        public bool EnforcingThreadSafety
+        {
+            get { return _enforceThreadSafeCalls; }
+        }
 
-		}
-		
-		/// <summary>
-		/// Throws an exception when the Thread Check fails.
-		/// </summary>
-		public void EnforceThreadSafety()
-		{
-			if(!CheckThreadSafety()) 
-				throw new InvalidOperationException(string.Format("Crossthread Access to '{0}' is not permited.", _identifier));
-		}
-		
-		/// <summary>
-		/// Returns true if it is safe, or we are not enforcing Safety.
-		/// </summary>
-		/// <returns></returns>
-		public bool CheckThreadSafety()
-		{
-			//If enforce threadSafety is on, we return based on if the thread is the same as the parent,
-			//otherwise we just return true because we want whatevers using this to suceed.
-			return _enforceThreadSafeCalls ? _safeThreadID == GetManagedThreadId(): true;
-		}
-		
-		/// <summary>
-		/// Returns if the current thread is the same as the Orignral thread.
-		/// </summary>
-		/// <returns></returns>
-		public bool IsSameThread()
-		{
-			return  _safeThreadID == GetManagedThreadId();
-		}
-		
-		protected int GetManagedThreadId()
-		{
-			return Thread.CurrentThread.ManagedThreadId;
-		}
-	}
+        /// <summary>
+        /// Takes the thread ID used to create it and uses it when CheckThreadSafety and EnforceThreadSafety are called. EnforcingThreadSafety is enabled.
+        /// </summary>
+        /// <param name="identifier">This is used when throwing exceptions.</param>
+        public ThreadSafetyEnforcer(string identifier)
+            : this(identifier, true)
+        {
+        }
+
+        /// <summary>
+        /// Takes the thread ID used to create it and uses it when CheckThreadSafety and EnforceThreadSafety are called.
+        /// </summary>
+        /// <param name="identifier">This is used when throwing exceptions.</param>
+        /// <param name="enforceThreadSafety">
+        /// This enables or disables enforcement of thread safety in the EnforceThreadSafety method.
+        /// When set to false, EnforceThreadSafety will never throw an exception.
+        /// </param>
+        public ThreadSafetyEnforcer(string identifier, bool enforceThreadSafety)
+        {
+            _enforceThreadSafeCalls = enforceThreadSafety;
+            _safeThreadID = GetManagedThreadId();
+            _identifier = identifier;
+
+        }
+
+        /// <summary>
+        /// Throws an exception when the Thread Check fails.
+        /// </summary>
+        [ThreadSafe(ThreadSafeFlags.ThreadSafeEnforced)]
+        public void EnforceThreadSafety()
+        {
+            if (_enforceThreadSafeCalls && !IsSameThread())
+                throw new InvalidOperationException(string.Format("Cross-thread Access to '{0}' is not permitted from this scope.", _identifier));
+        }
+
+        /// <summary>
+        /// Returns true if the current thread is the same as the Original thread.
+        /// </summary>
+        public bool IsSameThread()
+        {
+            return _safeThreadID == GetManagedThreadId();
+        }
+
+        /// <summary>
+        /// Retrieve the current ThreadID.
+        /// </summary>
+        private int GetManagedThreadId()
+        {
+            return Thread.CurrentThread.ManagedThreadId;
+        }
+    }
 }

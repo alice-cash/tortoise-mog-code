@@ -38,6 +38,7 @@ using Tortoise.Shared.Collection;
 using Tortoise.Shared.Localization;
 using Tortoise.Shared.Exceptions;
 
+
 namespace Tortoise.Shared
 {
     public enum ConsoleCommandSucess
@@ -95,7 +96,7 @@ namespace Tortoise.Shared
 
 
     /// <summary>
-    /// This is the backend for the Console system.
+    /// This is the back end for the Console system.
     /// </summary>
     public static class TConsole
     {

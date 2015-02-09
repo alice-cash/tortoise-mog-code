@@ -32,8 +32,21 @@ namespace Tortoise.Shared.Threading
 	/// <summary>
 	/// Description of IInvokable.
 	/// </summary>
-	public interface IInvokable
+	public abstract class Invokable
 	{
-		
+        protected Invoker _invoker;
+
+
+        #region Public Methods
+        public void InvokeMethod(System.Action<object> methodToInvoke, object userData)
+        {
+            _invoker.InvokeMethod(methodToInvoke, userData);
+        }
+
+        public bool InvokeRequired()
+        {
+            return _invoker.InvokeRequired();
+        }
+        #endregion
 	}
 }

@@ -5,11 +5,11 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{26B8AB12-57A5-4BC9-9AD7-AB2E3E949B82}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tortoise.Client</RootNamespace>
     <AssemblyName>Tortoise.Client</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <FileUpgradeFlags>
@@ -19,7 +19,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -27,6 +27,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -36,24 +37,56 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DialogHelper, Version=1.1.4869.36320, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\gorgonlib-read-only\trunk\Tools\DialogHelper\bin\Debug\DialogHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Gorgon, Version=1.1.4869.36319, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\gorgonlib-read-only\trunk\Gorgon\bin\Debug\Gorgon.dll</HintPath>
+    <Reference Include="Gorgon.Common">
+      <HintPath>..\Build Libraries\Gorgon.Common.dll</HintPath>
     </Reference>
-    <Reference Include="GorgonFramework">
-      <HintPath>..\..\..\gorgonlib-read-only\trunk\Tools\GorgonFramework\bin\Debug\GorgonFramework.dll</HintPath>
+    <Reference Include="Gorgon.Graphics">
+      <HintPath>..\Build Libraries\Gorgon.Graphics.dll</HintPath>
     </Reference>
-    <Reference Include="GorgonInput">
-      <HintPath>..\..\..\gorgonlib-read-only\trunk\PlugIns\bin\Debug\GorgonInput.dll</HintPath>
+    <Reference Include="Gorgon.Input">
+      <HintPath>..\Build Libraries\Gorgon.Input.dll</HintPath>
+    </Reference>
+    <Reference Include="Gorgon.MemoryAccess">
+      <HintPath>..\Build Libraries\Gorgon.MemoryAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Gorgon.Renderer.2D">
+      <HintPath>..\Build Libraries\Gorgon.Renderer.2D.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX">
+      <HintPath>..\Build Libraries\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SlimMath">
+      <HintPath>..\Build Libraries\SlimMath.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -66,15 +99,17 @@
     <Compile Include="Exceptions\ResourceLoadingException.cs" />
     <Compile Include="Extension\System\Drawing\Point.cs" />
     <Compile Include="Extension\System\Random.cs" />
+    <Compile Include="Game.cs" />
     <Compile Include="Module\Debugging.cs" />
     <Compile Include="Module\Login.cs" />
     <Compile Include="Net\ServerConnection.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Screen\FrameEventArgs.cs" />
     <Compile Include="Screen\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Screen\MainForm.designer.cs">
+    <Compile Include="Screen\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Screen\TDesktop.cs" />
@@ -84,120 +119,28 @@
     <None Include="Localization\EN-US.lang">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\FileSystems\BZipFileSystem.gorPack">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\FileSystems\FolderSystem\Header.folderSystem">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\FileSystems\FolderSystem\Sprites\base.gorSprite">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\FileSystems\FolderSystem\Sprites\Mother.gorSprite">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\FileSystems\FolderSystem\Sprites\Mother2c.gorSprite">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\GUI\DefaultGUISkin.gorPack">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Collection\" />
     <Folder Include="IO\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Screen\MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
+    <Folder Include="Plugins\" />
+    <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.csproj">
       <Project>{da8ab668-ec4d-4ae2-8f6c-4783f5925564}</Project>
       <Name>Shared</Name>
     </ProjectReference>
+    <ProjectReference Include="..\StormGraphics\TortoiseGraphics.csproj">
+      <Project>{cb558998-f114-4fb2-8a38-7ddef46b1f24}</Project>
+      <Name>TortoiseGraphics</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="GUI.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Plugins\Gorgon.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\Gorgon.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\Gorgon.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\Gorgon3DESFileSystem.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\Gorgon3DESFileSystem.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\Gorgon3DESFileSystem.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\GorgonBZip2FileSystem.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\GorgonBZip2FileSystem.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\GorgonBZip2FileSystem.XML">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\GorgonInput.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\GorgonInput.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\GorgonInput.XML">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\GorgonZipFileSystem.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\GorgonZipFileSystem.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\GorgonZipFileSystem.XML">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\ICSharpCode.SharpZipLib.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\SlimDX.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\SlimDX.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\SlimDX.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resources\FileSystems\FolderSystem\FileSystem.Index.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\FileSystems\FolderSystem\Images\0_HardVacuum.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\FileSystems\FolderSystem\Shaders\Blur.fx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\FileSystems\FolderSystem\Shaders\Cloak.fx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\FileSystems\FolderSystem\SomeText.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -3,4 +3,7 @@
   <PropertyGroup>
     <ProjectView>ShowAllFiles</ProjectView>
   </PropertyGroup>
+  <PropertyGroup>
+    <ReferencePath>C:\Projects\Code\tortoise\tortoise-mog-code\Build Libraries\</ReferencePath>
+  </PropertyGroup>
 </Project>

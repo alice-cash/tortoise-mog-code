@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CB558998-F114-4FB2-8A38-7DDEF46B1F24}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tortoise.Graphics</RootNamespace>
+    <AssemblyName>Tortoise.Graphics</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Gorgon.Animation">
+      <HintPath>..\Build Libraries\Gorgon.Animation.dll</HintPath>
+    </Reference>
+    <Reference Include="Gorgon.Common">
+      <HintPath>..\Build Libraries\Gorgon.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Gorgon.Graphics">
+      <HintPath>..\Build Libraries\Gorgon.Graphics.dll</HintPath>
+    </Reference>
+    <Reference Include="Gorgon.Input">
+      <HintPath>..\Build Libraries\Gorgon.Input.dll</HintPath>
+    </Reference>
+    <Reference Include="Gorgon.MemoryAccess">
+      <HintPath>..\Build Libraries\Gorgon.MemoryAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Gorgon.Renderer.2D">
+      <HintPath>..\Build Libraries\Gorgon.Renderer.2D.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX, Version=2.5.0.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Build Libraries\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SlimMath">
+      <HintPath>..\Build Libraries\SlimMath.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Graphics.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Delegates.cs" />
+    <Compile Include="Rendering\FontInfo.cs" />
+    <Compile Include="Rendering\GfxResource.Designer.cs" />
+    <Compile Include="Rendering\Graphics.cs" />
+    <Compile Include="Rendering\GUI\Button.cs" />
+    <Compile Include="Rendering\GUI\Container.cs" />
+    <Compile Include="Rendering\GUI\Control.cs" />
+    <Compile Include="Rendering\GUI\ControlContainer.cs" />
+    <Compile Include="Rendering\GUI\ControlSorter.cs" />
+    <Compile Include="Rendering\GUI\ImageDrawMode.cs" />
+    <Compile Include="Rendering\GUI\KeyPressed.cs" />
+    <Compile Include="Rendering\GUI\Label.cs" />
+    <Compile Include="Rendering\GUI\MovedEventArgs.cs" />
+    <Compile Include="Rendering\GUI\Picturebox.cs" />
+    <Compile Include="Rendering\GUI\ResizeEventArgs.cs" />
+    <Compile Include="Rendering\GUI\TextAlignement.cs" />
+    <Compile Include="Rendering\GUI\TextBox.cs" />
+    <Compile Include="Rendering\GUI\Window.cs" />
+    <Compile Include="Rendering\IRender.cs" />
+    <Compile Include="Rendering\KeyEventArgs.cs" />
+    <Compile Include="Rendering\MouseEventArgs.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rendering\Screen.cs" />
+    <Compile Include="Rendering\Surface.cs" />
+    <Compile Include="Rendering\TickEventArgs.cs" />
+    <Compile Include="Rendering\Window.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\Shared.csproj">
+      <Project>{da8ab668-ec4d-4ae2-8f6c-4783f5925564}</Project>
+      <Name>Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Rendering\GUI\Tortoise.sln" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Rendering\GfxResource.resx" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

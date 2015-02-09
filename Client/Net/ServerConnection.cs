@@ -4,7 +4,7 @@ using Tortoise.Shared.IO;
 using Tortoise.Shared.Module;
 using Tortoise.Client.Net;
 using Tortoise.Client.Exceptions;
-using System;
+
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
