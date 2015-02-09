@@ -5,10 +5,12 @@
 /ClientUnitTests/bin/Debug
 /ClientUnitTests/obj/Debug
 /packages
-/ClientUnitTests/bin/Debug
-/ClientUnitTests/obj/Debug
+/Server/bin
 /Server/obj
+/Shared/bin
 /Shared/obj
-/Shared/packages/Mono.Reflection.1.0.0.0
-/Client/bin/Debug
+/Shared/packages/
+/Client/bin
 /Client/obj
+/Old Code
+/Build Libraries
