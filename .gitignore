@@ -10,19 +10,3 @@
 /*/packages/*
 /packages
 /Build Libraries/*
-
-#/ClientUnitTests/bin
-#/ClientUnitTests/obj
-#/SharedUnitTests/bin
-#/SharedUnitTests/obj
-#/packages
-#/Server/bin
-#/Server/obj
-#/Server/packages
-#/Shared/bin
-#/Shared/obj
-#/Shared/packages
-#/Client/bin
-#/Client/obj
-#/Graphics/bin
-#/Graphics/obj
