@@ -14,5 +14,7 @@
 /Shared/packages/
 /Client/bin
 /Client/obj
+/Graphics/bin
+/Graphics/obj
 /Old Code
 /Build Libraries

@@ -1,3 +1,0 @@
-C:\Projects\Code\tortoise\tortoise-mog-code\StormGraphics\obj\Debug\Tortoise.Graphics.Rendering.GfxResource.resources
-C:\Projects\Code\tortoise\tortoise-mog-code\StormGraphics\obj\Debug\TortoiseGraphics.csproj.GenerateResource.Cache
-C:\Projects\Code\tortoise\tortoise-mog-code\StormGraphics\obj\Debug\TortoiseGraphics.csprojResolveAssemblyReference.cache
