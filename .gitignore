@@ -1,0 +1,14 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/ClientUnitTests/bin/Debug
+/ClientUnitTests/obj/Debug
+/packages
+/ClientUnitTests/bin/Debug
+/ClientUnitTests/obj/Debug
+/Server/obj
+/Shared/obj
+/Shared/packages/Mono.Reflection.1.0.0.0
+/Client/bin/Debug
+/Client/obj

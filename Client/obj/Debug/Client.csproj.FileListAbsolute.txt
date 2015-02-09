@@ -57,3 +57,5 @@ C:\Projects\Code\Multi\tortoise-mog-code\trunk\Client\obj\Debug\Tortoise.Client.
 C:\Projects\Code\Multi\tortoise-mog-code\trunk\Client\bin\Debug\Tortoise.Client.dll.config
 C:\Projects\Code\Multi\tortoise-mog-code\trunk\Client\bin\Debug\Tortoise.Client.dll
 C:\Projects\Code\Multi\tortoise-mog-code\trunk\Client\obj\Debug\Tortoise.Client.dll
+C:\Projects\Code\tortoise\tortoise-mog-code\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
+C:\Projects\Code\tortoise\tortoise-mog-code\Client\bin\Debug\Tortoise.Client.exe.config
