@@ -1,0 +1,63 @@
+
+==============================================================================================
+
+                        Tortoise Naming Convention and Code Guidelines                        
+
+==============================================================================================
+
+While we strive to follow the Conventions set in the MSDN such as those listed below.
+We do break away in a few cases and thus the full details regarding our naming convention are
+detailed.
+
+Reference documents:
+https://msdn.microsoft.com/en-us/library/ms229045(v=vs.100).aspx
+https://msdn.microsoft.com/en-us/library/vstudio/ms229043(v=vs.100).aspx
+https://msdn.microsoft.com/en-us/library/vstudio/ms229036(v=vs.100).aspx
+https://msdn.microsoft.com/en-us/library/vstudio/ms229059(v=vs.100).aspx
+https://msdn.microsoft.com/en-us/library/vstudio/ms229035(v=vs.100).aspx
+
+
+
+All public Classes, Method, Property, Delegates and Enumerators naming will use Pascal Casing. 
+Only alphabetic characters should be used for public accessible names and any other characters
+should be avoided.
+e.g.:
+Good:
+public class MyClass 
+{
+    public int Property { get; set; }
+	public void MyMethod()
+	{
+	}
+}
+
+Bad:
+public class my_class
+{
+    public int property {get;set}
+	public void my666Method()
+	{
+	}
+}
+
+==============================================================================================
+
+The name needs to briefly describe what it does and should at most consist of 4 words or 20 
+characters. If you exceed this you may need to consider simplifying the name or simplifying 
+what it does. Remember that you simply need to be skim over the code to get an idea of what
+the code does. Any further details can go into the documentation.
+
+e.g.:
+Good:
+GetDistance()
+IsDead
+GetEnemyMaxMoves()
+
+Bad:
+GetDistanceToProvidedPointOrEntitiy()
+IsTheEntityDead
+aaaaa_counts_the_moves()
+
+==============================================================================================
+
+No 
