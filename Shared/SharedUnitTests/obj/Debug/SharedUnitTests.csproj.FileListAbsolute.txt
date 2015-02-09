@@ -1,8 +1,0 @@
-C:\Projects\Code\tortoise\tortoise-mog-code\Shared\SharedUnitTests\bin\Debug\SharedUnitTests.dll
-C:\Projects\Code\tortoise\tortoise-mog-code\Shared\SharedUnitTests\bin\Debug\SharedUnitTests.pdb
-C:\Projects\Code\tortoise\tortoise-mog-code\Shared\SharedUnitTests\bin\Debug\Tortoise.Shared.dll
-C:\Projects\Code\tortoise\tortoise-mog-code\Shared\SharedUnitTests\bin\Debug\C5.dll
-C:\Projects\Code\tortoise\tortoise-mog-code\Shared\SharedUnitTests\bin\Debug\Tortoise.Shared.pdb
-C:\Projects\Code\tortoise\tortoise-mog-code\Shared\SharedUnitTests\obj\Debug\SharedUnitTests.csprojResolveAssemblyReference.cache
-C:\Projects\Code\tortoise\tortoise-mog-code\Shared\SharedUnitTests\obj\Debug\SharedUnitTests.dll
-C:\Projects\Code\tortoise\tortoise-mog-code\Shared\SharedUnitTests\obj\Debug\SharedUnitTests.pdb

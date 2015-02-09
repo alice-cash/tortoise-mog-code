@@ -4,6 +4,8 @@
 
 /ClientUnitTests/bin/Debug
 /ClientUnitTests/obj/Debug
+/SharedUnitTests/bin/Debug
+/SharedUnitTests/obj/Debug
 /packages
 /Server/bin
 /Server/obj
