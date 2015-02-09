@@ -106,9 +106,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screen\FrameEventArgs.cs" />
-    <Compile Include="Screen\MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Screen\MainForm.cs" />
     <Compile Include="Screen\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
@@ -131,10 +129,6 @@
     <ProjectReference Include="..\Shared\Shared.csproj">
       <Project>{da8ab668-ec4d-4ae2-8f6c-4783f5925564}</Project>
       <Name>Shared</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\StormGraphics\TortoiseGraphics.csproj">
-      <Project>{cb558998-f114-4fb2-8a38-7ddef46b1f24}</Project>
-      <Name>TortoiseGraphics</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

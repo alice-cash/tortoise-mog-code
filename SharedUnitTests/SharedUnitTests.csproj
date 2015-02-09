@@ -57,7 +57,7 @@
     <Compile Include="Threading\InvokeTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shared.csproj">
+    <ProjectReference Include="..\Shared\Shared.csproj">
       <Project>{da8ab668-ec4d-4ae2-8f6c-4783f5925564}</Project>
       <Name>Shared</Name>
     </ProjectReference>
