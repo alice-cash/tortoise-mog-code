@@ -30,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gorgon.Animation">
-      <HintPath>..\Build Libraries\Gorgon.Animation.dll</HintPath>
-    </Reference>
     <Reference Include="Gorgon.Common">
       <HintPath>..\Build Libraries\Gorgon.Common.dll</HintPath>
     </Reference>
