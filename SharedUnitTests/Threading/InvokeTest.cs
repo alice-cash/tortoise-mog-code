@@ -293,5 +293,102 @@ namespace SharedUnitTests.Threading
         }
         #endregion
 
+
+
+
+
+        #region "Invoker.SynchronousInvokeMethod() Timeout Test"
+        [TestMethod]
+        public void Invoker_SynchronousInvokeMethodTimeoutTest__ThreadSideTest()
+        {
+            Tortoise.Shared.Threading.Invoker InvokerObject;
+            System.Threading.Thread testThread;
+
+            InvokerObject = new Tortoise.Shared.Threading.Invoker("InvokerTest Object");
+
+            bool testSet = false;
+            bool threadDone = false;
+            bool threadSucess = false;
+
+            bool Waiting = false;
+
+            testThread = new System.Threading.Thread(() =>
+            {
+                //We need a way for this to pause until we are listening for the invoke.
+                while (!Waiting)
+                    System.Threading.Thread.Yield();
+
+                try
+                {
+
+
+                    InvokerObject.SynchronousInvokeMethod((object nothing) =>
+                    {
+                        testSet = true;
+                    }, null, 1000);
+                }
+                catch (Tortoise.Shared.Exceptions.LogicException ex)
+                {
+                    threadSucess = true;
+                }
+                catch
+                {
+                    threadSucess = false;
+                }
+                
+
+                threadDone = true;
+            });
+            testThread.Start();
+
+            DateTime Timeout = DateTime.Now.AddSeconds(1);
+
+            while (InvokerObject.InvokeCount() == 0)
+            {
+                if (!Waiting) Waiting = true;
+                if (Timeout <= DateTime.Now)
+                    Assert.Fail("Invoke Timeout! No invokable items arrived! If workstation is overloaded try again.");
+            }
+
+
+            //sleep and force previous thread to run... Hopefully
+            System.Threading.Thread.Yield();
+            System.Threading.Thread.Sleep(10);
+            System.Threading.Thread.Yield();
+
+            //Now verify threadSucess is still false.
+            Assert.IsFalse(threadSucess == false);
+
+            System.Threading.Thread.Sleep(2000);
+
+
+            //Ensure it has timed out
+            Assert.IsTrue(threadDone == false);
+            Assert.IsTrue(threadSucess == false);
+
+        }
+
+        [TestMethod, Timeout(1000)]
+        public void Invoker_SynchronousInvokeMethodTimeoutTest__ParentSideTest()
+        {
+            Tortoise.Shared.Threading.Invoker InvokerObject;
+            InvokerObject = new Tortoise.Shared.Threading.Invoker("InvokerTest Object");
+
+            bool testSet = false;
+
+            InvokerObject.SynchronousInvokeMethod((object nothing) =>
+            {
+                testSet = true;
+            }, null, 10000);
+
+            //This should still run.  If it doesn't the timeout for the test method will fail it.
+
+            Assert.IsTrue(testSet);
+
+            //In reality if this were to fail this would never run. The above timeout will catch this.
+            Assert.AreEqual(InvokerObject.InvokeCount(), 0);
+        }
+        #endregion
+
     }
 }

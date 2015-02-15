@@ -36,10 +36,9 @@ namespace Tortoise.Graphics.Rendering
     /// </summary>
     public class Screen : Container, IRender
     {
-        public Screen()
-            : base("_Screen", 0, 0, Program.GameLogic.ScreenSize.Width, Program.GameLogic.ScreenSize.Height)
+        public Screen(TGraphics graphics)
+            : base(graphics, "_Screen", 0, 0, graphics.ScreenSize.Width, graphics.ScreenSize.Height)
         {
-
         }
 
         public new void OnMouseDown(MouseEventArgs e) { base.OnMouseDown(e); }
@@ -54,10 +53,15 @@ namespace Tortoise.Graphics.Rendering
 
         public new void OnKeyboardPress(KeyEventArgs e) { base.OnKeyboardPress(e); }
 
-        public virtual void OnResize() { this.Size = Program.GameLogic.ScreenSize; }
+        public virtual void OnResize() { this.Size = _graphics.ScreenSize; }
 
         public new void Tick(TickEventArgs e) { base.Tick(e); }
 
         public new void Render() { base.Render(); }
+
+        public void Initialize()
+        {
+            
+        }
     }
 }

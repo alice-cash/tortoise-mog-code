@@ -6,7 +6,10 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using Form =  System.Windows.Forms.Form;
+using FormClosingEventArgs = System.Windows.Forms.FormClosingEventArgs;
+
+using Tortoise.Graphics.Rendering;
 
 namespace Tortoise.Graphics
 {
@@ -15,16 +18,16 @@ namespace Tortoise.Graphics
 
         static MainForm()
         {
-            AvailableScreens = new Dictionary<string, TDesktop>();
+            AvailableScreens = new Dictionary<string, Screen>();
         }
 
         public static MainForm Instance;
 
         public static bool ThreadsRunning { get; set; }
 
-        public static Dictionary<string, TDesktop> AvailableScreens { get; private set; }
+        public static Dictionary<string, Screen> AvailableScreens { get; private set; }
 
-        public static TDesktop CurrentScreen { get; private set; }
+        public static Screen CurrentScreen { get; private set; }
 
         //public GUISkin GUISkin { get; protected set; }
         /*   private Invoker _invoker;
@@ -55,7 +58,7 @@ namespace Tortoise.Graphics
                 throw new Exception("AvailableScreens not set!");
 
             foreach (var screen in AvailableScreens)
-                screen.Value.Init();
+                screen.Value.Initialize();
 
             if (!AvailableScreens.ContainsKey("MainMenu"))
                 throw new Exception("MainMenu not set!");
@@ -79,10 +82,10 @@ namespace Tortoise.Graphics
         /// </summary>
         public void ChangeToScreen(string screenName)
         {
-            //The lamba expression keeps the name in scope
-            //so no worried there, i hope...
+
             //The InvokeMethod will run it right away if this is the correct thread.
-            System.Action<object> id = (object nothing) =>
+            
+            InvokeMethod((object nothing) =>
             {
                 if (!AvailableScreens.ContainsKey(screenName))
                     throw new Exception(string.Format("{0} does not exist!", screenName));
@@ -93,8 +96,7 @@ namespace Tortoise.Graphics
                 if (ScreenChanged != null)
                     ScreenChanged(this, EventArgs.Empty);
 
-            };
-            InvokeMethod(id, null);
+            },null);
         }
 
         /// <summary>

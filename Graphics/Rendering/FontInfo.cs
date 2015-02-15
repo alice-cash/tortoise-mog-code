@@ -47,16 +47,17 @@ namespace Tortoise.Graphics.Rendering
     {
         static List<FontInfo> _data = new List<FontInfo>();
         private System.Drawing.Text.PrivateFontCollection FontData;
+        private TGraphics _graphics;
 
-
-        public static FontInfo GetInstance(float size, FontTypes name)
+        public static FontInfo GetInstance(TGraphics graphics, float size, FontTypes name)
         {
             foreach(FontInfo obj in _data)
             {
-                if (obj.FontName == name && obj.FontSize == size)
+                if (obj.FontName == name && obj.FontSize == size && obj._graphics == graphics)
                     return obj;
             }
             FontInfo font = new FontInfo(name, size);
+            font._graphics = graphics;
             _data.Add(font);
             return font;
         }
@@ -92,7 +93,7 @@ namespace Tortoise.Graphics.Rendering
             FontSize = size;
             FontName = type;
             Font = new System.Drawing.Font(GetName(type),size);
-            GFont = Program.GameLogic.Graphics.Fonts.CreateFont(Font.Name, Font, GorgonLibrary.Graphics.FontAntiAliasMode.AntiAlias);
+            GFont = _graphics.Graphics.Fonts.CreateFont(Font.Name, Font, GorgonLibrary.Graphics.FontAntiAliasMode.AntiAlias);
         }
 
 

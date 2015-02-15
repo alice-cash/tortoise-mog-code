@@ -202,3 +202,16 @@ As the example shows, all of the explanation occurs before the code. We should a
 the code with comments as this not only makes it harder to read but if a comment prefixes
 each line of code, we are at that point describing "What" the code does and not "Why" it does
 it.
+
+
+==============================================================================================
+
+Unit Tests and similar testing code may not follow all of the above guidelines as their goal 
+is to test the functionality of a specific function, class or method. While in an ideal world
+there would be unit tests to test every function with every possible data set however this is
+not possible. 
+
+Unit tests when created should focus on core classes or classes which we require they behave 
+in a known way. This is to help avoid issues in the future where core functionality can be 
+tested to ensure it is operating as expected. Without this failures in this core code can 
+cause issues such as 

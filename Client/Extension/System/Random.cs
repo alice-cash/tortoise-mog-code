@@ -25,18 +25,18 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
-using System;
+//using System;
 
-namespace Tortoise.Client.Extension.System
-{
-	/// <summary>
-	/// Holds methods that extend the System.Random class.
-	/// </summary>
-	public static class RandomExtension
-	{
-        public static float NextFloat(this Random _random)
-        {
-        	return Convert.ToSingle(_random.NextDouble());
-        }
-	}
-}
+//namespace Tortoise.Client.Extension.System
+//{
+//    /// <summary>
+//    /// Holds methods that extend the System.Random class.
+//    /// </summary>
+//    public static class RandomExtension
+//    {
+//        public static float NextFloat(this Random _random)
+//        {
+//            return Convert.ToSingle(_random.NextDouble());
+//        }
+//    }
+//}

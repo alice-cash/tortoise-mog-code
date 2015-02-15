@@ -27,9 +27,11 @@
  */
 
 using System;
-using System.Drawing;
+//using System.Drawing;
 using System.Runtime.CompilerServices;
 
+
+using Tortoise.Shared.Drawing;
 
 namespace Tortoise.Graphics.Rendering.GUI
 {
@@ -62,18 +64,18 @@ namespace Tortoise.Graphics.Rendering.GUI
 
         }
 
-        public Picturebox(string name, Surface image, int x, int y, int width, int height)
-            : this(name, image, new Rectangle(x, y, width, height))
+        public Picturebox(TGraphics graphics, string name, Surface image, int x, int y, int width, int height)
+            : this(graphics, name, image, new Rectangle(x, y, width, height))
         {
 
         }
-        public Picturebox(string name, Surface image, Point location, Size size)
-            : this(name, image, new Rectangle(location, size))
+        public Picturebox(TGraphics graphics, string name, Surface image, Point location, Size size)
+            : this(graphics, name, image, new Rectangle(location, size))
         {
 
         }
-        public Picturebox(string name, Surface image, Rectangle area)
-            : base(name, area)
+        public Picturebox(TGraphics graphics, string name, Surface image, Rectangle area)
+            : base(graphics, name, area)
         {
             _image = image;
         }

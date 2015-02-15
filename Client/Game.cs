@@ -30,55 +30,31 @@ using Tortoise.Graphics;
 
 using Tortoise.Shared;
 
+using TGraphics = Tortoise.Graphics.TGraphics;
+
 namespace Tortoise.Client
 {
-    class Game
+    internal class Game
     {
 
+        public TGraphics Graphics { get; private set; }
 
         public Game(MainForm Target)
         {
-            _form = Target;
-
-
-            // Create the graphics interface.
-            _graphics = new GorgonGraphics();
-
-            _window = new Window("Game Window");
-
-            // Create the primary swap chain.
-            _mainScreen = _graphics.Output.CreateSwapChain("MainScreen", new GorgonSwapChainSettings
-            {
-                Width = 800,
-                Height = 600,
-                Format = BufferFormat.R8G8B8A8_UIntNormal,
-                Window = _form,
-                IsWindowed = true
-            });
-
-            _renderer = _graphics.Output.Create2DRenderer(_mainScreen);
-            _renderer.IsLogoVisible = false;
-
-
-            _mainScreen.AfterSwapChainResized += (sender, args) =>
-            {
-
-            };
-
-            _window.Initialize();
-
+            Graphics = TGraphics.CreateGraphics(Target);
         }
 
 
         public bool GameLoop()
         {
 
-            GorgonRectangle tt = Program.GameLogic.Renderer2D.Renderables.CreateRectangle("TEST",
-                new Rectangle(1,1,100,100),Color.Gray, true);
+            return Graphics.DoRenderLoop();
+            //GorgonRectangle tt = Program.GameLogic.Renderer2D.Renderables.CreateRectangle("TEST",
+            //    new Rectangle(1,1,100,100),Color.Gray, true);
 
-            tt.Color = Color.Gray;
+            //tt.Color = Color.Gray;
 
-            tt.Draw();
+            //tt.Draw();
 
 
             /*
@@ -103,13 +79,13 @@ namespace Tortoise.Client
             target.Save(@"text.png", new GorgonLibrary.IO.GorgonCodecPNG());*/
 
 
-            _renderer.Drawing.DrawString(FontInfo.GetInstance(12.5f, FontTypes.Sans).GFont, "Arial", new SlimMath.Vector2(10, 10), Color.White);
-            _renderer.Drawing.DrawString(FontInfo.GetInstance(12.5f, FontTypes.Serif).GFont, "Times New Roman", new SlimMath.Vector2(10, 30), Color.White);
-            _renderer.Drawing.DrawString(FontInfo.GetInstance(12.5f, FontTypes.Sans_Mono).GFont, "Lucida Sans", new SlimMath.Vector2(10, 50), Color.White);
-            _renderer.Drawing.DrawString(FontInfo.GetInstance(12.5f, FontTypes.Serif_Mono).GFont, "Courier New", new SlimMath.Vector2(10, 70), Color.White);
+            //_renderer.Drawing.DrawString(FontInfo.GetInstance(12.5f, FontTypes.Sans).GFont, "Arial", new SlimMath.Vector2(10, 10), Color.White);
+            //_renderer.Drawing.DrawString(FontInfo.GetInstance(12.5f, FontTypes.Serif).GFont, "Times New Roman", new SlimMath.Vector2(10, 30), Color.White);
+            //_renderer.Drawing.DrawString(FontInfo.GetInstance(12.5f, FontTypes.Sans_Mono).GFont, "Lucida Sans", new SlimMath.Vector2(10, 50), Color.White);
+            //_renderer.Drawing.DrawString(FontInfo.GetInstance(12.5f, FontTypes.Serif_Mono).GFont, "Courier New", new SlimMath.Vector2(10, 70), Color.White);
             
 
-            _renderer.Render();
+            //_renderer.Render();
 
 
             return true;

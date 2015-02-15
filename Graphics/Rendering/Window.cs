@@ -42,26 +42,28 @@ namespace Tortoise.Graphics.Rendering
 {
     public class Window : Invokable, IRender
     {
-
+        /*
         public static Window CreateWindow(String name)
         {
-            
-        }
+            Window result = new Window(name);
+
+            return result;
+        }*/
 
         private string _name;
         public string Name { get { return _name; } }
 
         public Window(string Name)
         {
+            _invoker = new Invoker();
 
         }
 
         /// <summary>
         /// Initialize the class.
         /// </summary>
-        public override void Initialize()
+        public void Initialize()
         {
-            _invoker = new Invoker();
         }
 
         public void Load()

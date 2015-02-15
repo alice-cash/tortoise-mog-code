@@ -27,8 +27,9 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using Tortoise.Client.Extension.System.Drawing;
+//using System.Drawing;
+using Color = System.Drawing.Color;
+//using Tortoise.Client.Extension.System.Drawing;
 using Tortoise.Shared.Threading;
 
 using GorgonLibrary.Input;
@@ -67,6 +68,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         protected Surface _preRenderdSurface;
         protected bool _redrawPreRenderd = false;
 
+        protected TGraphics _graphics;
 
         protected bool _hasFocus;
 
@@ -229,15 +231,15 @@ namespace Tortoise.Graphics.Rendering.GUI
 
         public Point Location
         {
-            get { return Point.FromPoint(_area.Location); }
+            get { return _area.Location; }
             set
             {
                 _threadSafety.EnforceThreadSafety();
                 if (_area.X != value.X || _area.Y != value.Y)
                 {
-                    Point OldLocation = Point.FromPoint(_area.Location);
-                    _area.Location = value.ToPoint;
-                    doMove(new MovedEventArgs(OldLocation, Point.FromPoint(_area.Location)));
+                    Point OldLocation =_area.Location;
+                    _area.Location = value;
+                    doMove(new MovedEventArgs(OldLocation, _area.Location));
                 }
             }
         }
@@ -287,7 +289,7 @@ namespace Tortoise.Graphics.Rendering.GUI
                 _threadSafety.EnforceThreadSafety();
                 if (_area.Width != value)
                 {
-                    SizeF OldSize = Size;
+                    Size OldSize = Size;
                     _area.Width = value;
                     doResize(new ResizeEventArgs(OldSize, Size));
                     _redrawPreRenderd = true;
@@ -303,7 +305,7 @@ namespace Tortoise.Graphics.Rendering.GUI
                 _threadSafety.EnforceThreadSafety();
                 if (_area.Height != value)
                 {
-                    SizeF OldSize = Size;
+                    Size OldSize = Size;
                     _area.Height = value;
                     doResize(new ResizeEventArgs(OldSize, Size));
                     _redrawPreRenderd = true;
@@ -341,20 +343,21 @@ namespace Tortoise.Graphics.Rendering.GUI
         #endregion
 
         #region Constructors
-        public Control(string name, Point location, Size size)
-            : this(name, new Rectangle(location, size))
+        public Control(TGraphics graphics, string name, Point location, Size size)
+            : this(graphics, name, new Rectangle(location, size))
         {
 
         }
 
-        public Control(string name, int x, int y, int width, int height)
-            : this(name, new Rectangle(x, y, width, height))
+        public Control(TGraphics graphics, string name, int x, int y, int width, int height)
+            : this(graphics, name, new Rectangle(x, y, width, height))
         {
 
         }
 
-        public Control(string name, Rectangle area)
+        public Control(TGraphics graphics, string name, Rectangle area)
         {
+            _graphics = graphics;
             _threadSafety = new ThreadSafetyEnforcer(name);
             _invoker = new Invoker(_threadSafety);
             _area = area;
@@ -363,10 +366,10 @@ namespace Tortoise.Graphics.Rendering.GUI
         #endregion
 
         #region Virtual Methods
-        public override void Initialize()
+      /*  public override void Initialize()
         {
 
-        }
+        }*/
 
         public virtual void Load()
         {
@@ -378,7 +381,7 @@ namespace Tortoise.Graphics.Rendering.GUI
             //_chancedSize = true;
             //_chancedBackgroundColor = true;
 
-            _preRenderdSurface = Surface.CreateBlankSurface(Width, Height);
+            _preRenderdSurface = Surface.CreateBlankSurface(_graphics, Width, Height);
 
             _redrawPreRenderd = true;
         }
@@ -432,7 +435,7 @@ namespace Tortoise.Graphics.Rendering.GUI
             //If its not loaded, Throw a freaking error!
 
 
-            _preRenderdSurface.Render(RealLocation.ToPoint);
+            _preRenderdSurface.Render(RealLocation);
         }
 
         /// <summary>
@@ -523,18 +526,18 @@ namespace Tortoise.Graphics.Rendering.GUI
 
 
         #region protected Methods
+        protected bool IsPointOver(System.Drawing.Point pos)
+        {
+            return Area.Contains(Point.FromPoint(pos));
+        }
+
         protected bool IsPointOver(Point pos)
         {
             return Area.Contains(pos);
         }
 
-        protected bool IsPointOver(Tortoise.Shared.Drawing.Point pos)
-        {
-            return Area.Contains(pos.ToPoint);
-        }
-
         [Obsolete]
-        protected bool IsPointOver(PointF pos)
+        protected bool IsPointOver(System.Drawing.PointF pos)
         {
             return Area.Contains((int)pos.X, (int)pos.Y);
         }

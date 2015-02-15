@@ -71,10 +71,11 @@ namespace Tortoise.Shared.Collection
         {
             throw new NotSupportedException();
         }
-		public override void InsertAll<U>(int i, System.Collections.Generic.IEnumerable<U> items)
+		
+        /*public override void InsertAll<U>(int i, System.Collections.Generic.IEnumerable<U> items)
 		{
 			throw new NotSupportedException();
-		}
+		}*/
 		
 		public override void InsertFirst(T item)
 		{

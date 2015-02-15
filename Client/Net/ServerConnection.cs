@@ -31,7 +31,7 @@ namespace Tortoise.Client.Net
 
         private static void WorkThread()
 		{
-            while (Screen.MainForm.ThreadsRunning)
+            while (Program.ThreadsRunning)
 			{
                 if (MainServerConnection != null && MainServerConnection.Connected)
                 {

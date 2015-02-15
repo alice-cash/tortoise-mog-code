@@ -55,9 +55,9 @@ namespace Tortoise.Shared.Threading
                 locker = false;
             }
 
-            public void wait()
+            public void wait(int timeout)
             {
-                DateTime dieTime = DateTime.Now.AddMinutes(10);
+                DateTime dieTime = DateTime.Now.AddMilliseconds(timeout);
                 while (!locker)
                 {
                     Thread.Yield();
@@ -128,13 +128,30 @@ namespace Tortoise.Shared.Threading
 
         /// <summary>
         /// Attempt to enqueue the provided method to be called by the parent thread. This blocks
-        /// until the method is invoked. Tf called from the parent thread the method is executed immedatly.
+        /// until the method is invoked. Tf called from the parent thread the method is executed immediately.
+        /// Timeout occurs after 2 minutes, after which an exception is thrown.
         /// </summary>
         /// <param name="methodToInvoke">A method or delegate to call.</param>
         /// <param name="userData">An object with information sent to the method.</param>
-        /// <exception cref="InvalidProgramException">A InvalidProgramException is thrown when the application waits more than 10 minutes. 
+        /// <exception cref="InvalidProgramException">A InvalidProgramException is thrown when the application waits more than 2 minutes. 
         /// In the event this occurs the parent thread may have been terminated or is stuck.</exception>
         public void SynchronousInvokeMethod(System.Action<object> methodToInvoke, object userData)
+        {
+            SynchronousInvokeMethod(methodToInvoke, userData, (2 * 60 * 1000));
+        }
+
+        /// <summary>
+        /// Attempt to enqueue the provided method to be called by the parent thread. This
+        /// blocks until the method is invoked. Tf called from the parent thread the method is
+        /// executed immediately.
+        /// </summary>
+        /// <param name="methodToInvoke">A method or delegate to call.</param>
+        /// <param name="userData">An object with information sent to the method.</param>
+        /// <param name="timeout">Timeout in milliseconds.</param>
+        /// <exception cref="InvalidProgramException">A InvalidProgramException is thrown when
+        /// the application waits more than the provided timeout. In the event this occurs the
+        /// parent thread may have been terminated or is stuck.</exception>
+        public void SynchronousInvokeMethod(System.Action<object> methodToInvoke, object userData, int timeout)
         {
             if (InvokeRequired())
             {
@@ -143,8 +160,7 @@ namespace Tortoise.Shared.Threading
 
                 InvokeMethod(synchronousInvoke.InvokeProxy, synchronousInvoke);
 
-                // This will generate an exception after 10 minutes.
-                synchronousInvoke.wait();
+                synchronousInvoke.wait(timeout);
             }
             else
             {

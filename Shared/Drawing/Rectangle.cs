@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using ClassicRectangle = System.Drawing.Rectangle;
+using ClassicRectangleF = System.Drawing.RectangleF;
 
 namespace Tortoise.Shared.Drawing
 {
@@ -67,6 +68,15 @@ namespace Tortoise.Shared.Drawing
         }
 
 
+        public ClassicRectangle ToSystem()
+        {
+            return new ClassicRectangle(X, Y, Width, Height);
+        }
+
+        public ClassicRectangleF ToSystemF()
+        {
+            return new ClassicRectangleF(X, Y, Width, Height);
+        }
 
         //public static Rectangle Ceiling(RectangleF value);
         public bool Contains(Point pt)
@@ -163,19 +173,26 @@ namespace Tortoise.Shared.Drawing
         }
 
 
-        public void Offset(int x, int y);
+        public void Offset(int x, int y)
+        {
+            this.X += x;
+            this.Y += y;
+        }
 
 
         // public static Rectangle Round(RectangleF value);
 
 
-        public override string ToString();
+        public override string ToString()
+        {
+            return string.Format("[Width=\"{0}\", Height=\"{1}\", X=\"{2}\", Y=\"{3}\"]", Width, Height,X,Y);
+        }
 
 
         //public static Rectangle Truncate(RectangleF value);
 
 
-        public static Rectangle Union(Rectangle a, Rectangle b);
+        //public static Rectangle Union(Rectangle a, Rectangle b);
 
     }
 }

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Drawing;
+//using System.Drawing;
 
+using Color = System.Drawing.Color;
 
+using Tortoise.Shared.Drawing;
 
 namespace Tortoise.Graphics.Rendering.GUI
 {
@@ -14,18 +16,18 @@ namespace Tortoise.Graphics.Rendering.GUI
 
         private bool _isMouseMoved;
 
-        public Window(string name, string text, int x, int y, int width, int height)
-            : this(name, text, new Rectangle(x, y, width, height))
+        public Window(TGraphics graphics, string name, string text, int x, int y, int width, int height)
+            : this(graphics, name, text, new Rectangle(x, y, width, height))
         {
         }
-        public Window(string name, string text, Point location, Size size)
-            : this(name, text, new Rectangle(location, size))
+        public Window(TGraphics graphics, string name, string text, Point location, Size size)
+            : this(graphics, name, text, new Rectangle(location, size))
         {
 
         }
 
-        public Window(string name, string text, Rectangle area)
-            : base(name, area)
+        public Window(TGraphics graphics, string name, string text, Rectangle area)
+            : base(graphics, name, area)
         {
             BackgroundColor = Color.White;
         }
@@ -57,7 +59,7 @@ namespace Tortoise.Graphics.Rendering.GUI
 
             _preRenderdSurface.BeginChanges();
 
-            Program.GameLogic.Renderer2D.Drawing.DrawRectangle(new RectangleF(0, 0, Width, 25), Color.Gray);
+            _graphics.Renderer2D.Drawing.DrawRectangle(new Rectangle(0, 0, Width, 25).ToSystemF(), Color.Gray);
 
 
         }

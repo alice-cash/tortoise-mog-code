@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//using ClassicSize = System.Drawing.Size;
+using ClassicSize = System.Drawing.Size;
+using ClassicSizeF = System.Drawing.SizeF;
 
 namespace Tortoise.Shared.Drawing
 {
@@ -24,6 +25,26 @@ namespace Tortoise.Shared.Drawing
         {
             _width = width;
             _height = height;
+        }
+
+        public static Size FromSystem(ClassicSize size)
+        {
+            Size result = new Size(size.Width, size.Height);
+            return result;
+        }
+
+        public static Size FromSystem(ClassicSizeF size)
+        {
+            Size result = new Size((int)size.Width, (int)size.Height);
+            return result;
+        }
+
+        public static ClassicSize ToSystem(Size size) {
+            return size.ToSystem();
+        }
+
+        public ClassicSize ToSystem() {
+            return new ClassicSize(this.Width, this.Height);
         }
 
         /*

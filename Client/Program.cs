@@ -133,7 +133,7 @@ namespace Tortoise.Client
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
-                Initialize();
+                _initialize();
 
                 Gorgon.Run(mainForm, _gameLogic.GameLoop);
 
@@ -152,7 +152,7 @@ namespace Tortoise.Client
         /// <summary>
         /// Function to initialize the application.
         /// </summary>
-        private static void Initialize()
+        private static void _initialize()
         {
 
             Debug.Listeners.Clear();
@@ -173,7 +173,7 @@ namespace Tortoise.Client
             ServerConnection.Init();
 
 
-            ConsoleThread = new System.Threading.Thread(ConsoleReader);
+            ConsoleThread = new System.Threading.Thread(_consoleReader);
             ConsoleThread.Start();
 
             mainForm = new MainForm();
@@ -185,7 +185,7 @@ namespace Tortoise.Client
         /// <summary>
         /// Start reading the console. This should be put into its own thread.
         /// </summary>
-        private static void ConsoleReader()
+        private static void _consoleReader()
         {
 
             while (ThreadsRunning)

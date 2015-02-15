@@ -26,7 +26,7 @@
  * or implied, of Matthew Cash.
  */
 using System;
-using System.Drawing;
+//using System.Drawing;
 
 using Tortoise.Shared.Drawing;
 
@@ -35,22 +35,27 @@ namespace Tortoise.Graphics.Rendering.GUI
 	public class MovedEventArgs:EventArgs
 	{
         [Obsolete]
-		public PointF NewPointF{get;set;}
+        public System.Drawing.PointF NewPointF { get { return NewPoint.ToPointF; } set { NewPoint = Point.FromPointF(value); } }
         [Obsolete]
-		public PointF OldPointF{get;set;}
+        public System.Drawing.PointF OldPointF { get { return OldPoint.ToPointF; } set { OldPoint = Point.FromPointF(value); } }
+
+        public Point NewPoint { get; set; }
+        public Point OldPoint { get; set; }
+
+
 
         [Obsolete]
-        public MovedEventArgs(PointF _OldPoint, PointF _NewPoint)
+        public MovedEventArgs(System.Drawing.PointF oldPoint, System.Drawing.PointF newPoint)
         {
-            OldPointF = _OldPoint;
-            NewPointF = _NewPoint;
+            OldPointF = oldPoint;
+            NewPointF = newPoint;
         }
 
 
-        public MovedEventArgs(Point _OldPoint, Point _NewPoint)
+        public MovedEventArgs(Point oldPoint, Point newPoint)
         {
-            OldPointF = _OldPoint.ToPointF;
-            NewPointF = _NewPoint.ToPointF;
+            OldPoint = oldPoint;
+            NewPoint = newPoint;
         }
 	}
 }

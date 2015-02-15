@@ -1,9 +1,11 @@
 ﻿using System;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
-using System.Drawing;
+//using System.Drawing;
 using System.Drawing.Imaging;
+using Color = System.Drawing.Color;
 
+using Tortoise.Shared.Drawing;
 using Tortoise.Shared.Threading;
 
 namespace Tortoise.Graphics.Rendering
@@ -18,43 +20,44 @@ namespace Tortoise.Graphics.Rendering
         //GorgonLibrary.Graphics.GorgonTexture2D _texture;
         GorgonLibrary.Graphics.GorgonRenderTarget2D _target;
         private bool _can_Update;
+        TGraphics _graphics;
 
        /* public GorgonLibrary.Graphics.GorgonRenderTarget2D Target
         {
             get { return _target; }
         }*/
 
-        public static Surface CreateBlankSurface(int Width, int Height)
+        public static Surface CreateBlankSurface(TGraphics graphics, int Width, int Height)
         {
             Surface result;
-            result = new Surface(Width, Height);
+            result = new Surface(graphics, Width, Height);
             result.Initialize();
             return result;
         }
 
-        public static Surface CreateFromFile(string Filename)
+        public static Surface CreateFromFile(TGraphics graphics, string Filename)
         {
             Surface result;
-            result = new Surface(Filename);
+            result = new Surface(graphics, Filename);
             result.Initialize();
             return result;
         }
 
-        public static GorgonLibrary.Graphics.GorgonTexture2D CreateEmptyTexture(int width, int height)
+        public static GorgonLibrary.Graphics.GorgonTexture2D CreateEmptyTexture(TGraphics graphics, int width, int height)
         {
             GorgonLibrary.Graphics.GorgonTexture2D newtexture;
 
-            newtexture = Program.GameLogic.Graphics.Textures.CreateTexture(string.Format("Nondescript_Texture:_{0}x{1}", width, height),
+            newtexture = graphics.Graphics.Textures.CreateTexture(string.Format("Nondescript_Texture:_{0}x{1}", width, height),
                 width, height, BufferFormat.R8G8B8A8_UIntNormal, BufferUsage.Default);
 
             return newtexture;
         }
 
-        public static GorgonLibrary.Graphics.GorgonRenderTarget2D CreateEmptyTarget(int width, int height)
+        public static GorgonLibrary.Graphics.GorgonRenderTarget2D CreateEmptyTarget(TGraphics graphics, int width, int height)
         {
             GorgonLibrary.Graphics.GorgonRenderTarget2D newtexture;
 
-            newtexture = Program.GameLogic.Graphics.Output.CreateRenderTarget(string.Format("Nondescript_Texture:_{0}x{1}", width, height), 
+            newtexture = graphics.Graphics.Output.CreateRenderTarget(string.Format("Nondescript_Texture:_{0}x{1}", width, height), 
                             new GorgonRenderTarget2DSettings  {
                                 /*DepthStencilFormat = BufferFormat.Unknown,*/
                                 Width = width,
@@ -66,17 +69,21 @@ namespace Tortoise.Graphics.Rendering
             return newtexture;
         }
 
-        private Surface(int width, int height)
+        private Surface(TGraphics graphics, int width, int height)
         {
-            _target = CreateEmptyTarget(width, height);
+            _graphics = graphics;
 
+
+            _target = CreateEmptyTarget(_graphics, width, height);
 
             this.Width = width;
             this.Height = height;
         }
 
-        private Surface(string Filename)
+        private Surface(TGraphics graphics, string Filename)
         {
+            _graphics = graphics;
+
             if (!System.IO.File.Exists(Filename))
                 throw new System.IO.FileNotFoundException("The file could not be found!", Filename);
 
@@ -102,7 +109,7 @@ namespace Tortoise.Graphics.Rendering
             if (Codec == null)
                 throw new System.IO.FileLoadException("The file contains an invalid extension!", Filename);
 
-            _target = Program.GameLogic.Graphics.Textures.FromFile<GorgonRenderTarget2D>("Nondescript_Texture", Filename, Codec);
+            _target = _graphics.Graphics.Textures.FromFile<GorgonRenderTarget2D>("Nondescript_Texture", Filename, Codec);
 
 
             Width = _target.Settings.Width;
@@ -128,7 +135,7 @@ namespace Tortoise.Graphics.Rendering
             if (!_can_Update)
                 throw new Tortoise.Shared.Exceptions.LogicException("Surface cannot be updated at this time!");
 
-            Program.GameLogic.Renderer2D.Drawing.Blit(Source._target, rec);
+            _graphics.Renderer2D.Drawing.Blit(Source._target, rec.ToSystemF());
         }
         public void Blit(Surface Source, Point pos)
         {
@@ -146,12 +153,12 @@ namespace Tortoise.Graphics.Rendering
             if (_can_Update)
                 throw new Tortoise.Shared.Exceptions.LogicException("Surface changes must be disabled!");
 
-            Program.GameLogic.Renderer2D.Drawing.Blit(_target, rec);
+            _graphics.Renderer2D.Drawing.Blit(_target, rec.ToSystemF());
         }
 
         public void BeginChanges()
         {
-            Program.GameLogic.Renderer2D.Target = _target;
+            _graphics.Renderer2D.Target = _target;
             _can_Update = true;
         }
 
@@ -168,14 +175,14 @@ namespace Tortoise.Graphics.Rendering
                 throw new Tortoise.Shared.Exceptions.LogicException("Surface cannot be updated at this time!");
             //FlushChanges();
             _can_Update = false;
-            Program.GameLogic.Renderer2D.Target = null;
+            _graphics.Renderer2D.Target = null;
         }
 
         public void Fill(Color Color)
         {
             if (!_can_Update)
                 throw new Tortoise.Shared.Exceptions.LogicException("Surface cannot be updated at this time!");
-            Program.GameLogic.Renderer2D.Clear(Color);
+            _graphics.Renderer2D.Clear(Color);
             /*
 
 

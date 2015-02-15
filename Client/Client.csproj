@@ -63,6 +63,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="C5">
+      <HintPath>..\packages\C5.2.3.0.1\lib\net40\C5.dll</HintPath>
+    </Reference>
     <Reference Include="DialogHelper, Version=1.1.4869.36320, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\gorgonlib-read-only\trunk\Tools\DialogHelper\bin\Debug\DialogHelper.dll</HintPath>
@@ -126,6 +129,10 @@
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Graphics\Graphics.csproj">
+      <Project>{cb558998-f114-4fb2-8a38-7ddef46b1f24}</Project>
+      <Name>Graphics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shared\Shared.csproj">
       <Project>{da8ab668-ec4d-4ae2-8f6c-4783f5925564}</Project>
       <Name>Shared</Name>

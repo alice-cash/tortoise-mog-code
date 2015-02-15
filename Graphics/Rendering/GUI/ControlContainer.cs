@@ -29,7 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Tortoise.Client.Extension.System;
+//using Tortoise.Client.Extension.System;
 
 namespace Tortoise.Graphics.Rendering.GUI
 {
@@ -52,8 +52,13 @@ namespace Tortoise.Graphics.Rendering.GUI
             // we still want to handle the 1 in 10^75 or something
             // chance of getting a duplicate number should 1 exists 
             // already in that particular depth
-            while (ContainsKey(fdepth = _random.NextFloat() + depth)) ;
+            while (ContainsKey(fdepth = _nextFloat(_random) + depth)) ;
             Add(fdepth, control);
+        }
+
+        private static float _nextFloat(Random _random)
+        {
+            return Convert.ToSingle(_random.NextDouble());
         }
 
         public Control this[string name]

@@ -27,8 +27,9 @@
  */
 
 using System;
-using System.Drawing;
+//using System.Drawing;
 
+using Color = System.Drawing.Color;
 using Tortoise.Shared.Drawing;
 
 
@@ -82,20 +83,20 @@ namespace Tortoise.Graphics.Rendering.GUI
             return doMouseUp(e);
         }
 
-        public Button(string name, string text, Point location, Size size, FontInfo fontinfo)
-            : this(name, text, new Rectangle(location, size), fontinfo)
+        public Button(TGraphics graphics, string name, string text, Point location, Size size, FontInfo fontinfo)
+            : this(graphics, name, text, new Rectangle(location, size), fontinfo)
         {
 
         }
 
-        public Button(string name, string text, int x, int y, int width, int height, FontInfo fontinfo)
-            : this(name, text, new Rectangle(x, y, width, height), fontinfo)
+        public Button(TGraphics graphics, string name, string text, int x, int y, int width, int height, FontInfo fontinfo)
+            : this(graphics, name, text, new Rectangle(x, y, width, height), fontinfo)
         {
 
         }
 
-        public Button(string name, string text, Rectangle area, FontInfo fontinfo)
-            : base(name, text, area, fontinfo)
+        public Button(TGraphics graphics, string name, string text, Rectangle area, FontInfo fontinfo)
+            : base(graphics, name, text, area, fontinfo)
         {
 
         }

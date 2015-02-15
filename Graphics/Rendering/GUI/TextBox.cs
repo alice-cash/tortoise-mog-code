@@ -27,7 +27,11 @@
  */
 using System;
 using System.Text;
-using System.Drawing;
+//using System.Drawing;
+
+using Color = System.Drawing.Color;
+using Tortoise.Shared.Drawing;
+
 using Tortoise.Shared;
 using GorgonLibrary.Input;
 using GorgonLibrary.Renderers;
@@ -128,20 +132,20 @@ namespace Tortoise.Graphics.Rendering.GUI
 
         }
 
-        public TextBox(string name, int x, int y, int width, int height)
-            : this(name, new Rectangle(x, y, width, height))
+        public TextBox(TGraphics graphics, string name, int x, int y, int width, int height)
+            : this(graphics, name, new Rectangle(x, y, width, height))
         {
 
         }
-        public TextBox(string name, Point location, Size size)
-            : this(name, new Rectangle(location, size))
+        public TextBox(TGraphics graphics, string name, Point location, Size size)
+            : this(graphics, name, new Rectangle(location, size))
         {
 
         }
-        public TextBox(string name, Rectangle area)
-            : base(name, area)
+        public TextBox(TGraphics graphics, string name, Rectangle area)
+            : base(graphics, name, area)
 		{
-            _gorgonText = Program.GameLogic.Renderer2D.Renderables.CreateText(name + "_TextRenderer");
+            _gorgonText = _graphics.Renderer2D.Renderables.CreateText(name + "_TextRenderer");
             //_fontInfo = FontInfo.GetInstance(10, FontTypes.Sans_Mono);
             _flasherTimer = new Timer();
 			

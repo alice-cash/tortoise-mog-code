@@ -27,16 +27,23 @@
  */
 
 using System;
-using System.Drawing;
+using SizeF = System.Drawing.SizeF;
+using Tortoise.Shared.Drawing;
 
 namespace Tortoise.Graphics.Rendering.GUI
 {
     public class ResizeEventArgs:EventArgs
     {
-        public SizeF NewSize;
-        public SizeF OldSize;
+        public Size NewSize;
+        public Size OldSize;
 
         public ResizeEventArgs(SizeF _OldSize, SizeF _NewSize)
+        {
+            OldSize = Size.FromSystem(_OldSize);
+            NewSize = Size.FromSystem(_NewSize);
+        }
+
+        public ResizeEventArgs(Size _OldSize, Size _NewSize)
         {
             OldSize = _OldSize;
             NewSize = _NewSize;

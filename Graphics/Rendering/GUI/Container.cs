@@ -31,8 +31,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Tortoise.Shared.Drawing;
 
-using System.Drawing;
+//using System.Drawing;
+
 namespace Tortoise.Graphics.Rendering.GUI
 {
 	public class Container : Control
@@ -62,30 +64,30 @@ namespace Tortoise.Graphics.Rendering.GUI
 		}
 		 */
 
-		public Container(string name, int x, int y, int width, int height)
-			: this(name, new Rectangle(x, y, width, height))
+        public Container(TGraphics graphics, string name, int x, int y, int width, int height)
+            : this(graphics, name, new Rectangle(x, y, width, height))
 		{
 
 		}
-		public Container(string name, Point location, Size size)
-			: this(name, new Rectangle(location, size))
+        public Container(TGraphics graphics, string name, Point location, Size size)
+            : this(graphics, name, new Rectangle(location, size))
 		{
 
 		}
-		public Container(string name, Rectangle area)
-			: base(name, area)
+        public Container(TGraphics graphics, string name, Rectangle area)
+            : base(graphics, name, area)
 		{
 			Controls = new ControlContainerManager();
 		}
 
-
+        /*
 		public override void Initialize()
 		{
             if (_inited) return;
 			base.Initialize();
 			_Items = new ControlContainerManager();
 
-		}
+		}*/
 
 		public override void Load()
 		{
