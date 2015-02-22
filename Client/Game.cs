@@ -23,7 +23,6 @@ using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
 
-using Tortoise.Client.Screen;
 
 using Tortoise.Graphics.Rendering;
 using Tortoise.Graphics;
@@ -38,9 +37,11 @@ namespace Tortoise.Client
     {
 
         public TGraphics Graphics { get; private set; }
+        public MainForm MainForm { get; private set; }
 
         public Game(MainForm Target)
         {
+            MainForm = Target;
             Graphics = TGraphics.CreateGraphics(Target);
         }
 
@@ -89,6 +90,14 @@ namespace Tortoise.Client
 
 
             return true;
+        }
+
+        public void Quit()
+        {
+            Program.ThreadsRunning = false;
+            Graphics.Window.Unload();
+            MainForm.Close();
+            CleanUp();
         }
 
         internal void CleanUp()

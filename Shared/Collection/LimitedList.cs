@@ -81,5 +81,10 @@ namespace Tortoise.Shared.Collection
 			Array.Copy(base.array, 0, base.array, 1, _limit - 1);
 			base.array[0] = item;
 		}
+
+        public override System.Collections.Generic.IEnumerator<T> GetEnumerator()
+        {
+            return base.GetEnumerator();
+        }
 	}
 }

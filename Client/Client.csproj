@@ -103,6 +103,7 @@
     <Compile Include="Extension\System\Drawing\Point.cs" />
     <Compile Include="Extension\System\Random.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="MainMenuScreen.cs" />
     <Compile Include="Module\Debugging.cs" />
     <Compile Include="Module\Login.cs" />
     <Compile Include="Net\ServerConnection.cs" />

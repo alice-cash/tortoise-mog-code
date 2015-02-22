@@ -42,6 +42,11 @@ namespace Tortoise.Graphics.Rendering.GUI
             _random = new Random();
         }
 
+        public void Add(Control control)
+        {
+            this.Add(0, control);
+        }
+
         public void Add(int depth, Control control)
         {
             float fdepth;

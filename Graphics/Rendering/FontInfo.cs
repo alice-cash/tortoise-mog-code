@@ -56,8 +56,7 @@ namespace Tortoise.Graphics.Rendering
                 if (obj.FontName == name && obj.FontSize == size && obj._graphics == graphics)
                     return obj;
             }
-            FontInfo font = new FontInfo(name, size);
-            font._graphics = graphics;
+            FontInfo font = new FontInfo(graphics, name, size);
             _data.Add(font);
             return font;
         }
@@ -87,9 +86,9 @@ namespace Tortoise.Graphics.Rendering
         {
           
         }
-        private FontInfo(FontTypes type, float size)
+        private FontInfo(TGraphics graphics, FontTypes type, float size)
         {
-           
+            _graphics = graphics;
             FontSize = size;
             FontName = type;
             Font = new System.Drawing.Font(GetName(type),size);

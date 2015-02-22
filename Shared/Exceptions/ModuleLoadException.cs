@@ -33,7 +33,7 @@ namespace Tortoise.Shared.Exceptions
     /// <summary>
     /// Desctiption of ModuleLoadException.
     /// </summary>
-    public class ModuleLoadException : Exception, ISerializable
+    public class ModuleLoadException : TortoiseException
     {
         public ModuleLoadException()
         {
@@ -49,10 +49,6 @@ namespace Tortoise.Shared.Exceptions
         {
         }
 
-        // This constructor is needed for serialization.
-        protected ModuleLoadException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+
     }
 }

@@ -40,7 +40,8 @@ using System.Reflection;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Windows.Forms;
+//using System.Windows.Forms;
+using Application = System.Windows.Forms.Application;
 
 using GorgonLibrary;
 using GorgonLibrary.Diagnostics;
@@ -54,9 +55,9 @@ using SlimMath;
 using System.Runtime.InteropServices;
 
 
-using Tortoise.Client.Screen;
 using Tortoise.Shared;
 using Tortoise.Graphics;
+using Tortoise.Graphics.Rendering;
 
 namespace Tortoise.Client
 {
@@ -101,7 +102,7 @@ namespace Tortoise.Client
         private static Game _gameLogic;
 
         /// <summary>
-        /// Retrive the application's primary Game instance.
+        /// Retrieve the application's primary Game instance.
         /// </summary>
         public static Game GameLogic { get { return _gameLogic; } }
 
@@ -135,19 +136,33 @@ namespace Tortoise.Client
 
                 _initialize();
 
+                //Setup our Main Menu here. 
+                //TODO: Find a better location to put this.
+                Screen mainMenu =  new MainMenuScreen(_gameLogic.Graphics);
+
+                mainMenu.Initialize();
+
+                _gameLogic.Graphics.Window.AvailableScreens.Add("Main Menu", mainMenu);
+                _gameLogic.Graphics.Window.ChangeToScreen("Main Menu");
+
                 Gorgon.Run(mainForm, _gameLogic.GameLoop);
 
             }
-            catch (Exception ex)
+            catch (Tortoise.Shared.Exceptions.TortoiseException ex)
             {
-
+                if (System.Diagnostics.Debugger.IsAttached)
+                    System.Diagnostics.Debugger.Break();
+                Console.WriteLine(ex.ToString());
             }
             finally
             {
-                _gameLogic.CleanUp();
+                if(_gameLogic != null)
+                    _gameLogic.CleanUp();
             }
 
         }
+
+
 
         /// <summary>
         /// Function to initialize the application.
@@ -165,6 +180,9 @@ namespace Tortoise.Client
             //Trace.Listeners.Add(new ConsoleTraceListener());
             //Trace.Listeners.Add(new TortoiseConsoleTraceListiner());
 
+            mainForm = new MainForm();
+            _gameLogic = new Game(mainForm);
+
             Trace.WriteLine(string.Format("Tortoise Version {0}.{1}.{2}.{3}", Program.Version.Major, Program.Version.Minor, Program.Version.Build, Program.Version.Revision));
 
             DefaultLanguage.InitDefault();
@@ -172,13 +190,8 @@ namespace Tortoise.Client
 
             ServerConnection.Init();
 
-
             ConsoleThread = new System.Threading.Thread(_consoleReader);
             ConsoleThread.Start();
-
-            mainForm = new MainForm();
-            _gameLogic = new Game(mainForm);
-
         }
 
 

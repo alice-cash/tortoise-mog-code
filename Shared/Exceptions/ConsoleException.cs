@@ -37,7 +37,7 @@ namespace Tortoise.Shared.Exceptions
 	/// <summary>
 	/// Description of ConsoleException.
 	/// </summary>
-	public class ConsoleException : Exception
+    public class ConsoleException : TortoiseException
 	{
 		public ConsoleException()
 		{

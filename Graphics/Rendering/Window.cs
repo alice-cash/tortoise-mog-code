@@ -35,346 +35,360 @@ using Timer = Tortoise.Shared.Timer;
 using Tortoise.Shared;
 using Tortoise.Shared.Collection;
 using Tortoise.Shared.Threading;
+
+using Tortoise.Graphics;
+
 using GorgonLibrary.Input;
 using GorgonLibrary.Graphics;
 
+//namespace Tortoise.Graphics.Rendering
+//{
+//    public class Window : Invokable, IRender
+//    {
+//        /*
+//        public static Window CreateWindow(String name)
+//        {
+//            Window result = new Window(name);
+
+//            return result;
+//        }*/
+
+//        private string _name;
+//        public string Name { get { return _name; } }
+
+//        public Window(string Name)
+//        {
+//            _invoker = new Invoker();
+
+//        }
+
+
+//        public void Initialize()
+//        {
+//        }
+
+//        public void Load()
+//        {
+//            throw new NotImplementedException();
+//        }
+
+//        public void Unload()
+//        {
+//            throw new NotImplementedException();
+//        }
+
+//        public void Tick(TickEventArgs e)
+//        {
+//            throw new NotImplementedException();
+//        }
+
+//        public void Render()
+//        {
+//            throw new NotImplementedException();
+//        }
+
+//        public void Dispose()
+//        {
+//            throw new NotImplementedException();
+//        }
+
+
+//    }
+//}
+
+
 namespace Tortoise.Graphics.Rendering
 {
-    public class Window : Invokable, IRender
+    /// <summary>
+    /// The main window.
+    /// </summary>
+    public class Window
     {
-        /*
-        public static Window CreateWindow(String name)
+
+        TickEventArgs tickEventData;
+        Timer frameTimer;
+        Timer TotalTimer;
+        LimitedList<double> lastFrameTimes;
+
+        FontInfo DebugFont;
+
+        //private Surface MainSurface;
+
+        /* public int BestBitsPerPixle
+         {
+             get { return Video.BestBitsPerPixel(ScreenWidth, ScreenHeight, false); }
+         }*/
+
+        public Dictionary<string, Screen> AvailableScreens { get; private set; }
+        //public static Window Instance { get; private set; }
+
+
+        public event EventHandler ScreenChanged;
+
+        private int _bufferID;
+
+        private ThreadSafetyEnforcer _threadSafety;
+        private Invoker _invoker;
+
+        //public bool GameRunning { get; set; }
+        public Screen CurrentScreen { get; set; }
+
+        public TGraphics Graphics { get; private set; }
+
+        private GorgonInputFactory _factory;
+        private GorgonKeyboard _keyboard;
+        private GorgonPointingDevice _mouse;
+
+        public Window(TGraphics graphics)
         {
-            Window result = new Window(name);
-
-            return result;
-        }*/
-
-        private string _name;
-        public string Name { get { return _name; } }
-
-        public Window(string Name)
-        {
-            _invoker = new Invoker();
-
+            AvailableScreens = new Dictionary<string, Screen>();
+            Graphics = graphics;
         }
 
-        /// <summary>
-        /// Initialize the class.
-        /// </summary>
-        public void Initialize()
+        internal void Initialize()
         {
-        }
 
-        public void Load()
-        {
-            throw new NotImplementedException();
+
+            _threadSafety = new ThreadSafetyEnforcer("Main Window Class");
+            _invoker = new Invoker(_threadSafety);
+
+            //This selects our first screen, and Loads it.
+
+
+            //Width, Height, BitsPerPixle, resizable, openGL, fullscreen, hardware, frame
+            //Video.SetVideoMode(ScreenWidth, ScreenHeight, BestBitsPerPixle, true, false, false, true, true);
+            //Video.WindowCaption = "Tortoise Demo";
+
+            //MainSurface = GenerateSurface();
+
+
+            DebugFont = FontInfo.GetInstance(Graphics, 10, FontTypes.Sans_Mono);
+
+            GorgonManager.GorgonPluginLoader.LoadPlugins();
+
+            _factory = GorgonLibrary.Input.GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonWinFormsPlugIn");
+
+            if (_factory == null)
+            {
+                throw new NullReferenceException("Unable to load the GorgonLibrary.Input.GorgonWinFormsPlugIn Factory.");
+            }
+
+            _keyboard = _factory.CreateKeyboard(Graphics.Control);
+            _mouse = _factory.CreatePointingDevice(Graphics.Control);
+
+
+
+            _mouse.PointingDeviceDown += new EventHandler<PointingDeviceEventArgs>(Mouse_ButtonDown);
+            _mouse.PointingDeviceUp += new EventHandler<PointingDeviceEventArgs>(Mouse_ButtonUp);
+            _mouse.PointingDeviceMove += new EventHandler<PointingDeviceEventArgs>(Mouse_Move);
+
+            _keyboard.KeyDown += new EventHandler<KeyboardEventArgs>(Window_KeyDown);
+            _keyboard.KeyUp += new EventHandler<KeyboardEventArgs>(Window_KeyUp);
+
+            //_keyboard.KeyPress += new EventHandler<KeyEventArgs>(Window_KeyPress);
+
+            Graphics.Control.Resize += new EventHandler(Window_Resize);
+
+
+            tickEventData = new TickEventArgs();
+            frameTimer = new Timer(true);
+            TotalTimer = new Timer(true);
+            lastFrameTimes = new LimitedList<double>(30, 0);
+
+
+            TConsole.SetIfNotExsistValue("gf_RenderUpdateRec", ConsoleVarable.OnOffVarable("Draw Boxes showing Updated Areas"));
+            TConsole.SetIfNotExsistValue("gf_ShowFPS", ConsoleVarable.OnOffVarable("Displays FPS information"));
+
+
         }
 
         public void Unload()
         {
-            throw new NotImplementedException();
+            //GameRunning = false;
+            foreach (Screen screen in AvailableScreens.Values)
+                if (screen.Loaded)
+                    screen.Unload();
         }
 
-        public void Tick(TickEventArgs e)
+        void Window_Resize(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (ScreenLoaded())
+                CurrentScreen.OnResize();
         }
 
-        public void Render()
+        void Window_KeyUp(object sender, KeyboardEventArgs e)
         {
-            throw new NotImplementedException();
+            if (ScreenLoaded())
+            {
+                CurrentScreen.OnKeyboardUp(new KeyEventArgs(e));
+
+                CurrentScreen.OnKeyboardPress(new KeyEventArgs(e));
+            }
         }
 
-        public void Dispose()
+        void Window_KeyDown(object sender, KeyboardEventArgs e)
         {
-            throw new NotImplementedException();
+            if (ScreenLoaded())
+                CurrentScreen.OnKeyboardDown(new KeyEventArgs(e));
+        }
+
+        /*
+        void Window_KeyPress(object sender, KeyEventArgs e)
+        {
+            CurrentScreen.OnKeyboardPress(e);
+        }*/
+
+        void Mouse_Move(object sender, PointingDeviceEventArgs e)
+        {
+            if (ScreenLoaded())
+                CurrentScreen.OnMouseMove(new MouseEventArgs(e));
+        }
+
+        void Mouse_ButtonUp(object sender, PointingDeviceEventArgs e)
+        {
+            if (ScreenLoaded())
+                CurrentScreen.OnMouseUp(new MouseEventArgs(e));
+        }
+
+        void Mouse_ButtonDown(object sender, PointingDeviceEventArgs e)
+        {
+            if (ScreenLoaded())
+                CurrentScreen.OnMouseDown(new MouseEventArgs(e));
+        }
+
+
+        /*   public void Run()
+           {
+               if (GameRunning) return;
+               GameRunning = true;
+           }*/
+
+        public Surface GenerateSurface(Size size)
+        { return GenerateSurface(size.Width, size.Height); }
+        public Surface GenerateSurface(int width, int height)
+        {
+            Surface result = Surface.CreateBlankSurface(Graphics, width, height);
+            return result;
+        }
+        /*
+        public Surface GenerateTransparentSurface(int width, int height)
+        { return GenerateTransparentSurface(new Size(width, height)); }
+        public Surface GenerateTransparentSurface(Size size)
+        {
+            return new Surface(GfxResource.t).CreateStretchedSurface(size);
+        }*/
+
+        internal void Render()
+        {
+            _invoker.PollInvokes();
+            if (ScreenLoaded())
+            {
+                CurrentScreen.Tick(tickEventData);
+
+                CurrentScreen.Render();
+            }
+
+
+            //Video.Screen.Blit(MainSurface);
+
+            //if (TConsole.GetValue("gf_RenderUpdateRec").Value == "1")
+            //{
+            //     foreach (Rectangle rec in updateAreas)
+            //         Video.Screen.Draw(new Box(rec.Location, rec.Size), Color.Red);
+            //}
+
+
+
+            // if (TConsole.GetValue("gf_ShowFPS").Value == "1")
+            // {
+            //     Video.Screen.Blit(DebugFont.Font.Render(tickEventData.FPS.ToString("f2") + " fps - " + tickEventData.AverageFrameTime.ToString("f2") + " ms", Color.Red), new Point(10, 10));
+            //}
+
+            //Video.Screen.Update(); // (updateAreas);
+
+
+            //All of this is just for calculating the FPS and stuff.
+            tickEventData.LastFrameTime = frameTimer.ElapsedMilliseconds;
+            //this resets the timer's time, but doesn't stop it.
+            frameTimer.Reset();
+            frameTimer.Start();
+            lastFrameTimes.Add(tickEventData.LastFrameTime);
+            tickEventData.AverageFrameTime = CalculateAverage(lastFrameTimes);
+            tickEventData.FPS = 1000 / tickEventData.AverageFrameTime;
+            tickEventData.TotalSeconds = TotalTimer.ElapsedSeconds;
+            tickEventData.TotalMilliseconds = TotalTimer.ElapsedMilliseconds;
+        }
+
+
+
+
+        /// <summary>
+        /// Change to the screen name listed. The screenName should be an item in the AvailableScreens.
+        /// </summary>
+        public void ChangeToScreen(string screenName)
+        {
+            //The lambda expression keeps the name in scope
+            //so no worried there, i hope...
+            //The InvokeMethod will run it right away if this is the correct thread.
+            System.Action<object> id = (object nothing) =>
+            {
+                if (!AvailableScreens.ContainsKey(screenName))
+                    throw new Exception(string.Format("{0} does not exist!", screenName));
+                if(ScreenLoaded()) 
+                    CurrentScreen.Unload();
+                CurrentScreen = AvailableScreens[screenName];
+                CurrentScreen.Load();
+                if (ScreenChanged != null)
+                    ScreenChanged(this, EventArgs.Empty);
+
+            };
+            InvokeMethod(id, null);
+        }
+
+
+        public bool ScreenLoaded()
+        {
+            return CurrentScreen == null ? false : CurrentScreen.Loaded;
+        }
+
+
+        /// <summary>
+        /// Either adds the specified thread to the invoke list, or calls it now if its in the parent thread.
+        /// </summary>
+        /// <param name="methodToInvoke">A method or delegate to call.</param>
+        /// <param name="userData">An object with information sent to the method.</param>
+        public void InvokeMethod(System.Action<object> methodToInvoke, object userData)
+        {
+            _invoker.InvokeMethod(methodToInvoke, userData);
+        }
+
+        /// <summary>
+        /// Returns true if we need to invoke a method.
+        /// </summary>
+        public bool InvokeRequired()
+        {
+            return _invoker.InvokeRequired();
+        }
+
+        /// <summary>
+        /// Calculates the average number in a LimitedList<double>. If allowZero is false, 0 will be replaced with 1(for use in division)
+        /// </summary>
+        private double CalculateAverage(LimitedList<double> items, bool allowZero = false)
+        {
+            double count = 0, total = 0, result = 0;
+            foreach (var v in items)
+            {
+                if (v == 0) continue;
+                count++;
+                total += v;
+            }
+
+            if (count == 0) return allowZero ? 0 : 1;
+
+            result = total / count;
+            return !allowZero && result == 0 ? 1 : result;
         }
 
 
     }
 }
-
-
-//namespace Tortoise.Graphics.Rendering
-//{
-//    /// <summary>
-//    /// The main window.
-//    /// </summary>
-//    public class Window : GameWindow, IInvokable 
-//    {
-//        //This is called automatically when any static property is accessed
-//        //or an instance of the class is created
-//        static Window()
-//        {
-//            AvailableScreens = new Dictionary<string, Screen>();
-//        }
-
-//        TickEventArgs tickEventData;
-//        Timer frameTimer;
-//        Timer TotalTimer;
-//        LimitedList<double> lastFrameTimes;
-
-//        FontInfo DebugFont;
-
-//        private Surface MainSurface;
-
-//        public const int ScreenHeight = 600, ScreenWidth = 800;
-
-//       /* public int BestBitsPerPixle
-//        {
-//            get { return Video.BestBitsPerPixel(ScreenWidth, ScreenHeight, false); }
-//        }*/
-
-//        public static Dictionary<string, Screen> AvailableScreens { get; private set; }
-//        public static Window Instance { get; private set; }
-
-
-//        public event EventHandler ScreenChanged;
-
-//        private int _bufferID;
-
-//        private ThreadSafetyEnforcer _threadSafety;
-//        private Invoker _invoker;
-
-//        public bool GameRunning { get; set; }
-//        public Screen CurrentScreen { get; set; }
-
-//        protected override void OnLoad(EventArgs e)
-//        {
-//            GL.ClearColor(Color.Black);
-//            Instance = this;
-
-//            _threadSafety = new ThreadSafetyEnforcer("Main Window Class");
-//            _invoker = new Invoker(_threadSafety);
-
-//            //This selects our first screen, and Loads it.
-//            if (!AvailableScreens.ContainsKey("MainMenu"))
-//                throw new Exception("No module has set a MainMenu screen!");
-//            CurrentScreen = AvailableScreens["MainMenu"];
-
-//            //Width, Height, BitsPerPixle, resizable, openGL, fullscreen, hardware, frame
-//            //Video.SetVideoMode(ScreenWidth, ScreenHeight, BestBitsPerPixle, true, false, false, true, true);
-//            //Video.WindowCaption = "Tortoise Demo";
-
-//            MainSurface = GenerateSurface(Size);
-
-//            CurrentScreen.Load();
-
-//            DebugFont = FontInfo.GetInstance(10, FontTypes.Sans_Mono);
-
-//            Mouse.ButtonDown += new EventHandler<MouseButtonEventArgs>(Mouse_ButtonDown);
-//            Mouse.ButtonUp += new EventHandler<MouseButtonEventArgs>(Mouse_ButtonUp);
-//            Mouse.Move += new EventHandler<MouseMoveEventArgs>(Mouse_Move);
-
-//            KeyDown += new EventHandler<KeyboardKeyEventArgs>(Window_KeyDown);
-//            KeyUp += new EventHandler<KeyboardKeyEventArgs>(Window_KeyUp);
-//            KeyPress += new EventHandler<KeyPressEventArgs>(Window_KeyPress);
-
-//            Resize += new EventHandler<EventArgs>(Window_Resize);
-
-//            Closing += new EventHandler<System.ComponentModel.CancelEventArgs>(Window_Closing);
-
-
-//            tickEventData = new TickEventArgs();
-//            frameTimer = new Timer(true);
-//            TotalTimer = new Timer(true);
-//            lastFrameTimes = new LimitedList<double>(30, 0);
-
-
-//            TConsole.SetIfNotExsistValue("gf_RenderUpdateRec", ConsoleVarable.OnOffVarable("Draw Boxes showing Updated Areas"));
-//            TConsole.SetIfNotExsistValue("gf_ShowFPS", ConsoleVarable.OnOffVarable("Displays FPS information"));
-
-
-//        }
-
-
-
-
-
-
-//        void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-//        {
-//            GameRunning = false;
-//            foreach (Screen screen in AvailableScreens.Values)
-//                if (screen.Loaded)
-//                    screen.Unload();
-
-//            Program.ThreadsRunning = false;
-//            //Code to run when everything else is unloaded should go here 
-//        }
-
-//        void Window_Resize(object sender, EventArgs e)
-//        {
-//            CurrentScreen.OnResize();
-//        }
-
-//        void Window_KeyUp(object sender, KeyboardKeyEventArgs e)
-//        {
-//            CurrentScreen.OnKeyboardUp(new KeyEventArgs(e));
-//        }
-
-//        void Window_KeyDown(object sender, KeyboardKeyEventArgs e)
-//        {
-//            CurrentScreen.OnKeyboardDown(new KeyEventArgs(e));
-//        }
-
-//        void Window_KeyPress(object sender, KeyPressEventArgs e)
-//        {
-//            CurrentScreen.OnKeyboardPress(e);
-//        }
-
-//        void Mouse_Move(object sender, MouseMoveEventArgs e)
-//        {
-//            CurrentScreen.OnMouseMove(new MouseEventArgs(e));
-//        }
-
-//        void Mouse_ButtonUp(object sender, MouseButtonEventArgs e)
-//        {
-//            CurrentScreen.OnMouseUp(new MouseEventArgs(e));
-//        }
-
-//        void Mouse_ButtonDown(object sender, MouseButtonEventArgs e)
-//        {
-//            CurrentScreen.OnMouseDown(new MouseEventArgs(e));
-//        }
-
-
-//        public void Run()
-//        {
-//            if (GameRunning) return;
-//            GameRunning = true;
-//        }
-
-//        public Surface GenerateSurface(Size size)
-//        { return GenerateSurface(size.Width, size.Height); }
-//        public Surface GenerateSurface(int width, int height)
-//        {
-//            Surface s = new Surface(width, height);
-//            return s;
-//        }
-//        /*
-//        public Surface GenerateTransparentSurface(int width, int height)
-//        { return GenerateTransparentSurface(new Size(width, height)); }
-//        public Surface GenerateTransparentSurface(Size size)
-//        {
-//            return new Surface(GfxResource.t).CreateStretchedSurface(size);
-//        }*/
-
-//        protected override void OnRenderFrame(FrameEventArgs e)
-//        {
-//            if (!GameRunning)
-//                return;
-//            _invoker.PollInvokes();
-//            CurrentScreen.Tick(tickEventData); 
-
-
-//            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-//            GL.MatrixMode(MatrixMode.Modelview);
-//            GL.LoadIdentity();
-
-//            GL.Color3(Color.Red);
-//            GL.Begin(BeginMode.Triangles);						// Drawing Using TrianGL.es
-//            CurrentScreen.Render();
-//            GL.End();
-
-
-//            //Video.Screen.Blit(MainSurface);
-
-//            //if (TConsole.GetValue("gf_RenderUpdateRec").Value == "1")
-//            //{
-//           //     foreach (Rectangle rec in updateAreas)
-//           //         Video.Screen.Draw(new Box(rec.Location, rec.Size), Color.Red);
-//            //}
-
-
-
-//           // if (TConsole.GetValue("gf_ShowFPS").Value == "1")
-//           // {
-//           //     Video.Screen.Blit(DebugFont.Font.Render(tickEventData.FPS.ToString("f2") + " fps - " + tickEventData.AverageFrameTime.ToString("f2") + " ms", Color.Red), new Point(10, 10));
-//            //}
-
-//            //Video.Screen.Update(); // (updateAreas);
-
-//            SwapBuffers();
-
-//            //All of this is just for calculating the FPS and stuff.
-//            tickEventData.LastFrameTime = frameTimer.ElapsedMilliseconds;
-//            //this resets the timer's time, but doesn't stop it.
-//            frameTimer.Reset();
-//            frameTimer.Start();
-//            lastFrameTimes.Add(tickEventData.LastFrameTime);
-//            tickEventData.AverageFrameTime = CalculateAverage(lastFrameTimes);
-//            tickEventData.FPS = 1000 / tickEventData.AverageFrameTime;
-//            tickEventData.TotalSeconds = TotalTimer.ElapsedSeconds;
-//            tickEventData.TotalMilliseconds = TotalTimer.ElapsedMilliseconds;
-//        }
-
-
-
-
-//        /// <summary>
-//        /// Change to the screen name listed. The screenName should be an item in the AvailableScreens.
-//        /// </summary>
-//        public void ChangeToScreen(string screenName)
-//        {
-//            //The lamba expression keeps the name in scope
-//            //so no worried there, i hope...
-//            //The InvokeMethod will run it right away if this is the correct thread.
-//            System.Action<object> id = (object nothing) =>
-//            {
-//                if (!AvailableScreens.ContainsKey(screenName))
-//                    throw new Exception(string.Format("{0} does not exist!", screenName));
-//                CurrentScreen.Unload();
-//                CurrentScreen = AvailableScreens[screenName];
-//                CurrentScreen.Load();
-//                if (ScreenChanged != null)
-//                    ScreenChanged(this, EventArgs.Empty);
-
-//            };
-//            InvokeMethod(id, null);
-//        }
-
-
-
-//        /// <summary>
-//        /// Either adds the specified thread to the invoke list, or calls it now if its in the parent thread.
-//        /// </summary>
-//        /// <param name="methodToInvoke">A method or delegate to call.</param>
-//        /// <param name="userData">An object with information sent to the method.</param>
-//        public void InvokeMethod(System.Action<object> methodToInvoke, object userData)
-//        {
-//            _invoker.InvokeMethod(methodToInvoke, userData);
-//        }
-
-//        /// <summary>
-//        /// Returns true if we need to invoke a method.
-//        /// </summary>
-//        public bool InvokeRequired()
-//        {
-//            return _invoker.InvokeRequired();
-//        }
-
-//        /// <summary>
-//        /// Calculates the average number in a LimitedList<double>. If allowZero is false, 0 will be replaced with 1(for use in division)
-//        /// </summary>
-//        private double CalculateAverage(LimitedList<double> items, bool allowZero = false)
-//        {
-//            double count = 0, total = 0, result = 0;
-//            foreach (var v in items)
-//            {
-//                if (v == 0) continue;
-//                count++;
-//                total += v;
-//            }
-
-//            if (count == 0) return allowZero ? 0 : 1;
-
-//            result = total / count;
-//            return !allowZero && result == 0 ? 1 : result;
-//        }
-
-
-
-//    }
-//}

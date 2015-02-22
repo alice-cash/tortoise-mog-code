@@ -43,7 +43,7 @@ namespace Tortoise.Graphics.Rendering
             return result;
         }
 
-        public static GorgonLibrary.Graphics.GorgonTexture2D CreateEmptyTexture(TGraphics graphics, int width, int height)
+        private static GorgonLibrary.Graphics.GorgonTexture2D CreateEmptyTexture(TGraphics graphics, int width, int height)
         {
             GorgonLibrary.Graphics.GorgonTexture2D newtexture;
 
@@ -53,7 +53,7 @@ namespace Tortoise.Graphics.Rendering
             return newtexture;
         }
 
-        public static GorgonLibrary.Graphics.GorgonRenderTarget2D CreateEmptyTarget(TGraphics graphics, int width, int height)
+        private static GorgonLibrary.Graphics.GorgonRenderTarget2D CreateEmptyTarget(TGraphics graphics, int width, int height)
         {
             GorgonLibrary.Graphics.GorgonRenderTarget2D newtexture;
 

@@ -35,9 +35,9 @@ using System;
 namespace Tortoise.Shared.Exceptions
 {
 	/// <summary>
-	/// Desctiption of ExceptonInvalidVarableName.
+	/// Description of ExceptonInvalidVarableName.
 	/// </summary>
-	public class InvalidVarableNameExceptions : Exception
+    public class InvalidVarableNameExceptions : TortoiseException
 	{
 		public InvalidVarableNameExceptions()
 		{

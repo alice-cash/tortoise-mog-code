@@ -34,34 +34,33 @@ namespace Tortoise.Graphics.Rendering
     /// <summary>
     /// Description of Screen.
     /// </summary>
-    public class Screen : Container, IRender
+    public abstract class Screen : Container, IRender
     {
         public Screen(TGraphics graphics)
             : base(graphics, "_Screen", 0, 0, graphics.ScreenSize.Width, graphics.ScreenSize.Height)
         {
         }
 
-        public new void OnMouseDown(MouseEventArgs e) { base.OnMouseDown(e); }
+        internal new void OnMouseDown(MouseEventArgs e) { base.OnMouseDown(e); }
 
-        public new void OnMouseUp(MouseEventArgs e) { base.OnMouseUp(e); }
+        internal new void OnMouseUp(MouseEventArgs e) { base.OnMouseUp(e); }
 
-        public new void OnMouseMove(MouseEventArgs e) { base.OnMouseMove(e); }
+        internal new void OnMouseMove(MouseEventArgs e) { base.OnMouseMove(e); }
 
-        public new void OnKeyboardDown(KeyEventArgs e) { base.OnKeyboardDown(e); }
+        internal new void OnKeyboardDown(KeyEventArgs e) { base.OnKeyboardDown(e); }
 
-        public new void OnKeyboardUp(KeyEventArgs e) { base.OnKeyboardUp(e); }
+        internal new void OnKeyboardUp(KeyEventArgs e) { base.OnKeyboardUp(e); }
 
-        public new void OnKeyboardPress(KeyEventArgs e) { base.OnKeyboardPress(e); }
+        internal new void OnKeyboardPress(KeyEventArgs e) { base.OnKeyboardPress(e); }
 
-        public virtual void OnResize() { this.Size = _graphics.ScreenSize; }
+        internal virtual void OnResize() { this.Size = _graphics.ScreenSize; }
 
         public new void Tick(TickEventArgs e) { base.Tick(e); }
 
         public new void Render() { base.Render(); }
 
-        public void Initialize()
-        {
-            
-        }
+        
+        public abstract void Initialize();
+
     }
 }

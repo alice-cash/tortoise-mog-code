@@ -57,6 +57,7 @@
     <Compile Include="Exceptions\InvalidVarableNameExceptions.cs" />
     <Compile Include="Exceptions\LogicException.cs" />
     <Compile Include="Exceptions\ModuleLoadException.cs" />
+    <Compile Include="Exceptions\TortoiseException.cs" />
     <Compile Include="ExecutionState.cs" />
     <Compile Include="IO\ByteReader.cs" />
     <Compile Include="IO\ByteWriter.cs" />

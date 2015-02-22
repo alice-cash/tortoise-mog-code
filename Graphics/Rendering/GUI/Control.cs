@@ -60,7 +60,6 @@ namespace Tortoise.Graphics.Rendering.GUI
          */
         //protected ControlContainer _parent = null;
 
-       // protected bool _inited = false;
         protected bool _loaded = false;
 
         protected Container _parent;
@@ -366,14 +365,10 @@ namespace Tortoise.Graphics.Rendering.GUI
         #endregion
 
         #region Virtual Methods
-      /*  public override void Initialize()
-        {
 
-        }*/
 
         public virtual void Load()
         {
-
 
             _loaded = true;
             //_changed = true;

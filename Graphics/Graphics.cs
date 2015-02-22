@@ -43,6 +43,8 @@ namespace Tortoise.Graphics
         public GorgonGraphics Graphics { get { return _graphics; } }
         public Gorgon2D Renderer2D { get { return _renderer; } }
 
+        public System.Windows.Forms.Control Control { get { return _control; } }
+
         public Size ScreenSize { get { return Size.FromSystem(_control.Size); } }
 
         private Window _window;
@@ -67,7 +69,7 @@ namespace Tortoise.Graphics
             this._initGraphics();
 
 
-            this._window = new Window("Game Window");
+            this._window = new Window(this);
 
 
             this._renderer = this._graphics.Output.Create2DRenderer(this._mainScreen);
@@ -97,6 +99,7 @@ namespace Tortoise.Graphics
 
         public bool DoRenderLoop()
         {
+            this._window.Render();
             this.Renderer2D.Render();
             return true;
         }
