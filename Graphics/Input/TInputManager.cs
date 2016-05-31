@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2012 Matthew Cash. All rights reserved.
+ * Copyright 2016 Matthew Cash. All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -26,42 +26,37 @@
  * or implied, of Matthew Cash.
  */
 using System;
-using System.Drawing;
-using Tortoise.Graphics.Input;
-using Tortoise.Graphics.Rendering.GUI;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Tortoise.Graphics.Rendering
+namespace Tortoise.Graphics.Input
 {
-    /// <summary>
-    /// Description of Screen.
-    /// </summary>
-    public abstract class Screen : Container, IRender
+    public class TInputManager
     {
-        public Screen(TGraphics graphics)
-            : base(graphics, "_Screen", 0, 0, graphics.ScreenSize.Width, graphics.ScreenSize.Height)
+        public TMouseState MouseStateManager { get; private set; }
+        public TKeyState KeyStateManager { get; private set; }
+
+        private InputState[] _stateManagerArray;
+
+        public TInputManager()
         {
+            MouseStateManager = new TMouseState();
+            KeyStateManager = new TKeyState();
+
+            _stateManagerArray = new InputState[] { MouseStateManager, KeyStateManager };
         }
 
-        internal new void OnMouseDown(MouseEventArgs e) { base.OnMouseDown(e); }
-
-        internal new void OnMouseUp(MouseEventArgs e) { base.OnMouseUp(e); }
-
-        internal new void OnMouseMove(MouseEventArgs e) { base.OnMouseMove(e); }
-
-        internal new void OnKeyboardDown(KeyEventArgs e) { base.OnKeyboardDown(e); }
-
-        internal new void OnKeyboardUp(KeyEventArgs e) { base.OnKeyboardUp(e); }
-
-        internal new void OnKeyboardPress(KeyEventArgs e) { base.OnKeyboardPress(e); }
-
-        internal virtual void OnResize() { this.Size = _graphics.ScreenSize; }
-
-        public new void Tick(TickEventArgs e) { base.Tick(e); }
-
-        public new void Render() { base.Render(); }
-
-        
-        public abstract void Initialize();
-
+        public bool DoEventPoll()
+        {
+            bool changed = false;
+            foreach(InputState manager in _stateManagerArray)
+            {
+                if (manager.Poll())
+                    changed = true;
+            }
+            return changed;
+        }
     }
 }

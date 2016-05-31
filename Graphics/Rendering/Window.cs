@@ -36,10 +36,15 @@ using Tortoise.Shared;
 using Tortoise.Shared.Collection;
 using Tortoise.Shared.Threading;
 
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+
 using Tortoise.Graphics;
 
 using GorgonLibrary.Input;
 using GorgonLibrary.Graphics;
+using Tortoise.Graphics.Input;
 
 //namespace Tortoise.Graphics.Rendering
 //{
@@ -135,9 +140,9 @@ namespace Tortoise.Graphics.Rendering
 
         public TGraphics Graphics { get; private set; }
 
-        private GorgonInputFactory _factory;
-        private GorgonKeyboard _keyboard;
-        private GorgonPointingDevice _mouse;
+        KeyboardState _keyState;
+        MouseState _pointerState;
+
 
         public Window(TGraphics graphics)
         {
@@ -164,26 +169,16 @@ namespace Tortoise.Graphics.Rendering
 
             DebugFont = FontInfo.GetInstance(Graphics, 10, FontTypes.Sans_Mono);
 
-            GorgonManager.GorgonPluginLoader.LoadPlugins();
-
-            _factory = GorgonLibrary.Input.GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonWinFormsPlugIn");
-
-            if (_factory == null)
-            {
-                throw new NullReferenceException("Unable to load the GorgonLibrary.Input.GorgonWinFormsPlugIn Factory.");
-            }
-
-            _keyboard = _factory.CreateKeyboard(Graphics.Control);
-            _mouse = _factory.CreatePointingDevice(Graphics.Control);
+            TMouseState mouse = Graphics.InputManager.MouseStateManager;
+            TKeyState keyboard = Graphics.InputManager.KeyStateManager;
 
 
+            mouse.MouseDownEvent += Mouse_ButtonDown;
+            mouse.MouseUpEvent += Mouse_ButtonUp;
+            mouse.MouseMoveEvent += Mouse_Move;
 
-            _mouse.PointingDeviceDown += new EventHandler<PointingDeviceEventArgs>(Mouse_ButtonDown);
-            _mouse.PointingDeviceUp += new EventHandler<PointingDeviceEventArgs>(Mouse_ButtonUp);
-            _mouse.PointingDeviceMove += new EventHandler<PointingDeviceEventArgs>(Mouse_Move);
-
-            _keyboard.KeyDown += new EventHandler<KeyboardEventArgs>(Window_KeyDown);
-            _keyboard.KeyUp += new EventHandler<KeyboardEventArgs>(Window_KeyUp);
+            keyboard.KeyboardKeyPressEvent += Window_KeyDown;
+            keyboard.KeyboardKeyReleaseEvent += Window_KeyUp;
 
             //_keyboard.KeyPress += new EventHandler<KeyEventArgs>(Window_KeyPress);
 
@@ -216,20 +211,20 @@ namespace Tortoise.Graphics.Rendering
                 CurrentScreen.OnResize();
         }
 
-        void Window_KeyUp(object sender, KeyboardEventArgs e)
+        void Window_KeyUp( KeyEventArgs e)
         {
             if (ScreenLoaded())
             {
-                CurrentScreen.OnKeyboardUp(new KeyEventArgs(e));
+                CurrentScreen.OnKeyboardUp(e);
 
-                CurrentScreen.OnKeyboardPress(new KeyEventArgs(e));
+                CurrentScreen.OnKeyboardPress(e);
             }
         }
 
-        void Window_KeyDown(object sender, KeyboardEventArgs e)
+        void Window_KeyDown(KeyEventArgs e)
         {
             if (ScreenLoaded())
-                CurrentScreen.OnKeyboardDown(new KeyEventArgs(e));
+                CurrentScreen.OnKeyboardDown(e);
         }
 
         /*
@@ -238,22 +233,22 @@ namespace Tortoise.Graphics.Rendering
             CurrentScreen.OnKeyboardPress(e);
         }*/
 
-        void Mouse_Move(object sender, PointingDeviceEventArgs e)
+        void Mouse_Move(MouseEventArgs e)
         {
             if (ScreenLoaded())
-                CurrentScreen.OnMouseMove(new MouseEventArgs(e));
+                CurrentScreen.OnMouseMove(e);
         }
 
-        void Mouse_ButtonUp(object sender, PointingDeviceEventArgs e)
+        void Mouse_ButtonUp(MouseEventArgs e)
         {
             if (ScreenLoaded())
-                CurrentScreen.OnMouseUp(new MouseEventArgs(e));
+                CurrentScreen.OnMouseUp(e);
         }
 
-        void Mouse_ButtonDown(object sender, PointingDeviceEventArgs e)
+        void Mouse_ButtonDown(MouseEventArgs e)
         {
             if (ScreenLoaded())
-                CurrentScreen.OnMouseDown(new MouseEventArgs(e));
+                CurrentScreen.OnMouseDown(e);
         }
 
 
@@ -278,13 +273,19 @@ namespace Tortoise.Graphics.Rendering
             return new Surface(GfxResource.t).CreateStretchedSurface(size);
         }*/
 
-        internal void Render()
+            internal void Tick()
         {
             _invoker.PollInvokes();
             if (ScreenLoaded())
             {
                 CurrentScreen.Tick(tickEventData);
+            }
+        }
 
+        internal void Render()
+        {
+            if (ScreenLoaded())
+            {
                 CurrentScreen.Render();
             }
 
@@ -371,9 +372,9 @@ namespace Tortoise.Graphics.Rendering
         }
 
         /// <summary>
-        /// Calculates the average number in a LimitedList<double>. If allowZero is false, 0 will be replaced with 1(for use in division)
+        /// Calculates the average number in a LimitedList<double>. If allowZero is false, 0 will be replaced with nonZero(for use in division)
         /// </summary>
-        private double CalculateAverage(LimitedList<double> items, bool allowZero = false)
+        private double CalculateAverage(LimitedList<double> items, bool allowZero = false, int nonZero = 1)
         {
             double count = 0, total = 0, result = 0;
             foreach (var v in items)
@@ -383,10 +384,10 @@ namespace Tortoise.Graphics.Rendering
                 total += v;
             }
 
-            if (count == 0) return allowZero ? 0 : 1;
+            if (count == 0) return allowZero ? 0 : nonZero;
 
             result = total / count;
-            return !allowZero && result == 0 ? 1 : result;
+            return !allowZero && result == 0 ? nonZero : result;
         }
 
 

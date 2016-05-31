@@ -23,6 +23,7 @@ namespace Tortoise.Graphics
 
         public static MainForm Instance;
 
+        
         public static bool ThreadsRunning { get; set; }
 
         public static Dictionary<string, Screen> AvailableScreens { get; private set; }
@@ -35,9 +36,11 @@ namespace Tortoise.Graphics
 
         public event EventHandler ScreenChanged;
 
-
         public MainForm(string ScreenTitle)
         {
+            if (Instance != null)
+                throw new Exception("Duplicate MainForm detected!");
+
             Instance = this;
             InitializeComponent();
             this.Text = ScreenTitle;
@@ -69,6 +72,8 @@ namespace Tortoise.Graphics
             CurrentScreen.Load();
             if (ScreenChanged != null)
                 ScreenChanged(this, EventArgs.Empty);
+
+            this.Show();
         }
 
         void MainForm_FormClosing(object sender, FormClosingEventArgs e)

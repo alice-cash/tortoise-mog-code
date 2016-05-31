@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using ClassicRectangle = System.Drawing.Rectangle;
 using ClassicRectangleF = System.Drawing.RectangleF;
+using RenderRectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Tortoise.Shared.Drawing
 {
@@ -76,6 +77,11 @@ namespace Tortoise.Shared.Drawing
         public ClassicRectangleF ToSystemF()
         {
             return new ClassicRectangleF(X, Y, Width, Height);
+        }
+
+        public RenderRectangle ToRender()
+        {
+            return new RenderRectangle(X, Y, Width, Height);
         }
 
         //public static Rectangle Ceiling(RectangleF value);

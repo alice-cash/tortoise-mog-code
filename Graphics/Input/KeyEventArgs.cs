@@ -26,9 +26,10 @@
  * or implied, of Matthew Cash.
  */
 using System;
-using GorgonLibrary.Input;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework.Input;
 
-namespace Tortoise.Graphics.Rendering
+namespace Tortoise.Graphics.Input
 {
 	/// <summary>
 	/// Description of KeyEventArgs.
@@ -36,11 +37,34 @@ namespace Tortoise.Graphics.Rendering
 	public class KeyEventArgs : EventArgs
 	{
 
-        public KeyboardEventArgs EventData { get; private set; }
-        public KeyEventArgs(KeyboardEventArgs TKArgs)
+        public KeyEventData EventData { get; private set; }
+        public KeyEventArgs(KeyEventData args)
 		{
-            EventData = TKArgs;
+            EventData = args;
 		}
 
 	}
+
+    public struct KeyEventData
+    {
+        /// <summary>
+        /// New keys pressed for this event.
+        /// </summary>
+        public IEnumerable<Keys> PressedKeys { get; }
+        /// <summary>
+        /// Keys released for this event.
+        /// </summary>
+        public IEnumerable<Keys> ReleasedKeys { get; }
+        /// <summary>
+        /// All keys currently pressed.
+        /// </summary>
+        public IEnumerable<Keys> AllPressed { get; }
+
+        public KeyEventData(IEnumerable<Keys> kPressed, IEnumerable<Keys> kReleased, IEnumerable<Keys> kAll)
+        {
+            PressedKeys = kPressed;
+            ReleasedKeys = kReleased;
+            AllPressed = kAll;
+        }
+    }
 }

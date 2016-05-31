@@ -26,6 +26,7 @@
  * or implied, of Matthew Cash.
  * */
 
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -77,7 +78,7 @@ namespace Tortoise.Graphics.Rendering
         public FontTypes FontName { get; private set; }
         public System.Drawing.Font Font { get; private set; }
 
-        public GorgonLibrary.Graphics.GorgonFont GFont { get; private set; }
+        public TextRenderer GFont { get; private set; }
 
         /// <summary>
         /// Placeholder to eat it!
@@ -92,7 +93,8 @@ namespace Tortoise.Graphics.Rendering
             FontSize = size;
             FontName = type;
             Font = new System.Drawing.Font(GetName(type),size);
-            GFont = _graphics.Graphics.Fonts.CreateFont(Font.Name, Font, GorgonLibrary.Graphics.FontAntiAliasMode.AntiAlias);
+            _graphics.SpriteBatch.Dr
+            GFont = _graphics.SpriteBatch..Fonts.CreateFont(Font.Name, Font, GorgonLibrary.Graphics.FontAntiAliasMode.AntiAlias);
         }
 
 

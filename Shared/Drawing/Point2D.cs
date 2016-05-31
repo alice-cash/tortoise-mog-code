@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using ClassicPoint = System.Drawing.Point;
 using ClassicPointF = System.Drawing.PointF;
 
+using RenderPoint = Microsoft.Xna.Framework.Point;
+
 using Size = Tortoise.Shared.Drawing.Size;
 
 namespace Tortoise.Shared.Drawing
@@ -34,6 +36,14 @@ namespace Tortoise.Shared.Drawing
             }
         }
 
+        public RenderPoint ToRenderPoint
+        {
+            get
+            {
+                return new RenderPoint(_x, _y);
+            }
+        }
+
         public static Point FromPointF(ClassicPointF ptf, bool round = false)
         {
             int x, y;
@@ -55,6 +65,12 @@ namespace Tortoise.Shared.Drawing
         {
             return new Point(pt.X, pt.Y);
         }
+
+        public static Point FromPoint(RenderPoint pt)
+        {
+            return new Point(pt.X, pt.Y);
+        }
+
 
         //public Point(int dw);
         public Point(Size sz)
@@ -144,14 +160,19 @@ namespace Tortoise.Shared.Drawing
         }
 
 
-        
+
         //public static implicit operator PointF(Point p);
         public static explicit operator Point(ClassicPoint p)
         {
             return Point.FromPoint(p);
         }
 
-        
+        public static explicit operator Point(RenderPoint p)
+        {
+            return Point.FromPoint(p);
+        }
+
+
         /*
 
 

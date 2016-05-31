@@ -32,7 +32,8 @@ using Color = System.Drawing.Color;
 //using Tortoise.Client.Extension.System.Drawing;
 using Tortoise.Shared.Threading;
 
-using GorgonLibrary.Input;
+using Tortoise.Graphics.Input;
+
 using Tortoise.Shared.Exceptions;
 
 using Tortoise.Shared.Drawing;
@@ -467,7 +468,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         internal virtual bool OnMouseDown(MouseEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
-            if (!IsPointOver(e.Position)) return false;
+            if (!IsPointOver(e.MouseData.Position)) return false;
             return doMouseDown(e);
         }
         /// <summary>
@@ -476,7 +477,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         internal virtual bool OnMouseUp(MouseEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
-            if (!IsPointOver(e.Position)) return false;
+            if (!IsPointOver(e.MouseData.Position)) return false;
             return doMouseUp(e);
         }
         /// <summary>
@@ -485,7 +486,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         internal virtual bool OnMouseMove(MouseEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
-            if (!IsPointOver(e.Position)) return false;
+            if (!IsPointOver(e.MouseData.Position)) return false;
             return doMouseMove(e);
         }
 

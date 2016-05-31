@@ -145,7 +145,8 @@ namespace Tortoise.Client
                 _gameLogic.Graphics.Window.AvailableScreens.Add("Main Menu", mainMenu);
                 _gameLogic.Graphics.Window.ChangeToScreen("Main Menu");
 
-                Gorgon.Run(mainForm, _gameLogic.GameLoop);
+
+                _gameLoop();
 
             }
             catch (Tortoise.Shared.Exceptions.TortoiseException ex)
@@ -192,6 +193,16 @@ namespace Tortoise.Client
 
             ConsoleThread = new System.Threading.Thread(_consoleReader);
             ConsoleThread.Start();
+        }
+
+        private static void _gameLoop()
+        {
+            while (ThreadsRunning)
+            {
+                Application.DoEvents();
+                _gameLogic.Graphics.DoTick();
+                _gameLogic.Graphics.DoRender();
+            }
         }
 
 

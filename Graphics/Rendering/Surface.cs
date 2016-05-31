@@ -1,12 +1,17 @@
 ﻿using System;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Renderers;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 //using System.Drawing;
 using System.Drawing.Imaging;
 using Color = System.Drawing.Color;
+using XColor = Microsoft.Xna.Framework.Color;
+using Point = Tortoise.Shared.Drawing.Point;
+using Rectangle = Tortoise.Shared.Drawing.Rectangle;
 
 using Tortoise.Shared.Drawing;
 using Tortoise.Shared.Threading;
+using System.IO;
 
 namespace Tortoise.Graphics.Rendering
 {
@@ -17,12 +22,12 @@ namespace Tortoise.Graphics.Rendering
     public class Surface : IDisposable
     {
         public int Width, Height;
-        //GorgonLibrary.Graphics.GorgonTexture2D _texture;
-        GorgonLibrary.Graphics.GorgonRenderTarget2D _target;
+        //Texture2D _texture;
+        RenderTarget2D _target;
         private bool _can_Update;
         TGraphics _graphics;
 
-       /* public GorgonLibrary.Graphics.GorgonRenderTarget2D Target
+       /* public RenderTarget2D Target
         {
             get { return _target; }
         }*/
@@ -43,30 +48,22 @@ namespace Tortoise.Graphics.Rendering
             return result;
         }
 
-        private static GorgonLibrary.Graphics.GorgonTexture2D CreateEmptyTexture(TGraphics graphics, int width, int height)
+        private static Texture2D CreateEmptyTexture(TGraphics graphics, int width, int height)
         {
-            GorgonLibrary.Graphics.GorgonTexture2D newtexture;
-
-            newtexture = graphics.Graphics.Textures.CreateTexture(string.Format("Nondescript_Texture:_{0}x{1}", width, height),
-                width, height, BufferFormat.R8G8B8A8_UIntNormal, BufferUsage.Default);
+            Texture2D newtexture;
+            
+            newtexture = new Texture2D(graphics.GraphicsDevice, width,height, false, SurfaceFormat.Color);
 
             return newtexture;
         }
 
-        private static GorgonLibrary.Graphics.GorgonRenderTarget2D CreateEmptyTarget(TGraphics graphics, int width, int height)
+        private static RenderTarget2D CreateEmptyTarget(TGraphics graphics, int width, int height)
         {
-            GorgonLibrary.Graphics.GorgonRenderTarget2D newtexture;
+            RenderTarget2D newtarget;
 
-            newtexture = graphics.Graphics.Output.CreateRenderTarget(string.Format("Nondescript_Texture:_{0}x{1}", width, height), 
-                            new GorgonRenderTarget2DSettings  {
-                                /*DepthStencilFormat = BufferFormat.Unknown,*/
-                                Width = width,
-                                Height = height,
-                                Format = BufferFormat.R8G8B8A8_UIntNormal,
-                                /*  Multisampling = GorgonMultisampling.NoMultiSampling*/
-                            });
-
-            return newtexture;
+            newtarget = new RenderTarget2D(graphics.GraphicsDevice, width, height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
+            
+            return newtarget;
         }
 
         private Surface(TGraphics graphics, int width, int height)
@@ -87,33 +84,11 @@ namespace Tortoise.Graphics.Rendering
             if (!System.IO.File.Exists(Filename))
                 throw new System.IO.FileNotFoundException("The file could not be found!", Filename);
 
-            GorgonLibrary.IO.GorgonImageCodec Codec = null;
+            
+            _target = (RenderTarget2D)RenderTarget2D.FromStream(graphics.GraphicsDevice, new FileStream(Filename, FileMode.Open));
 
-            if (Filename.EndsWith(".png", true, System.Globalization.CultureInfo.CurrentCulture))
-                Codec = new GorgonLibrary.IO.GorgonCodecPNG();
-            if (Filename.EndsWith(".bmp", true, System.Globalization.CultureInfo.CurrentCulture))
-                Codec = new GorgonLibrary.IO.GorgonCodecBMP();
-            if (Filename.EndsWith(".jpg", true, System.Globalization.CultureInfo.CurrentCulture))
-                Codec = new GorgonLibrary.IO.GorgonCodecJPEG();
-            if (Filename.EndsWith(".jpeg", true, System.Globalization.CultureInfo.CurrentCulture))
-                Codec = new GorgonLibrary.IO.GorgonCodecJPEG();
-            if (Filename.EndsWith(".tga", true, System.Globalization.CultureInfo.CurrentCulture))
-                Codec = new GorgonLibrary.IO.GorgonCodecTGA();
-            if (Filename.EndsWith(".dds", true, System.Globalization.CultureInfo.CurrentCulture))
-                Codec = new GorgonLibrary.IO.GorgonCodecDDS();
-            if (Filename.EndsWith(".gif", true, System.Globalization.CultureInfo.CurrentCulture))
-                Codec = new GorgonLibrary.IO.GorgonCodecGIF();
-            if (Filename.EndsWith(".tif", true, System.Globalization.CultureInfo.CurrentCulture))
-                Codec = new GorgonLibrary.IO.GorgonCodecTIFF();
-
-            if (Codec == null)
-                throw new System.IO.FileLoadException("The file contains an invalid extension!", Filename);
-
-            _target = _graphics.Graphics.Textures.FromFile<GorgonRenderTarget2D>("Nondescript_Texture", Filename, Codec);
-
-
-            Width = _target.Settings.Width;
-            Height = _target.Settings.Height;
+            Width = _target.Width;
+            Height = _target.Height;
         }
 
 
@@ -135,7 +110,7 @@ namespace Tortoise.Graphics.Rendering
             if (!_can_Update)
                 throw new Tortoise.Shared.Exceptions.LogicException("Surface cannot be updated at this time!");
 
-            _graphics.Renderer2D.Drawing.Blit(Source._target, rec.ToSystemF());
+            _graphics.SpriteBatch.Draw(Source._target, rec.ToRender(), XColor.White);
         }
         public void Blit(Surface Source, Point pos)
         {
@@ -153,12 +128,14 @@ namespace Tortoise.Graphics.Rendering
             if (_can_Update)
                 throw new Tortoise.Shared.Exceptions.LogicException("Surface changes must be disabled!");
 
-            _graphics.Renderer2D.Drawing.Blit(_target, rec.ToSystemF());
+
+            _graphics.SpriteBatch.Draw(_target, rec.ToRender(),XColor.White);
         }
 
         public void BeginChanges()
         {
-            _graphics.Renderer2D.Target = _target;
+            _graphics.GraphicsDevice.SetRenderTarget(_target);
+            _graphics.SpriteBatch.Begin();
             _can_Update = true;
         }
 
@@ -175,14 +152,15 @@ namespace Tortoise.Graphics.Rendering
                 throw new Tortoise.Shared.Exceptions.LogicException("Surface cannot be updated at this time!");
             //FlushChanges();
             _can_Update = false;
-            _graphics.Renderer2D.Target = null;
+            _graphics.SpriteBatch.End();
+            _graphics.GraphicsDevice.SetRenderTarget(null);
         }
 
-        public void Fill(Color Color)
+        public void Fill(Color color)
         {
             if (!_can_Update)
                 throw new Tortoise.Shared.Exceptions.LogicException("Surface cannot be updated at this time!");
-            _graphics.Renderer2D.Clear(Color);
+            _graphics.GraphicsDevice.Clear(ToXNA(color));
             /*
 
 
@@ -196,12 +174,17 @@ namespace Tortoise.Graphics.Rendering
 
         }
 
+        private XColor ToXNA(Color color)
+        {
+            return new XColor(color.R, color.G, color.B);
+        }
+
         /// <summary>
         /// Saves a PNG file of the surface.
         /// </summary>
         public void Save(string Path)
         {
-            _target.Save(Path, new GorgonLibrary.IO.GorgonCodecPNG());
+            _target.SaveAsPng(new FileStream(Path, FileMode.Create), Width,Height);
         }
 
         public void Dispose()

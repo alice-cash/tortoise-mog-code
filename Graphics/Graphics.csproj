@@ -34,27 +34,29 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\C5.2.3.0.1\lib\net40\C5.dll</HintPath>
     </Reference>
-    <Reference Include="Gorgon.Common">
-      <HintPath>..\Build Libraries\Gorgon.Common.dll</HintPath>
+    <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="Gorgon.Graphics">
-      <HintPath>..\Build Libraries\Gorgon.Graphics.dll</HintPath>
-    </Reference>
-    <Reference Include="Gorgon.Input">
-      <HintPath>..\Build Libraries\Gorgon.Input.dll</HintPath>
-    </Reference>
-    <Reference Include="Gorgon.MemoryAccess">
-      <HintPath>..\Build Libraries\Gorgon.MemoryAccess.dll</HintPath>
-    </Reference>
-    <Reference Include="Gorgon.Renderer.2D">
-      <HintPath>..\Build Libraries\Gorgon.Renderer.2D.dll</HintPath>
+    <Reference Include="MonoGame.Framework.Net, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.Net.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX, Version=2.5.0.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Build Libraries\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SlimMath">
-      <HintPath>..\Build Libraries\SlimMath.dll</HintPath>
+    <Reference Include="SharpDX.Direct2D1, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D9, Version=2.6.3.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -67,8 +69,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GorgonManager\GorgonPluginLoader.cs" />
-    <Compile Include="Graphics.cs" />
+    <Compile Include="Input\InputState.cs" />
+    <Compile Include="Input\TInputManager.cs" />
+    <Compile Include="Input\TKeyState.cs" />
+    <Compile Include="Input\TMouseState.cs" />
+    <Compile Include="TGame.cs" />
+    <Compile Include="TGraphics.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -78,7 +84,6 @@
     <Compile Include="Rendering\Delegates.cs" />
     <Compile Include="Rendering\FontInfo.cs" />
     <Compile Include="Rendering\GfxResource.Designer.cs" />
-    <Compile Include="Rendering\Graphics.cs" />
     <Compile Include="Rendering\GUI\Button.cs" />
     <Compile Include="Rendering\GUI\Container.cs" />
     <Compile Include="Rendering\GUI\Control.cs" />
@@ -94,8 +99,8 @@
     <Compile Include="Rendering\GUI\TextBox.cs" />
     <Compile Include="Rendering\GUI\Window.cs" />
     <Compile Include="Rendering\IRender.cs" />
-    <Compile Include="Rendering\KeyEventArgs.cs" />
-    <Compile Include="Rendering\MouseEventArgs.cs" />
+    <Compile Include="Input\KeyEventArgs.cs" />
+    <Compile Include="Input\MouseEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\Screen.cs" />
     <Compile Include="Rendering\Surface.cs" />
@@ -116,6 +121,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\Fonts\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
