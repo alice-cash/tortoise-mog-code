@@ -41,6 +41,10 @@
     <Reference Include="C5">
       <HintPath>..\packages\C5.2.3.0.1\lib\net40\C5.dll</HintPath>
     </Reference>
+    <Reference Include="MonoGame.Extended, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoGame.Extended.0.5.149\lib\MonoGame.Extended.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
@@ -54,7 +58,7 @@
     <Compile Include="Collection\LimitedList.cs" />
     <Compile Include="Collection\SortedList.cs" />
     <Compile Include="Diagnostics\TortoiseConsoleTraceListiner.cs" />
-    <Compile Include="Drawing\Point2D.cs" />
+    <Compile Include="Drawing\Point.cs" />
     <Compile Include="Drawing\Rectangle.cs" />
     <Compile Include="Drawing\Size.cs" />
     <Compile Include="Exceptions\ConsoleException.cs" />

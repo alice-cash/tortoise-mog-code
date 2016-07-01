@@ -34,6 +34,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\C5.2.3.0.1\lib\net40\C5.dll</HintPath>
     </Reference>
+    <Reference Include="MonoGame.Extended">
+      <HintPath>..\packages\MonoGame.Extended.0.5.149\lib\MonoGame.Extended.dll</HintPath>
+    </Reference>
     <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
@@ -73,6 +76,10 @@
     <Compile Include="Input\TInputManager.cs" />
     <Compile Include="Input\TKeyState.cs" />
     <Compile Include="Input\TMouseState.cs" />
+    <Compile Include="Rendering\GUI\KeyPressed.cs" />
+    <Compile Include="Rendering\Primitives\Box.cs" />
+    <Compile Include="Rendering\Primitives\Line.cs" />
+    <Compile Include="Rendering\Primitives\PrimitiveBase.cs" />
     <Compile Include="TGame.cs" />
     <Compile Include="TGraphics.cs" />
     <Compile Include="MainForm.cs">
@@ -90,7 +97,6 @@
     <Compile Include="Rendering\GUI\ControlContainer.cs" />
     <Compile Include="Rendering\GUI\ControlSorter.cs" />
     <Compile Include="Rendering\GUI\ImageDrawMode.cs" />
-    <Compile Include="Rendering\GUI\KeyPressed.cs" />
     <Compile Include="Rendering\GUI\Label.cs" />
     <Compile Include="Rendering\GUI\MovedEventArgs.cs" />
     <Compile Include="Rendering\GUI\Picturebox.cs" />
@@ -114,17 +120,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Rendering\GUI\Tortoise.sln" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Rendering\GfxResource.resx" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Content\Content.mgcb" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Content\Fonts\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

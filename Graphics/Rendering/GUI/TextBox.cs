@@ -33,9 +33,13 @@ using Color = System.Drawing.Color;
 using Tortoise.Shared.Drawing;
 
 using Tortoise.Shared;
-using GorgonLibrary.Input;
-using GorgonLibrary.Renderers;
+using Tortoise.Graphics.Input;
 using System.Collections;
+using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
+using XColor = Microsoft.Xna.Framework.Color;
+using MonoGame.Extended.BitmapFonts;
 
 namespace Tortoise.Graphics.Rendering.GUI
 {
@@ -46,7 +50,7 @@ namespace Tortoise.Graphics.Rendering.GUI
     {
         private struct KeysLastPressed
         {
-            public KeyboardKeys Key { get; set; }
+            public Keys Key { get; set; }
             //public int TimeSinceLast;
         }
 
@@ -54,8 +58,8 @@ namespace Tortoise.Graphics.Rendering.GUI
         private string _visibleText = "";
         private Size _textSize;
         private int _markerPosition = 0;
-       // private FontInfo _fontInfo;
-        private GorgonText _gorgonText;
+        private FontInfo _fontInfo;
+        //private GorgonText _gorgonText;
         private char _passwordChar = '*';
         private bool _usePasswordChar = false;
         private int _cursorPosition;
@@ -145,8 +149,9 @@ namespace Tortoise.Graphics.Rendering.GUI
         public TextBox(TGraphics graphics, string name, Rectangle area)
             : base(graphics, name, area)
 		{
-            _gorgonText = _graphics.Renderer2D.Renderables.CreateText(name + "_TextRenderer");
-            //_fontInfo = FontInfo.GetInstance(10, FontTypes.Sans_Mono);
+            
+            //_gorgonText = _graphics.Renderer2D.Renderables.CreateText(name + "_TextRenderer");
+            _fontInfo = FontInfo.GetInstance(graphics, 22, FontTypes.Sans);
             _flasherTimer = new Timer();
 			
 		    FocusChanged += delegate
@@ -168,8 +173,9 @@ namespace Tortoise.Graphics.Rendering.GUI
                 _visibleText = sb.ToString();
             }
 
-            _textSize.Width = (int)_gorgonText.Size.X;
-            _textSize.Height = (int)_gorgonText.Size.Y;
+            Vector2 stringSize = _fontInfo.Bitmap.MeasureString(_visibleText);
+            _textSize.Width = (int)stringSize.X;
+            _textSize.Height = (int)stringSize.Y;
 
             /*
             if (_visibleText == "")
@@ -189,9 +195,8 @@ namespace Tortoise.Graphics.Rendering.GUI
                     _redrawPreRenderd = true;
                 }
 
-
-                _gorgonText.Text = _visibleText.Substring(0, _cursorPosition);
-                _markerPosition = (int)_gorgonText.Size.X;
+                stringSize = _fontInfo.Bitmap.MeasureString(_visibleText.Substring(0, _cursorPosition));
+                _markerPosition = (int)stringSize.X;
 
                 
             }
@@ -226,7 +231,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         internal override bool OnMouseUp(MouseEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
-            if (IsPointOver(e.Position))
+            if (IsPointOver(e.MouseData.Position))
             {
                 this.HasFocus = true;
                 doMouseUp(e);
@@ -246,7 +251,7 @@ namespace Tortoise.Graphics.Rendering.GUI
             if (!HasFocus) return false;
             //we base all work on the up part.
             
-            HandleKey(e.EventData.Key);
+            HandleKey(e.EventData.PressedKeys);
             _flasherTimer.Reset();
             _showMarker = true;
 
@@ -257,7 +262,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         internal override bool OnKeyboardPress(KeyEventArgs e)
         {
             if (!HasFocus) return false;
-            HandleKeyPress(e.EventData.Key);
+            HandleKeyPress(e.EventData.PressedKeys);
             _flasherTimer.Reset();
             _showMarker = true;
 
@@ -265,65 +270,72 @@ namespace Tortoise.Graphics.Rendering.GUI
             return true;
         }
 
-        private void HandleKeyPress(KeyboardKeys key)
+        private void HandleKeyPress(IEnumerable<Keys> keyData)
         {
-  
-                    //TODO: Messy, make more readable.
-                    
 
-                    //Check for any KeyWasPressed events
-                    //Then check if Cancel was set to true
-                    //Useful for sub-classes with special input checkers
-                    if (CancelCharacterInput != null)
-                    {
-                        KeyPressed kp = new KeyPressed();
-                        kp.Key = key;
-                        kp.Cancel = false;
-                        CancelCharacterInput(this, kp);
-                        if (kp.Cancel)
-                            return;
-                    }
+            foreach (Keys key in keyData)
+            {
+                //TODO: Messy, make more readable.
 
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append(Text.Substring(0, _cursorPosition));
-                    sb.Append(key);
-                    sb.Append(Text.Substring(_cursorPosition));
-                    _cursorPosition += 1;
-                    Text = sb.ToString();
 
+                //Check for any KeyWasPressed events
+                //Then check if Cancel was set to true
+                //Useful for sub-classes with special input checkers
+                if (CancelCharacterInput != null)
+                {
+                    KeyPressed kp = new KeyPressed();
+                    kp.Key = key;
+                    kp.Cancel = false;
+                    CancelCharacterInput(this, kp);
+                    if (kp.Cancel)
+                        return;
+                }
+
+                StringBuilder sb = new StringBuilder();
+                sb.Append(Text.Substring(0, _cursorPosition));
+                sb.Append(key);
+                sb.Append(Text.Substring(_cursorPosition));
+                _cursorPosition += 1;
+                Text = sb.ToString();
+            }
         
         }
 
-        private void HandleKey(KeyboardKeys key)
+        private void HandleKey(IEnumerable<Keys> keyData)
         {
+            foreach (Keys key in keyData)
+                HandleKey(key);
+        }
 
+        private void HandleKey(Keys key)
+        {
             switch (key)
             {
-                case (KeyboardKeys.Back):
+                case (Keys.Back):
                     if (_cursorPosition > 0)
                     {
                         Text = Text.Remove(_cursorPosition - 1, 1);
                         //_cursorPosition -= 1;
                     }
                     break;
-                case (KeyboardKeys.Delete):
+                case (Keys.Delete):
 
                     if (_cursorPosition < Text.Length)
                     {
                         Text = Text.Remove(_cursorPosition, 1);
                     }
                     break;
-                case (KeyboardKeys.End):
+                case (Keys.End):
                     _cursorPosition = Text.Length;
                     break;
-                case (KeyboardKeys.Home):
+                case (Keys.Home):
                     _cursorPosition = 0;
                     break;
-                case (KeyboardKeys.Left):
+                case (Keys.Left):
                     if (_cursorPosition > 0)
                         _cursorPosition -= 1;
                     break;
-                case (KeyboardKeys.Right):
+                case (Keys.Right):
                     if (_cursorPosition < Text.Length)
                         _cursorPosition += 1;
                     break;
@@ -344,22 +356,16 @@ namespace Tortoise.Graphics.Rendering.GUI
             _preRenderdSurface.BeginChanges();
             _preRenderdSurface.Fill(_backgroundColor);
 
-            _gorgonText.Text = _visibleText;
-            _gorgonText.Color = Color.Black;
 
-            _gorgonText.Draw();
+            _graphics.SpriteBatch.DrawString(_fontInfo.Bitmap, _text, new Vector2(0, 0), XColor.Black);
 
 
             if (_showMarker && HasFocus)
             {
-                SlimMath.Vector2 drawPos = new SlimMath.Vector2();
+                Vector2 drawPos = new Vector2();
                 drawPos.X= _markerPosition;
-                _gorgonText.Position = drawPos;
-                _gorgonText.Color = Color.Black;
-                _gorgonText.Text = "|";
-                _gorgonText.Draw();
+                _graphics.SpriteBatch.DrawString(_fontInfo.Bitmap, "|", drawPos, XColor.Black);
             }
-
 
 
             _preRenderdSurface.EndChanges();

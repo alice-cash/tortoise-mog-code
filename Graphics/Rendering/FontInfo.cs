@@ -26,7 +26,9 @@
  * or implied, of Matthew Cash.
  * */
 
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.BitmapFonts;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -78,7 +80,7 @@ namespace Tortoise.Graphics.Rendering
         public FontTypes FontName { get; private set; }
         public System.Drawing.Font Font { get; private set; }
 
-        public TextRenderer GFont { get; private set; }
+        public BitmapFont Bitmap { get; private set; }
 
         /// <summary>
         /// Placeholder to eat it!
@@ -87,17 +89,20 @@ namespace Tortoise.Graphics.Rendering
         {
           
         }
+
         private FontInfo(TGraphics graphics, FontTypes type, float size)
         {
             _graphics = graphics;
             FontSize = size;
             FontName = type;
             Font = new System.Drawing.Font(GetName(type),size);
-            _graphics.SpriteBatch.Dr
-            GFont = _graphics.SpriteBatch..Fonts.CreateFont(Font.Name, Font, GorgonLibrary.Graphics.FontAntiAliasMode.AntiAlias);
+            Bitmap = graphics.Content.Load<BitmapFont>(string.Format("{0}-{1}", GetName(type), size));
         }
 
+        private void test()
+        {
 
+        }
     }
 
 }

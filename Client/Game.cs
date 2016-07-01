@@ -14,14 +14,6 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-using GorgonLibrary;
-
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
 
 
 using Tortoise.Graphics.Rendering;
@@ -49,7 +41,7 @@ namespace Tortoise.Client
         public bool GameLoop()
         {
 
-            return Graphics.DoRenderLoop();
+            //return Graphics.DoRenderLoop();
             //GorgonRectangle tt = Program.GameLogic.Renderer2D.Renderables.CreateRectangle("TEST",
             //    new Rectangle(1,1,100,100),Color.Gray, true);
 

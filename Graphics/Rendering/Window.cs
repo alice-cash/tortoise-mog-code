@@ -42,8 +42,6 @@ using Microsoft.Xna.Framework.Input;
 
 using Tortoise.Graphics;
 
-using GorgonLibrary.Input;
-using GorgonLibrary.Graphics;
 using Tortoise.Graphics.Input;
 
 //namespace Tortoise.Graphics.Rendering
@@ -167,7 +165,7 @@ namespace Tortoise.Graphics.Rendering
             //MainSurface = GenerateSurface();
 
 
-            DebugFont = FontInfo.GetInstance(Graphics, 10, FontTypes.Sans_Mono);
+            //DebugFont = FontInfo.GetInstance(Graphics, 10, FontTypes.Sans_Mono);
 
             TMouseState mouse = Graphics.InputManager.MouseStateManager;
             TKeyState keyboard = Graphics.InputManager.KeyStateManager;

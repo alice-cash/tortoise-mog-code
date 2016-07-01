@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Color = System.Drawing.Color;
 
 using Tortoise.Shared.Drawing;
+using Tortoise.Graphics.Input;
 
 namespace Tortoise.Graphics.Rendering.GUI
 {
@@ -35,7 +36,7 @@ namespace Tortoise.Graphics.Rendering.GUI
 
         internal override bool OnMouseDown(MouseEventArgs e)
         {
-            int Y = (e.Position - RealLocation).Y;
+            int Y = (e.MouseData.Position - RealLocation).Y;
 
 
             return base.OnMouseDown(e);
@@ -59,9 +60,7 @@ namespace Tortoise.Graphics.Rendering.GUI
 
             _preRenderdSurface.BeginChanges();
 
-            _graphics.Renderer2D.Drawing.DrawRectangle(new Rectangle(0, 0, Width, 25).ToSystemF(), Color.Gray);
-
-
+            Primitives.Box.DrawBox(_graphics, new Rectangle(0, 0, Width, 25), Color.Gray);
         }
     }
 }

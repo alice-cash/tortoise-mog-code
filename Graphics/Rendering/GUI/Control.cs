@@ -38,6 +38,9 @@ using Tortoise.Shared.Exceptions;
 
 using Tortoise.Shared.Drawing;
 
+using XColor = Microsoft.Xna.Framework.Color;
+
+
 
 namespace Tortoise.Graphics.Rendering.GUI
 {
@@ -461,6 +464,15 @@ namespace Tortoise.Graphics.Rendering.GUI
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        protected virtual XColor _toXNAColor(Color color)
+        {
+            return new XColor(color.R, color.G, color.B, color.A);
+        }
 
         /// <summary>
         /// A MouseButton Event, returns true if the event is used, and false if it isn't.

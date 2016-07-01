@@ -43,13 +43,6 @@ using System.Text;
 //using System.Windows.Forms;
 using Application = System.Windows.Forms.Application;
 
-using GorgonLibrary;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
-using SlimMath;
 
 
 using System.Runtime.InteropServices;
@@ -116,6 +109,7 @@ namespace Tortoise.Client
 #if DEBUG
             _consoleVisible = true;
 #endif
+            ThreadsRunning = true;
 
             foreach (string arg in args)
                 if (string.Compare(arg, "-c", true) == 0 ||
@@ -145,6 +139,8 @@ namespace Tortoise.Client
                 _gameLogic.Graphics.Window.AvailableScreens.Add("Main Menu", mainMenu);
                 _gameLogic.Graphics.Window.ChangeToScreen("Main Menu");
 
+
+                _gameLogic.Graphics.Control.Show();
 
                 _gameLoop();
 

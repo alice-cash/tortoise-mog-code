@@ -43,10 +43,11 @@ using Microsoft.Xna.Framework.Input;
 
 using Tortoise.Shared.Drawing;
 using System.Windows.Forms;
+using Microsoft.Xna.Framework.Content;
 
 namespace Tortoise.Graphics
 {
-    public class TGraphics
+    public class TGraphics : IGraphicsDeviceService
     {
 
         /// <summary>
@@ -56,7 +57,9 @@ namespace Tortoise.Graphics
 
         PresentationParameters parameters;
 
-        GraphicsDeviceManager _graphics;
+        GameServiceContainer _services;
+        public ContentManager Content { get; private set; }
+
         GraphicsDevice _graphicsDevice;
         SpriteBatch _spriteBatch;
 
@@ -65,12 +68,26 @@ namespace Tortoise.Graphics
         public Size ScreenSize { get { return Size.FromSystem(_control.Size); } }
 
         private Window _window;
+
+        public event EventHandler<EventArgs> DeviceCreated;
+        public event EventHandler<EventArgs> DeviceDisposing;
+        public event EventHandler<EventArgs> DeviceReset;
+        public event EventHandler<EventArgs> DeviceResetting;
+
         public Window Window { get { return _window; } }
 
         public TInputManager InputManager { get; private set; }
 
         internal GraphicsDevice GraphicsDevice { get { return _graphicsDevice; } }
         internal SpriteBatch SpriteBatch { get { return _spriteBatch; } }
+
+        GraphicsDevice IGraphicsDeviceService.GraphicsDevice
+        {
+            get
+            {
+                return _graphicsDevice;
+            }
+        }
 
         public static TGraphics CreateGraphics(System.Windows.Forms.Control control)
         {
@@ -93,6 +110,10 @@ namespace Tortoise.Graphics
 
             this._window = new Window(this);
 
+            _services = new GameServiceContainer();
+
+            Content = new ContentManager(_services, "Content");
+            
             InputManager = new TInputManager();
 
             parameters = new PresentationParameters();
@@ -111,7 +132,13 @@ namespace Tortoise.Graphics
 
             _spriteBatch = new SpriteBatch(_graphicsDevice);
 
+            _services.AddService(_graphicsDevice);
+            _services.AddService(_spriteBatch);
+            _services.AddService(typeof(IGraphicsDeviceService), this);
+
+
             this._window.Initialize();
+            OnDeviceCreated(EventArgs.Empty);
         }
 
         public bool DoTick()
@@ -125,7 +152,7 @@ namespace Tortoise.Graphics
         {
             _spriteBatch.Begin();
             this._window.Render();
-            _spriteBatch.End();
+            _spriteBatch.End ();
             this._flush();
             return true;
         }
@@ -147,6 +174,29 @@ namespace Tortoise.Graphics
             }
         }
 
+        internal void OnDeviceCreated(EventArgs e)
+        {
+            if (DeviceCreated != null)
+                DeviceCreated(this, e);
+        }
+
+        internal void OnDeviceDisposing(EventArgs e)
+        {
+            if (DeviceDisposing != null)
+                DeviceDisposing(this, e);
+        }
+
+        internal void OnDeviceResetting(EventArgs e)
+        {
+            if (DeviceResetting != null)
+                DeviceResetting(this, e);
+        }
+
+        internal void OnDeviceReset(EventArgs e)
+        {
+            if (DeviceReset != null)
+                DeviceReset(this, e);
+        }
 
     }
 }

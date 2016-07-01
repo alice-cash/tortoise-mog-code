@@ -31,7 +31,9 @@ using System;
 
 using Color = System.Drawing.Color;
 using Tortoise.Shared.Drawing;
-
+using Tortoise.Graphics.Input;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
+using MonoGame.Extended.BitmapFonts;
 
 namespace Tortoise.Graphics.Rendering.GUI
 {
@@ -46,10 +48,12 @@ namespace Tortoise.Graphics.Rendering.GUI
         private bool _useDownTexture;
         private bool _useOverTexture;
 
+
+
         internal override bool OnMouseMove(MouseEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
-            if (!IsPointOver(e.Position))
+            if (!IsPointOver(e.MouseData.Position))
             {
                 _redrawPreRenderd = _useOverTexture == true || _useDownTexture == true;
                 _useOverTexture = false;
@@ -65,7 +69,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         internal override bool OnMouseDown(MouseEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
-            if (!IsPointOver(e.Position)) return false;
+            if (!IsPointOver(e.MouseData.Position)) return false;
 
             _redrawPreRenderd = _useDownTexture == false || _useOverTexture == true;
             _useOverTexture = false;
@@ -76,7 +80,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         internal override bool OnMouseUp(MouseEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
-            if (!IsPointOver(e.Position)) return false;
+            if (!IsPointOver(e.MouseData.Position)) return false;
             _redrawPreRenderd = _useOverTexture == true || _useDownTexture == true;
             _useOverTexture = false;
             _useDownTexture = false;
@@ -128,15 +132,11 @@ namespace Tortoise.Graphics.Rendering.GUI
                 _preRenderdSurface.Blit(MouseDownTexture);
 
 
-            _gorgonText.Text = _text;
-            _gorgonText.Color = TextColor;
-
-
             if (_backgroundImage != null)
                 _preRenderdSurface.Blit(_backgroundImage);
 
+            _graphics.SpriteBatch.DrawString(_fontInfo.Bitmap, _text, new Vector2(0, 0), _toXNAColor(TextColor));
 
-            _gorgonText.Draw();
 
             _preRenderdSurface.EndChanges();
 

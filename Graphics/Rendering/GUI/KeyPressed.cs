@@ -25,8 +25,9 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of Matthew Cash.
  */
+using Microsoft.Xna.Framework.Input;
 using System;
-using GorgonLibrary.Input;
+using Tortoise.Graphics.Input;
 
 namespace Tortoise.Graphics.Rendering.GUI
 {
@@ -35,7 +36,7 @@ namespace Tortoise.Graphics.Rendering.GUI
 	/// </summary>
 	public class KeyPressed: EventArgs
 	{
-		public KeyboardKeys Key{get;set;}
+		public Keys Key{get;set;}
 		public bool Cancel{get;set;}
 		
 	}

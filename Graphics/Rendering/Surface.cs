@@ -27,10 +27,12 @@ namespace Tortoise.Graphics.Rendering
         private bool _can_Update;
         TGraphics _graphics;
 
-       /* public RenderTarget2D Target
-        {
-            get { return _target; }
-        }*/
+        /* public RenderTarget2D Target
+         {
+             get { return _target; }
+         }*/
+
+        internal TGraphics Graphics { get { return _graphics; } }
 
         public static Surface CreateBlankSurface(TGraphics graphics, int Width, int Height)
         {
@@ -51,8 +53,8 @@ namespace Tortoise.Graphics.Rendering
         private static Texture2D CreateEmptyTexture(TGraphics graphics, int width, int height)
         {
             Texture2D newtexture;
-            
-            newtexture = new Texture2D(graphics.GraphicsDevice, width,height, false, SurfaceFormat.Color);
+
+            newtexture = new Texture2D(graphics.GraphicsDevice, width, height, false, SurfaceFormat.Color);
 
             return newtexture;
         }
@@ -62,7 +64,7 @@ namespace Tortoise.Graphics.Rendering
             RenderTarget2D newtarget;
 
             newtarget = new RenderTarget2D(graphics.GraphicsDevice, width, height, false, SurfaceFormat.Color, DepthFormat.Depth24Stencil8);
-            
+
             return newtarget;
         }
 
@@ -84,7 +86,7 @@ namespace Tortoise.Graphics.Rendering
             if (!System.IO.File.Exists(Filename))
                 throw new System.IO.FileNotFoundException("The file could not be found!", Filename);
 
-            
+
             _target = (RenderTarget2D)RenderTarget2D.FromStream(graphics.GraphicsDevice, new FileStream(Filename, FileMode.Open));
 
             Width = _target.Width;
@@ -129,7 +131,17 @@ namespace Tortoise.Graphics.Rendering
                 throw new Tortoise.Shared.Exceptions.LogicException("Surface changes must be disabled!");
 
 
-            _graphics.SpriteBatch.Draw(_target, rec.ToRender(),XColor.White);
+            _graphics.SpriteBatch.Draw(_target, rec.ToRender(), XColor.White);
+        }
+
+        public void Draw(Point point, float angle, Point origin, Point scale, XColor color, float layer = 0, SpriteEffects effects = SpriteEffects.None)
+        {
+            _graphics.SpriteBatch.Draw(_target, point.ToVector2, null, color, angle, origin.ToVector2, scale.ToVector2, effects, layer);
+        }
+
+        public void Draw(Point point, float angle, Point origin, Point scale, Color color, float layer = 0, SpriteEffects effects = SpriteEffects.None)
+        {
+            Draw(point, angle, origin, scale, ToXNAColor(color), layer , effects);
         }
 
         public void BeginChanges()
@@ -160,7 +172,7 @@ namespace Tortoise.Graphics.Rendering
         {
             if (!_can_Update)
                 throw new Tortoise.Shared.Exceptions.LogicException("Surface cannot be updated at this time!");
-            _graphics.GraphicsDevice.Clear(ToXNA(color));
+            _graphics.GraphicsDevice.Clear(ToXNAColor(color));
             /*
 
 
@@ -174,7 +186,7 @@ namespace Tortoise.Graphics.Rendering
 
         }
 
-        private XColor ToXNA(Color color)
+        private XColor ToXNAColor(Color color)
         {
             return new XColor(color.R, color.G, color.B);
         }
@@ -184,7 +196,7 @@ namespace Tortoise.Graphics.Rendering
         /// </summary>
         public void Save(string Path)
         {
-            _target.SaveAsPng(new FileStream(Path, FileMode.Create), Width,Height);
+            _target.SaveAsPng(new FileStream(Path, FileMode.Create), Width, Height);
         }
 
         public void Dispose()

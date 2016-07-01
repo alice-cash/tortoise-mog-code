@@ -29,12 +29,15 @@
 using System;
 using System.Runtime.CompilerServices;
 //using System.Drawing;
-using GorgonLibrary.Renderers;
-using GorgonLibrary.Graphics;
+using Tortoise.Graphics.Input;
+
 
 using Tortoise.Shared.Exceptions;
 using Tortoise.Shared.Drawing;
 using Color = System.Drawing.Color;
+using XColor = Microsoft.Xna.Framework.Color;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
+using MonoGame.Extended.BitmapFonts;
 
 namespace Tortoise.Graphics.Rendering.GUI
 {
@@ -47,7 +50,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         protected FontInfo _fontInfo;
         protected TextAlignement _align;
         protected Color _textColor;
-        protected GorgonText _gorgonText;
+        //protected GorgonText _gorgonText;
 
         public TextAlignement TextAlignement
         {
@@ -89,12 +92,12 @@ namespace Tortoise.Graphics.Rendering.GUI
 
 
         public Label(TGraphics graphics, string name, string text, int x, int y, int width, int height)
-            : this(graphics, name, text, new Rectangle(x, y, width, height), FontInfo.GetInstance(graphics, 12, FontTypes.Sans))
+            : this(graphics, name, text, new Rectangle(x, y, width, height), FontInfo.GetInstance(graphics, 22, FontTypes.Sans))
         {
 
         }
         public Label(TGraphics graphics, string name, string text, Point location, Size size)
-            : this(graphics, name, text, new Rectangle(location, size), FontInfo.GetInstance(graphics, 12, FontTypes.Sans))
+            : this(graphics, name, text, new Rectangle(location, size), FontInfo.GetInstance(graphics, 22, FontTypes.Sans))
         {
 
         }
@@ -113,7 +116,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         {
             Text = text;
             _fontInfo = fontInfo;
-            _gorgonText = _graphics.Renderer2D.Renderables.CreateText(name + "_label", fontInfo.GFont, text);
+            //_gorgonText = _graphics.Renderer2D.Renderables.CreateText(name + "_label", fontInfo.GFont, text);
         }
 
         int test = 0;
@@ -126,22 +129,16 @@ namespace Tortoise.Graphics.Rendering.GUI
 
             _preRenderdSurface.BeginChanges();
 
-            _graphics.Renderer2D.Clear(Color.Transparent);
+            _preRenderdSurface.Fill(Color.Transparent);
 
-            _gorgonText.Text = _text;
-            _gorgonText.Color = Color.Black;
-            _gorgonText.Position = new SlimMath.Vector2(0, 0);
-
-            _gorgonText.Draw();
-
-
+            _graphics.SpriteBatch.DrawString(_fontInfo.Bitmap, _text, new Vector2(0, 0), XColor.Black);
 
             _preRenderdSurface.EndChanges();
 
 
 
             return;
-
+/*
             //Required for thread enforcement 
             base.Redraw_PreRenderd();
 
@@ -169,7 +166,7 @@ namespace Tortoise.Graphics.Rendering.GUI
             _preRenderdSurface.Save(@"C:\testing\debug" + (test++).ToString() + ".png");
 
 
-
+    */
 
 
 

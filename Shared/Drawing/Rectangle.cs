@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ClassicRectangle = System.Drawing.Rectangle;
 using ClassicRectangleF = System.Drawing.RectangleF;
 using RenderRectangle = Microsoft.Xna.Framework.Rectangle;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace Tortoise.Shared.Drawing
 {
@@ -22,6 +23,14 @@ namespace Tortoise.Shared.Drawing
 
 
         public Rectangle(Point location, Size size) : this(location.X, location.Y, size.Width, size.Height) { }
+
+        public Rectangle(Point p1, Point p2) {
+            X = min(p1.X, p2.X);
+            Y = min(p1.Y, p2.Y);
+            Width = abs(p1.X - p2.X);
+            Height = abs(p1.Y - p2.Y);
+        }
+
 
         public Rectangle(int x, int y, int width, int height) : this()
         {
@@ -167,6 +176,11 @@ namespace Tortoise.Shared.Drawing
             return a < b ? b : a;
         }
 
+        private static int abs(int i)
+        {
+            return i < 0 ? i * -1 : i;
+        }
+
         public bool IntersectsWith(Rectangle rect)
         {
             return this == Empty ? false : Intersect(this, rect) != Empty;
@@ -199,6 +213,7 @@ namespace Tortoise.Shared.Drawing
 
 
         //public static Rectangle Union(Rectangle a, Rectangle b);
+
 
     }
 }
