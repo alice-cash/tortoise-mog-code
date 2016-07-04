@@ -37,7 +37,7 @@ using Tortoise.Shared.Drawing;
 using Color = System.Drawing.Color;
 using XColor = Microsoft.Xna.Framework.Color;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
-using MonoGame.Extended.BitmapFonts;
+//using MonoGame.Extended.BitmapFonts;
 
 namespace Tortoise.Graphics.Rendering.GUI
 {
@@ -47,7 +47,7 @@ namespace Tortoise.Graphics.Rendering.GUI
     public class Label : Control
     {
         protected string _text;
-        protected FontInfo _fontInfo;
+        protected FontManager _fontInfo;
         protected TextAlignement _align;
         protected Color _textColor;
         //protected GorgonText _gorgonText;
@@ -92,30 +92,31 @@ namespace Tortoise.Graphics.Rendering.GUI
 
 
         public Label(TGraphics graphics, string name, string text, int x, int y, int width, int height)
-            : this(graphics, name, text, new Rectangle(x, y, width, height), FontInfo.GetInstance(graphics, 22, FontTypes.Sans))
+            : this(graphics, name, text, new Rectangle(x, y, width, height), FontManager.GetInstance(graphics, 18, FontTypes.Sans))
         {
 
         }
         public Label(TGraphics graphics, string name, string text, Point location, Size size)
-            : this(graphics, name, text, new Rectangle(location, size), FontInfo.GetInstance(graphics, 22, FontTypes.Sans))
+            : this(graphics, name, text, new Rectangle(location, size), FontManager.GetInstance(graphics, 18, FontTypes.Sans))
         {
 
         }
-        public Label(TGraphics graphics, string name, string text, int x, int y, int width, int height, FontInfo fontInfo)
+        public Label(TGraphics graphics, string name, string text, int x, int y, int width, int height, FontManager fontInfo)
             : this(graphics, name, text, new Rectangle(x, y, width, height), fontInfo)
         {
 
         }
-        public Label(TGraphics graphics, string name, string text, Point location, Size size, FontInfo fontInfo)
+        public Label(TGraphics graphics, string name, string text, Point location, Size size, FontManager fontInfo)
             : this(graphics, name, text, new Rectangle(location, size), fontInfo)
         {
 
         }
-        public Label(TGraphics graphics, string name, string text, Rectangle area, FontInfo fontInfo)
+        public Label(TGraphics graphics, string name, string text, Rectangle area, FontManager fontInfo)
             : base(graphics, name, area)
         {
             Text = text;
             _fontInfo = fontInfo;
+            _textColor = Color.Black;
             //_gorgonText = _graphics.Renderer2D.Renderables.CreateText(name + "_label", fontInfo.GFont, text);
         }
 
@@ -131,7 +132,8 @@ namespace Tortoise.Graphics.Rendering.GUI
 
             _preRenderdSurface.Fill(Color.Transparent);
 
-            _graphics.SpriteBatch.DrawString(_fontInfo.Bitmap, _text, new Vector2(0, 0), XColor.Black);
+            //_graphics.SpriteBatch.DrawString(_fontInfo.Bitmap, _text, new Vector2(0, 0), XColor.Black);
+            FontManager.DrawString(_fontInfo, _text, new Point(0, 0), TextColor);
 
             _preRenderdSurface.EndChanges();
 

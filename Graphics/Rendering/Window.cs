@@ -43,6 +43,8 @@ using Microsoft.Xna.Framework.Input;
 using Tortoise.Graphics;
 
 using Tortoise.Graphics.Input;
+using Color = System.Drawing.Color;
+using Point = Tortoise.Shared.Drawing.Point;
 
 //namespace Tortoise.Graphics.Rendering
 //{
@@ -113,7 +115,7 @@ namespace Tortoise.Graphics.Rendering
         Timer TotalTimer;
         LimitedList<double> lastFrameTimes;
 
-        FontInfo DebugFont;
+        FontManager DebugFont;
 
         //private Surface MainSurface;
 
@@ -165,7 +167,7 @@ namespace Tortoise.Graphics.Rendering
             //MainSurface = GenerateSurface();
 
 
-            //DebugFont = FontInfo.GetInstance(Graphics, 10, FontTypes.Sans_Mono);
+            DebugFont = FontManager.GetInstance(Graphics, 12, FontTypes.Sans);
 
             TMouseState mouse = Graphics.InputManager.MouseStateManager;
             TKeyState keyboard = Graphics.InputManager.KeyStateManager;
@@ -298,10 +300,10 @@ namespace Tortoise.Graphics.Rendering
 
 
 
-            // if (TConsole.GetValue("gf_ShowFPS").Value == "1")
-            // {
-            //     Video.Screen.Blit(DebugFont.Font.Render(tickEventData.FPS.ToString("f2") + " fps - " + tickEventData.AverageFrameTime.ToString("f2") + " ms", Color.Red), new Point(10, 10));
-            //}
+            if (TConsole.GetValue("gf_ShowFPS").Value == "1")
+            {
+                FontManager.DrawString(DebugFont, tickEventData.FPS.ToString("f2") + " fps - " + tickEventData.AverageFrameTime.ToString("f2") + " ms", new Point(10, 10), Color.Red);
+            }
 
             //Video.Screen.Update(); // (updateAreas);
 

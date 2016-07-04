@@ -110,6 +110,8 @@ namespace Tortoise.Graphics
 
             this._window = new Window(this);
 
+            
+
             _services = new GameServiceContainer();
 
             Content = new ContentManager(_services, "Content");

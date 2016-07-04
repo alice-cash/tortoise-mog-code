@@ -28,10 +28,13 @@
 
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
+//using MonoGame.Extended.BitmapFonts;
 using System;
 using System.Collections.Generic;
+using Color = System.Drawing.Color;
 using System.Text;
+using Tortoise.Shared.Drawing;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace Tortoise.Graphics.Rendering
 {
@@ -46,22 +49,41 @@ namespace Tortoise.Graphics.Rendering
     /// <summary>
     /// Stores and returns Font data. Based around the Vera font set.
     /// </summary>
-    public class FontInfo
+    public class FontManager
     {
-        static List<FontInfo> _data = new List<FontInfo>();
-        private System.Drawing.Text.PrivateFontCollection FontData;
+        static List<FontManager> _data = new List<FontManager>();
+        const int FontFileSize = 36; //Font file is in 36pt and is downscaled for 
         private TGraphics _graphics;
 
-        public static FontInfo GetInstance(TGraphics graphics, float size, FontTypes name)
+        public static FontManager GetInstance(TGraphics graphics, float size, FontTypes name)
         {
-            foreach(FontInfo obj in _data)
+            foreach (FontManager obj in _data)
             {
                 if (obj.FontName == name && obj.FontSize == size && obj._graphics == graphics)
                     return obj;
             }
-            FontInfo font = new FontInfo(graphics, name, size);
+            FontManager font = new FontManager(graphics, name, size);
             _data.Add(font);
             return font;
+        }
+
+        public static void DrawString(FontManager font, string text, Point position, Color color)
+        {
+            float scale = font.FontSize / FontFileSize;
+            font._graphics.SpriteBatch.DrawString(font.Bitmap, text, position.ToVector2, ColorTools.ToXNAColor(color), 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+        }
+
+
+        public static void DrawString(TGraphics graphics, string text, float size, FontTypes name, Point position, Color color)
+        {
+            FontManager font = GetInstance(graphics, size, name);
+
+            DrawString(font, text, position, color);
+        }
+
+        public static PointF MeasureString(FontManager font, string text)
+        {
+            return PointF.FromVector2(font.Bitmap.MeasureString(text)) * (font.FontSize / FontFileSize);
         }
 
         private static string GetName(FontTypes type)
@@ -80,29 +102,47 @@ namespace Tortoise.Graphics.Rendering
         public FontTypes FontName { get; private set; }
         public System.Drawing.Font Font { get; private set; }
 
-        public BitmapFont Bitmap { get; private set; }
+        private SpriteFont Bitmap { get; set; }
 
         /// <summary>
         /// Placeholder to eat it!
         /// </summary>
-        private FontInfo()
-        {
-          
-        }
+        private FontManager() { }
 
-        private FontInfo(TGraphics graphics, FontTypes type, float size)
+        private FontManager(TGraphics graphics, FontTypes type, float size)
         {
             _graphics = graphics;
             FontSize = size;
             FontName = type;
-            Font = new System.Drawing.Font(GetName(type),size);
-            Bitmap = graphics.Content.Load<BitmapFont>(string.Format("{0}-{1}", GetName(type), size));
+            Font = new System.Drawing.Font(GetName(type), size);
+            Bitmap = graphics.Content.Load<SpriteFont>(string.Format("{0}-{1}", GetName(type), FontFileSize));
         }
-
-        private void test()
+/*
+        private int getFontSize(float size)
         {
+            if (size < 6 || size > 38) throw new ArgumentOutOfRangeException("size");
 
+            int isize = (int)Math.Ceiling(size);
+
+            foreach (int i in new int [] {12,18,24,30,38})
+                if (isize <= i) return i;
+
+            throw new InvalidProgramException("You should not see this. Bug in getFontSize()?");
         }
+
+
+        private static int GetFontScaler(int i)
+        {
+            i--;
+            i |= i >> 1;
+            i |= i >> 2;
+            i |= i >> 4;
+            i |= i >> 8;
+            i++;
+            return i;
+        }
+        */
+
     }
 
 }

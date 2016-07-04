@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -76,8 +77,9 @@ namespace Tortoise.Client
 
         public override void Initialize()
         {
-            _mainLabel = new Label(_graphics, "MainLabel", Program.GameName, 10, 10, 400, 30);
-            _exitButton = new Button(_graphics, "ExitButton", "Exit", 340, 340, 60, 30, FontInfo.GetInstance(_graphics, 22, FontTypes.Sans));
+            _mainLabel = new Label(_graphics, "MainLabel", Program.GameName, 10, 10, 400, 30, FontManager.GetInstance(_graphics,34, FontTypes.Sans));
+            _exitButton = new Button(_graphics, "ExitButton", "Exit", 340, 340, 60, 30, FontManager.GetInstance(_graphics, 22, FontTypes.Sans));
+
 
             _exitButton.MouseUp += _exitButton_MouseUp;
 

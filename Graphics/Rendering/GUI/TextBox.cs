@@ -39,7 +39,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using XColor = Microsoft.Xna.Framework.Color;
-using MonoGame.Extended.BitmapFonts;
+//using MonoGame.Extended.BitmapFonts;
 
 namespace Tortoise.Graphics.Rendering.GUI
 {
@@ -58,7 +58,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         private string _visibleText = "";
         private Size _textSize;
         private int _markerPosition = 0;
-        private FontInfo _fontInfo;
+        private FontManager _fontInfo;
         //private GorgonText _gorgonText;
         private char _passwordChar = '*';
         private bool _usePasswordChar = false;
@@ -151,7 +151,7 @@ namespace Tortoise.Graphics.Rendering.GUI
 		{
             
             //_gorgonText = _graphics.Renderer2D.Renderables.CreateText(name + "_TextRenderer");
-            _fontInfo = FontInfo.GetInstance(graphics, 22, FontTypes.Sans);
+            _fontInfo = FontManager.GetInstance(graphics, 22, FontTypes.Sans);
             _flasherTimer = new Timer();
 			
 		    FocusChanged += delegate
@@ -173,7 +173,9 @@ namespace Tortoise.Graphics.Rendering.GUI
                 _visibleText = sb.ToString();
             }
 
-            Vector2 stringSize = _fontInfo.Bitmap.MeasureString(_visibleText);
+            PointF stringSize = FontManager.MeasureString(_fontInfo, _visibleText);
+            FontManager.DrawString(_fontInfo, _text, new Point(0, 0), TextColor);
+
             _textSize.Width = (int)stringSize.X;
             _textSize.Height = (int)stringSize.Y;
 
@@ -195,7 +197,7 @@ namespace Tortoise.Graphics.Rendering.GUI
                     _redrawPreRenderd = true;
                 }
 
-                stringSize = _fontInfo.Bitmap.MeasureString(_visibleText.Substring(0, _cursorPosition));
+                stringSize = FontManager.MeasureString(_fontInfo, _visibleText.Substring(0, _cursorPosition));
                 _markerPosition = (int)stringSize.X;
 
                 
@@ -357,14 +359,16 @@ namespace Tortoise.Graphics.Rendering.GUI
             _preRenderdSurface.Fill(_backgroundColor);
 
 
-            _graphics.SpriteBatch.DrawString(_fontInfo.Bitmap, _text, new Vector2(0, 0), XColor.Black);
+            //_graphics.SpriteBatch.DrawString(_fontInfo.Bitmap, _text, new Vector2(0, 0), XColor.Black);
+            FontManager.DrawString(_fontInfo, _text, new Point(0, 0), TextColor);
 
 
             if (_showMarker && HasFocus)
             {
-                Vector2 drawPos = new Vector2();
+                Point drawPos = new Point();
                 drawPos.X= _markerPosition;
-                _graphics.SpriteBatch.DrawString(_fontInfo.Bitmap, "|", drawPos, XColor.Black);
+                //_graphics.SpriteBatch.DrawString(_fontInfo.Bitmap, "|", drawPos, XColor.Black);
+                FontManager.DrawString(_fontInfo, "|", drawPos, TextColor);
             }
 
 

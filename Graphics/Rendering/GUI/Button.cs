@@ -33,7 +33,7 @@ using Color = System.Drawing.Color;
 using Tortoise.Shared.Drawing;
 using Tortoise.Graphics.Input;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
-using MonoGame.Extended.BitmapFonts;
+//using MonoGame.Extended.BitmapFonts;
 
 namespace Tortoise.Graphics.Rendering.GUI
 {
@@ -87,19 +87,19 @@ namespace Tortoise.Graphics.Rendering.GUI
             return doMouseUp(e);
         }
 
-        public Button(TGraphics graphics, string name, string text, Point location, Size size, FontInfo fontinfo)
+        public Button(TGraphics graphics, string name, string text, Point location, Size size, FontManager fontinfo)
             : this(graphics, name, text, new Rectangle(location, size), fontinfo)
         {
 
         }
 
-        public Button(TGraphics graphics, string name, string text, int x, int y, int width, int height, FontInfo fontinfo)
+        public Button(TGraphics graphics, string name, string text, int x, int y, int width, int height, FontManager fontinfo)
             : this(graphics, name, text, new Rectangle(x, y, width, height), fontinfo)
         {
 
         }
 
-        public Button(TGraphics graphics, string name, string text, Rectangle area, FontInfo fontinfo)
+        public Button(TGraphics graphics, string name, string text, Rectangle area, FontManager fontinfo)
             : base(graphics, name, text, area, fontinfo)
         {
 
@@ -135,7 +135,9 @@ namespace Tortoise.Graphics.Rendering.GUI
             if (_backgroundImage != null)
                 _preRenderdSurface.Blit(_backgroundImage);
 
-            _graphics.SpriteBatch.DrawString(_fontInfo.Bitmap, _text, new Vector2(0, 0), _toXNAColor(TextColor));
+            FontManager.DrawString(_fontInfo, _text, new Point(0, 0), TextColor);
+
+            //_graphics.SpriteBatch.DrawString(_fontInfo.Bitmap, _text, new Vector2(0, 0), ColorTools.ToXNAColor(TextColor));
 
 
             _preRenderdSurface.EndChanges();

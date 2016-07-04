@@ -30,7 +30,7 @@
 
 #-----------------------------------------------------------------------------------------------#
 # Lines starting with a # are ignored															#
-# I keep a standard with lines that have variables. They use the String.Format form tomake		#
+# I keep a standard with lines that have variables. They use the String.Format form to make		#
 # things easy. There will be a comment before it specifying what the number may contain			#
 # within the string.																			#
 # if you use curly brackets, you must double them up											#
@@ -71,6 +71,6 @@ Login_Status_Sucess			Successful Login!
 Login_Status_Failure		Failed to Login. Check your username and password and try again.
 
 Server_Message_SyncError	Ops! There seems to have been an error with the client or the server.\nIf you continue to receive this error message, make sure your client is up to date.
-#We will want to replace this with either a {0} and have the client replace it with a url or something. To lazy now.
+#We will want to replace this with either a {0} and have the developer replace it with a url or something. To lazy now.
 Server_Message_OutOfDate	Your client is out of date!\nVisit http://www.stormraidergames.com/Tortoise to download the latest version!
 Server_Message_Null			The server seems to have sent us an invalid message! If you receive this you will want to report it!

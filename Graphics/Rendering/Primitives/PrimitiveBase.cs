@@ -28,14 +28,6 @@ namespace Tortoise.Graphics.Rendering.Primitives
             return Surface.CreateBlankSurface(tgraphics, 1, 1);
         }
 
-        // protected Surface _pixel;
-        //protected TGraphics _tgraphics;
-        
-        //protected PrimitiveBase(TGraphics tgraphics)
-       // {
-           // _tgraphics = tgraphics;
-       // }
-
 
     }
 }

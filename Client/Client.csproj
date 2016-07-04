@@ -70,27 +70,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\gorgonlib-read-only\trunk\Tools\DialogHelper\bin\Debug\DialogHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Gorgon.Common">
-      <HintPath>..\Build Libraries\Gorgon.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Gorgon.Graphics">
-      <HintPath>..\Build Libraries\Gorgon.Graphics.dll</HintPath>
-    </Reference>
-    <Reference Include="Gorgon.Input">
-      <HintPath>..\Build Libraries\Gorgon.Input.dll</HintPath>
-    </Reference>
-    <Reference Include="Gorgon.MemoryAccess">
-      <HintPath>..\Build Libraries\Gorgon.MemoryAccess.dll</HintPath>
-    </Reference>
-    <Reference Include="Gorgon.Renderer.2D">
-      <HintPath>..\Build Libraries\Gorgon.Renderer.2D.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX">
-      <HintPath>..\Build Libraries\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SlimMath">
-      <HintPath>..\Build Libraries\SlimMath.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -121,7 +100,6 @@
     <None Include="Localization\EN-US.lang">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Collection\" />
@@ -138,11 +116,6 @@
       <Project>{da8ab668-ec4d-4ae2-8f6c-4783f5925564}</Project>
       <Name>Shared</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="GUI.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

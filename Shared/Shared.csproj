@@ -58,6 +58,8 @@
     <Compile Include="Collection\LimitedList.cs" />
     <Compile Include="Collection\SortedList.cs" />
     <Compile Include="Diagnostics\TortoiseConsoleTraceListiner.cs" />
+    <Compile Include="Drawing\ColorTools.cs" />
+    <Compile Include="Drawing\PointF.cs" />
     <Compile Include="Drawing\Point.cs" />
     <Compile Include="Drawing\Rectangle.cs" />
     <Compile Include="Drawing\Size.cs" />
