@@ -92,7 +92,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Delegates.cs" />
-    <Compile Include="Rendering\FontInfo.cs" />
+    <Compile Include="Rendering\FontManager.cs" />
     <Compile Include="Rendering\GfxResource.Designer.cs" />
     <Compile Include="Rendering\GUI\Button.cs" />
     <Compile Include="Rendering\GUI\Container.cs" />

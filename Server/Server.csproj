@@ -101,11 +101,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Connections\" />
-    <Folder Include="IO\" />
-    <Folder Include="Threading\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\StormLib\StormLib.csproj">
       <Project>{78870f52-be99-459a-9a5a-48135d1cae81}</Project>

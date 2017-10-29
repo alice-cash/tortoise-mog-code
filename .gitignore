@@ -8,6 +8,9 @@
 */obj/*
 */packages
 */packages/*
+.vs
+.vs/*
 /packages
 /Build Libraries/*
 *.suo
+
