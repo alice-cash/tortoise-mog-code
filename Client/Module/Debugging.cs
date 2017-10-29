@@ -38,14 +38,15 @@
 using System;
 using System.Collections.Generic;
 using Tortoise.Shared.Net;
-using Tortoise.Shared.Module;
-using Tortoise.Shared;
-using Console = Tortoise.Shared.TConsole;
 
+using Tortoise.Shared;
+using Console = StormLib.Console;
+using StormLib;
+using StormLib.Module;
 
 namespace Tortoise.Client.Module
 {
-    class Debugging : ModuleLoader
+    class Debugging : IModuleLoader
     {
 
         /// <summary>
@@ -85,17 +86,17 @@ namespace Tortoise.Client.Module
 
         }
 
-        public override Version Version
+        public Version Version
         {
             get { return new Version(1, 0, 0, 0); }
         }
 
-        public override string Name
+        public string Name
         {
             get { return "Debugging"; }
         }
 
-        public override void Load()
+        public void Load()
         {
             Console.SetValue("Debugging_Level", new ConsoleVarable() { ValidCheck = CheckConsoleInput, Value = "0" });
         }

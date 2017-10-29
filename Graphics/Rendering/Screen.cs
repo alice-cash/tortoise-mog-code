@@ -42,23 +42,23 @@ namespace Tortoise.Graphics.Rendering
         {
         }
 
-        internal new void OnMouseDown(MouseEventArgs e) { base.OnMouseDown(e); }
+        public override bool OnMouseDown(MouseEventArgs e) { return base.OnMouseDown(e); }
 
-        internal new void OnMouseUp(MouseEventArgs e) { base.OnMouseUp(e); }
+        public override bool OnMouseUp(MouseEventArgs e) { return base.OnMouseUp(e); }
 
-        internal new void OnMouseMove(MouseEventArgs e) { base.OnMouseMove(e); }
+        public override bool OnMouseMove(MouseEventArgs e) { return base.OnMouseMove(e); }
 
-        internal new void OnKeyboardDown(KeyEventArgs e) { base.OnKeyboardDown(e); }
+        public override bool OnKeyboardDown(KeyEventArgs e) { return base.OnKeyboardDown(e); }
 
-        internal new void OnKeyboardUp(KeyEventArgs e) { base.OnKeyboardUp(e); }
+        public override bool OnKeyboardUp(KeyEventArgs e) { return base.OnKeyboardUp(e); }
 
-        internal new void OnKeyboardPress(KeyEventArgs e) { base.OnKeyboardPress(e); }
+        public override bool OnKeyboardPress(KeyEventArgs e) { return base.OnKeyboardPress(e); }
 
-        internal virtual void OnResize() { this.Size = _graphics.ScreenSize; }
+        public void OnResize() { this.Size = _graphics.ScreenSize; }
 
-        public new void Tick(TickEventArgs e) { base.Tick(e); }
+        public override void Tick(TickEventArgs e) { base.Tick(e); }
 
-        public new void Render() { base.Render(); }
+        public override void Render() { base.Render(); }
 
         
         public abstract void Initialize();

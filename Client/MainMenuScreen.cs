@@ -9,7 +9,7 @@ using Tortoise.Graphics;
 using Tortoise.Graphics.Input;
 using Tortoise.Graphics.Rendering;
 using Tortoise.Graphics.Rendering.GUI;
-
+using StormLib;
 
 namespace Tortoise.Client
 {
@@ -65,7 +65,8 @@ namespace Tortoise.Client
 
         Label _mainLabel;
         Button _exitButton;
-
+        Label _testLabel;
+        TextBox _testTextBox;
 
         public MainMenuScreen(TGraphics graphics)
             : base(graphics)
@@ -79,18 +80,57 @@ namespace Tortoise.Client
         {
             _mainLabel = new Label(_graphics, "MainLabel", Program.GameName, 10, 10, 400, 30, FontManager.GetInstance(_graphics,34, FontTypes.Sans));
             _exitButton = new Button(_graphics, "ExitButton", "Exit", 340, 340, 60, 30, FontManager.GetInstance(_graphics, 22, FontTypes.Sans));
-
-
+            _testLabel = new Label(_graphics, "Test", "TEST", 0, 0, 30, 30);
+            _testTextBox = new TextBox(_graphics, "TestBox", 50, 50, 400, 29)
+            {
+                BackgroundColor = Color.Green
+            };
             _exitButton.MouseUp += _exitButton_MouseUp;
+
+            _exitButton.Anchor = ControlAnchor.Right | ControlAnchor.Bottom;
+            _testLabel.Anchor = ControlAnchor.Right;
+
 
             this.Controls.Add(_mainLabel);
             this.Controls.Add(_exitButton);
+            this.Controls.Add(_testLabel);
+            this.Controls.Add(_testTextBox);
+
+            t.Start();
+        }
+
+        private Timer t = new Timer();
+        private bool isdown;
+
+        public static Action<string, string> LoginRequest { get; internal set; }
+
+        public override void Tick(TickEventArgs e) {
+            base.Tick(e);
+            if (t.ElapsedMilliseconds > 100)
+            {
+                t.Restart();
+
+                if (isdown)
+                    _testLabel.Y -= 1;
+                else
+                    _testLabel.Y += 1;
+                if(_testLabel.Y < 1)
+                {
+                    isdown = true;
+                } 
+
+                if(_testLabel.Bottom + 1 > this.Bottom)
+                {
+                    isdown = false;
+                }
+                _testLabel.Text = _testLabel.Y.ToString();
+            }
         }
 
         void _exitButton_MouseUp(object sender, MouseEventArgs e)
         {
             //TODO: Proper application exit.
-            Program.GameLogic.Quit();
+            Program.Exit();
         }
 
 

@@ -35,42 +35,44 @@ using Tortoise.Server.XML;
 using Tortoise.Shared;
 using Tortoise.Shared.Exceptions;
 using Tortoise.Shared.IO;
-using Tortoise.Shared.Module;
+using StormLib;
+using StormLib.Module;
 using Tortoise.Shared.Net;
+using StormLib.Exceptions;
 
 namespace Tortoise.Server.Module
 {
 	/// <summary>
 	/// A username/password login module for testing/debuging.
 	/// </summary>
-	internal class Dbg_StaticLoginLoader : ModuleLoader
+	internal class Dbg_StaticLoginLoader : IModuleLoader
 	{
 		
-		public override Version Version {
+		public Version Version {
 			get {
 				return new Version(1,0,0,0);
 			}
 		}
 		
-		public override string Name {
+		public string Name {
 			get {
 				return "Debugging StaticLogin.";
 			}
 		}
 
-		public override void Load()
+		public void Load()
 		{
 			if(Login.LoginAttempt != null)
 				throw new ModuleLoadException("Login.LoginAttempt has already been set!");
 			
 			//as this is executed during runtime, not start up, we don't want to use exceptions.
-            Login.LoginAttempt = testLogin;
+            Login.LoginAttempt = TestLogin;
 		}
 
-        private ExecutionState<bool> testLogin(Connection Sender, string username, string HashedPassword)
+        private ExecutionState<bool> TestLogin(Connection Sender, string username, string HashedPassword)
         {
             var accountdata = ConnectionData.GetPlayerData(Sender);
-            var data = Data.Tables.account.GetAccountByUsername(username);
+            var data = Data.Tables.Account.GetAccountByUsername(username);
             if (!accountdata.ByteArrayValues.ContainsKey("AuthKey"))
                 return ExecutionState<bool>.Failed("Connection has no AuthKey! Cannot recompute hash!");
             byte[] key = accountdata.ByteArrayValues["AuthKey"];

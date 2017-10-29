@@ -10,7 +10,8 @@ using Point = Tortoise.Shared.Drawing.Point;
 using Rectangle = Tortoise.Shared.Drawing.Rectangle;
 
 using Tortoise.Shared.Drawing;
-using Tortoise.Shared.Threading;
+using StormLib.Threading;
+using StormLib.Exceptions;
 using System.IO;
 
 namespace Tortoise.Graphics.Rendering
@@ -110,7 +111,7 @@ namespace Tortoise.Graphics.Rendering
         public void Blit(Surface Source, Rectangle rec)
         {
             if (!_can_Update)
-                throw new Tortoise.Shared.Exceptions.LogicException("Surface cannot be updated at this time!");
+                throw new StormLib.Exceptions.LogicException("Surface cannot be updated at this time!");
 
             _graphics.SpriteBatch.Draw(Source._target, rec.ToRender(), XColor.White);
         }
@@ -128,7 +129,7 @@ namespace Tortoise.Graphics.Rendering
         public void Render(Rectangle rec)
         {
             if (_can_Update)
-                throw new Tortoise.Shared.Exceptions.LogicException("Surface changes must be disabled!");
+                throw new StormLib.Exceptions.LogicException("Surface changes must be disabled!");
 
 
             _graphics.SpriteBatch.Draw(_target, rec.ToRender(), XColor.White);
@@ -161,7 +162,7 @@ namespace Tortoise.Graphics.Rendering
         public void EndChanges()
         {
             if (!_can_Update)
-                throw new Tortoise.Shared.Exceptions.LogicException("Surface cannot be updated at this time!");
+                throw new StormLib.Exceptions.LogicException("Surface cannot be updated at this time!");
             //FlushChanges();
             _can_Update = false;
             _graphics.SpriteBatch.End();
@@ -171,7 +172,7 @@ namespace Tortoise.Graphics.Rendering
         public void Fill(Color color)
         {
             if (!_can_Update)
-                throw new Tortoise.Shared.Exceptions.LogicException("Surface cannot be updated at this time!");
+                throw new StormLib.Exceptions.LogicException("Surface cannot be updated at this time!");
             _graphics.GraphicsDevice.Clear(ToXNAColor(color));
             /*
 

@@ -105,10 +105,10 @@ namespace Tortoise.Graphics.Rendering.GUI
 			_loaded = false;
 			foreach (Control Item in _Items.Values)
 				if (Item.Loaded)
-					Item.Load();
+					Item.Unload();
 		}
 
-        internal override void Tick(TickEventArgs e)
+        public override void Tick(TickEventArgs e)
 		{
 			foreach (var Item in Controls)
 			{
@@ -141,7 +141,7 @@ namespace Tortoise.Graphics.Rendering.GUI
 				}
 				_inFocusChange = false;
 			}
-			doFocusChange();
+			DoFocusChange();
 		}
 		
 
@@ -149,7 +149,7 @@ namespace Tortoise.Graphics.Rendering.GUI
 		/// <summary>
 		/// Renders the control to the screen.
 		/// </summary>
-        internal override void Render()
+        public override void Render()
 		{
             base.Render();
 
@@ -160,10 +160,10 @@ namespace Tortoise.Graphics.Rendering.GUI
 
 		}
 
-		/// <summary>
-		/// A MouseButton Event, returns true if the event is used, and false if it isn't.
-		/// </summary>
-        internal override bool OnMouseDown(MouseEventArgs e)
+        /// <summary>
+        /// A MouseButton Event, returns true if the event is used, and false if it isn't.
+        /// </summary>
+        public override bool OnMouseDown(MouseEventArgs e)
 		{
 			bool go = false;
 			foreach (Control Item in _Items.Values.Reverse())
@@ -172,12 +172,12 @@ namespace Tortoise.Graphics.Rendering.GUI
 				if (go)
 					break;
 			}
-			return go ? true : doMouseDown(e);
+			return go ? true : DoMouseDown(e);
 		}
-		/// <summary>
-		/// A MouseButton Event, returns true if the event is used, and false if it isn't.
-		/// </summary>
-        internal override bool OnMouseUp(MouseEventArgs e)
+        /// <summary>
+        /// A MouseButton Event, returns true if the event is used, and false if it isn't.
+        /// </summary>
+        public override bool OnMouseUp(MouseEventArgs e)
 		{
 
 			bool go = false;
@@ -187,12 +187,12 @@ namespace Tortoise.Graphics.Rendering.GUI
 				if (go)
 					break;
 			}
-			return go ? true : doMouseUp(e);
+			return go ? true : DoMouseUp(e);
 		}
-		/// <summary>
-		/// A MouseMove Event, returns true if the event is used, and false if it isn't.
-		/// </summary>
-        internal override bool OnMouseMove(MouseEventArgs e)
+        /// <summary>
+        /// A MouseMove Event, returns true if the event is used, and false if it isn't.
+        /// </summary>
+        public override bool OnMouseMove(MouseEventArgs e)
 		{
 			bool go = false;
 			foreach (Control Item in _Items.Values.Reverse())
@@ -201,12 +201,12 @@ namespace Tortoise.Graphics.Rendering.GUI
 				if (go)
 					break;
 			}
-			return go ? true : doMouseMove(e);
+			return go ? true : DoMouseMove(e);
 		}
-		/// <summary>
-		/// A Keyboard Event, returns true if the event is used, and false if it isn't.
-		/// </summary>
-        internal override bool OnKeyboardDown(KeyEventArgs e)
+        /// <summary>
+        /// A Keyboard Event, returns true if the event is used, and false if it isn't.
+        /// </summary>
+        public override bool OnKeyboardDown(KeyEventArgs e)
 		{
 			bool go = false;
 			foreach (Control Item in _Items.Values.Reverse())
@@ -218,10 +218,10 @@ namespace Tortoise.Graphics.Rendering.GUI
 			//Keyboard events should never be triggered in the base container event.
 			return go;
 		}
-		/// <summary>
-		/// A Keyboard Event, returns true if the event is used, and false if it isn't.
-		/// </summary>
-        internal override bool OnKeyboardUp(KeyEventArgs e)
+        /// <summary>
+        /// A Keyboard Event, returns true if the event is used, and false if it isn't.
+        /// </summary>
+        public override bool OnKeyboardUp(KeyEventArgs e)
 		{
 			bool go = false;
 			foreach (Control Item in _Items.Values.Reverse())
@@ -234,17 +234,27 @@ namespace Tortoise.Graphics.Rendering.GUI
 			return go;
 		}
 
-        internal override bool OnKeyboardPress(KeyEventArgs e)
+        public override bool OnKeyboardPress(KeyEventArgs e)
         {
 			bool go = false;
 			foreach (Control Item in _Items.Values.Reverse())
 			{
-				go = Item.OnKeyboardDown(e);
+				go = Item.OnKeyboardPress(e);
 				if (go)
 					break;
 			}
 			//Keyboard events should never be triggered in the base container event.
 			return go; 
+        }
+
+        public override void DoResize(ResizeEventArgs e)
+        {
+            base.DoResize(e);
+
+            foreach (Control Item in _Items.Values.Reverse())
+            {
+                Item.ContainerResized(e);
+            }
         }
     }
 

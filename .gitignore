@@ -3,11 +3,11 @@
 ################################################################################
 
 */bin
-*/bin/**
+*/bin/*
 */obj
-*/obj/**
+*/obj/*
 */packages
-*/packages/**
+*/packages/*
 /packages
 /Build Libraries/*
-**.suo
+*.suo

@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Control = System.Windows.Forms.Control;
 using Tortoise.Shared.Drawing;
 
 namespace Tortoise.Graphics.Input
@@ -39,6 +40,7 @@ namespace Tortoise.Graphics.Input
     public class TMouseState : InputState
     {
 
+        private TGraphics _graphics;
         private MouseButtons[] _mouseStateArray;
         private Point _mouseStatePoint;
         private int _mouseStateWheel;
@@ -49,88 +51,164 @@ namespace Tortoise.Graphics.Input
         public event Action<MouseEventArgs> MouseMoveEvent;
         public event Action<MouseEventArgs> MouseWheelEvent;
 
-        public TMouseState()
+        private List<MouseStateEventData> _mouseEventData;
+
+
+        private struct MouseStateEventData
+        {
+            public MouseEventData Data;
+            public MouseStateEventType Type;
+
+            public MouseStateEventData(System.Windows.Forms.MouseEventArgs e, MouseStateEventType t)
+            {
+                Type = t;
+                Data = new MouseEventData(e, t == MouseStateEventType.MouseDown);
+            }
+        }
+
+        private enum MouseStateEventType
+        {
+            MouseDown,
+            MouseUp,
+            MouseMove,
+            MouseWheel
+        }
+
+
+        public TMouseState(TGraphics graphics)
         {
             _mouseStateArray = new MouseButtons[0];
+            _mouseEventData = new List<MouseStateEventData>();
+
+            _graphics = graphics;
+
+            graphics.Control.MouseDown += _control_MouseDown;
+            graphics.Control.MouseUp += _control_MouseUp;
+            graphics.Control.MouseMove += _control_MouseMove;
+            graphics.Control.MouseWheel += _control_MouseWheel;
+           
+        }
+
+        private void _control_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            lock (_mouseEventData)
+            {
+                _mouseEventData.Add(new MouseStateEventData(e, MouseStateEventType.MouseWheel));
+            }
+        }
+
+        private void _control_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            lock (_mouseEventData)
+            {
+                _mouseEventData.Add(new MouseStateEventData(e, MouseStateEventType.MouseMove));
+            }
+        }
+
+        private void _control_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            lock (_mouseEventData)
+            {
+                _mouseEventData.Add(new MouseStateEventData(e, MouseStateEventType.MouseUp));
+            }
+        }
+
+        private void _control_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            lock (_mouseEventData)
+            {
+                _mouseEventData.Add(new MouseStateEventData(e, MouseStateEventType.MouseDown));
+            }
         }
 
         public override bool Poll()
         {
             bool returnStatus = false;
-            MouseState ms = Mouse.GetState();
-            MouseButtons[] currentState = _getButtonState(ms);
-            Point currentPoint = (Point)ms.Position; //Explicit conversion from XNA point to Tortus Point
-            int currentWheel = ms.ScrollWheelValue;
+
+
+
+            MouseStateEventData[] eventDataArray;
+
+            lock (_mouseEventData)
+            {
+                eventDataArray = _mouseEventData.ToArray();
+                _mouseEventData.Clear();
+            }
+
+            if(eventDataArray.Length == 0) { return returnStatus; }
+
+
+            MouseButtons[] currentState = _getButtonState(eventDataArray);
+
+            Point currentPoint = eventDataArray[0].Data.Position; 
+  
 
             MouseButtons[] pressedButtons = GetNewItems(_mouseStateArray, currentState);
             MouseButtons[] releasedButtons = GetMissingItems(_mouseStateArray, currentState);
 
             //Subtract current values so positive values result in a positive delta.
             Point relativePoint = currentPoint - _mouseStatePoint;
-            int wheelDelta = currentWheel - _mouseStateWheel;
+            int wheelDelta = eventDataArray[0].Data.WheelDelta;
+            _mouseStateWheel = _mouseStateWheel + wheelDelta;
 
-            MouseEventData eventData = new MouseEventData(pressedButtons, releasedButtons, currentState, currentPoint, relativePoint, currentWheel, wheelDelta);
+
+            MouseEventData eventData = new MouseEventData(pressedButtons, releasedButtons, currentState, currentPoint, relativePoint, _mouseStateWheel, wheelDelta);
+
+            //System.Diagnostics.Trace.WriteLine(eventData.ToString());
 
             if (pressedButtons.Length != 0 || releasedButtons.Length != 0 || relativePoint != Point.Empty || wheelDelta != 0)
             {
-                if (MouseEvent != null)
-                {
-                    MouseEvent(new MouseEventArgs(eventData));
-                }
+                MouseEvent?.Invoke(new MouseEventArgs(eventData));
                 returnStatus = true;
             }
 
             if (pressedButtons.Length != 0)
             {
-                if (MouseDownEvent != null)
-                {
-                    MouseDownEvent(new MouseEventArgs(eventData));
-                }
+                MouseDownEvent?.Invoke(new MouseEventArgs(eventData));
             }
 
             if (releasedButtons.Length != 0)
             {
-                if (MouseUpEvent != null)
-                {
-                    MouseUpEvent(new MouseEventArgs(eventData));
-                }
+                MouseUpEvent?.Invoke(new MouseEventArgs(eventData));
             }
 
 
             if (relativePoint != Point.Empty)
             {
-                if (MouseMoveEvent != null)
-                {
-                    MouseMoveEvent(new MouseEventArgs(eventData));
-                }
+                MouseMoveEvent?.Invoke(new MouseEventArgs(eventData));
             }
 
             if (wheelDelta != 0)
             {
-                if (MouseWheelEvent != null)
-                {
-                    MouseWheelEvent(new MouseEventArgs(eventData));
-                }
+                MouseWheelEvent?.Invoke(new MouseEventArgs(eventData));
             }
 
             _mouseStateArray = currentState;
             return returnStatus;
         }
 
-        private MouseButtons[] _getButtonState(MouseState ms)
+        private MouseButtons[] _getButtonState(MouseStateEventData[] data)
         {
   
+             
             List<MouseButtons> ButtonList = new List<MouseButtons>();
-            if (ms.LeftButton == ButtonState.Pressed)
-                ButtonList.Add(MouseButtons.Left);
-            if (ms.RightButton == ButtonState.Pressed)
-                ButtonList.Add(MouseButtons.Right);
-            if (ms.MiddleButton == ButtonState.Pressed)
-                ButtonList.Add(MouseButtons.Middle);
-            if (ms.XButton1 == ButtonState.Pressed)
-                ButtonList.Add(MouseButtons.X1);
-            if (ms.XButton2 == ButtonState.Pressed)
-                ButtonList.Add(MouseButtons.X2);
+
+            //This is all super fuckin redundant however the data from the Form events is spread out among a 
+            // bunch of event data elements so this is a super hack to consolidate it all.
+            foreach(var e in data)
+            {
+                if (e.Data.LeftButtonPressed)
+                    ButtonList.Add(MouseButtons.Left);
+                if (e.Data.MiddleButtonPressed)
+                    ButtonList.Add(MouseButtons.Middle);
+                if (e.Data.RightButtonPressed)
+                    ButtonList.Add(MouseButtons.Right);
+                if (e.Data.X1ButtonPressed)
+                    ButtonList.Add(MouseButtons.X1);
+                if (e.Data.X2ButtonPressed)
+                    ButtonList.Add(MouseButtons.X2);
+
+            }
 
             return ButtonList.ToArray();
         }

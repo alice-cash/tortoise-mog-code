@@ -30,11 +30,11 @@ using System.Drawing;
 using System.Collections.Generic;
 
 
-using Timer = Tortoise.Shared.Timer;
+using Timer = StormLib.Timer;
 
 using Tortoise.Shared;
-using Tortoise.Shared.Collection;
-using Tortoise.Shared.Threading;
+using StormLib.Collection;
+using StormLib.Threading;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -45,6 +45,7 @@ using Tortoise.Graphics;
 using Tortoise.Graphics.Input;
 using Color = System.Drawing.Color;
 using Point = Tortoise.Shared.Drawing.Point;
+using StormLib;
 
 //namespace Tortoise.Graphics.Rendering
 //{
@@ -179,6 +180,7 @@ namespace Tortoise.Graphics.Rendering
 
             keyboard.KeyboardKeyPressEvent += Window_KeyDown;
             keyboard.KeyboardKeyReleaseEvent += Window_KeyUp;
+            keyboard.KeyboardEvent+= Window_KeyPress;
 
             //_keyboard.KeyPress += new EventHandler<KeyEventArgs>(Window_KeyPress);
 
@@ -191,8 +193,8 @@ namespace Tortoise.Graphics.Rendering
             lastFrameTimes = new LimitedList<double>(30, 0);
 
 
-            TConsole.SetIfNotExsistValue("gf_RenderUpdateRec", ConsoleVarable.OnOffVarable("Draw Boxes showing Updated Areas"));
-            TConsole.SetIfNotExsistValue("gf_ShowFPS", ConsoleVarable.OnOffVarable("Displays FPS information"));
+            StormLib.Console.SetIfNotExsistValue("gf_RenderUpdateRec", ConsoleVarable.OnOffVarable("Draw Boxes showing Updated Areas"));
+            StormLib.Console.SetIfNotExsistValue("gf_ShowFPS", ConsoleVarable.OnOffVarable("Displays FPS information"));
 
 
         }
@@ -214,11 +216,8 @@ namespace Tortoise.Graphics.Rendering
         void Window_KeyUp( KeyEventArgs e)
         {
             if (ScreenLoaded())
-            {
                 CurrentScreen.OnKeyboardUp(e);
 
-                CurrentScreen.OnKeyboardPress(e);
-            }
         }
 
         void Window_KeyDown(KeyEventArgs e)
@@ -227,11 +226,12 @@ namespace Tortoise.Graphics.Rendering
                 CurrentScreen.OnKeyboardDown(e);
         }
 
-        /*
-        void Window_KeyPress(object sender, KeyEventArgs e)
+        
+        void Window_KeyPress(KeyEventArgs e)
         {
-            CurrentScreen.OnKeyboardPress(e);
-        }*/
+            if (ScreenLoaded())
+                CurrentScreen.OnKeyboardPress(e);
+        }
 
         void Mouse_Move(MouseEventArgs e)
         {
@@ -292,7 +292,7 @@ namespace Tortoise.Graphics.Rendering
 
             //Video.Screen.Blit(MainSurface);
 
-            //if (TConsole.GetValue("gf_RenderUpdateRec").Value == "1")
+            //if (StormLib.Console.GetValue("gf_RenderUpdateRec").Value == "1")
             //{
             //     foreach (Rectangle rec in updateAreas)
             //         Video.Screen.Draw(new Box(rec.Location, rec.Size), Color.Red);
@@ -300,7 +300,7 @@ namespace Tortoise.Graphics.Rendering
 
 
 
-            if (TConsole.GetValue("gf_ShowFPS").Value == "1")
+            if (StormLib.Console.GetValue("gf_ShowFPS").Value == "1")
             {
                 FontManager.DrawString(DebugFont, tickEventData.FPS.ToString("f2") + " fps - " + tickEventData.AverageFrameTime.ToString("f2") + " ms", new Point(10, 10), Color.Red);
             }
@@ -339,8 +339,7 @@ namespace Tortoise.Graphics.Rendering
                     CurrentScreen.Unload();
                 CurrentScreen = AvailableScreens[screenName];
                 CurrentScreen.Load();
-                if (ScreenChanged != null)
-                    ScreenChanged(this, EventArgs.Empty);
+                ScreenChanged?.Invoke(this, EventArgs.Empty);
 
             };
             InvokeMethod(id, null);

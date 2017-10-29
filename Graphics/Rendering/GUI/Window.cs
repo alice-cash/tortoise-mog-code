@@ -34,7 +34,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         }
 
 
-        internal override bool OnMouseDown(MouseEventArgs e)
+        public override bool OnMouseDown(MouseEventArgs e)
         {
             int Y = (e.MouseData.Position - RealLocation).Y;
 
@@ -42,19 +42,19 @@ namespace Tortoise.Graphics.Rendering.GUI
             return base.OnMouseDown(e);
         }
 
-        internal override bool OnMouseMove(MouseEventArgs e)
+        public override bool OnMouseMove(MouseEventArgs e)
         {
             return base.OnMouseMove(e);
         }
 
-        internal override bool OnMouseUp(MouseEventArgs e)
+        public override bool OnMouseUp(MouseEventArgs e)
         {
             return base.OnMouseUp(e);
         }
 
 
 
-        protected override void Redraw_PreRenderd()
+        public override void Redraw_PreRenderd()
         {
             base.Redraw_PreRenderd();
 

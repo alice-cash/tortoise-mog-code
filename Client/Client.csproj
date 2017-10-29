@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tortoise.Client</RootNamespace>
     <AssemblyName>Tortoise.Client</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <FileUpgradeFlags>
@@ -63,9 +63,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="C5">
-      <HintPath>..\packages\C5.2.3.0.1\lib\net40\C5.dll</HintPath>
-    </Reference>
     <Reference Include="DialogHelper, Version=1.1.4869.36320, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\gorgonlib-read-only\trunk\Tools\DialogHelper\bin\Debug\DialogHelper.dll</HintPath>
@@ -100,6 +97,7 @@
     <None Include="Localization\EN-US.lang">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Collection\" />
@@ -108,6 +106,10 @@
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\StormLib\StormLib.csproj">
+      <Project>{78870f52-be99-459a-9a5a-48135d1cae81}</Project>
+      <Name>StormLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Graphics\Graphics.csproj">
       <Project>{cb558998-f114-4fb2-8a38-7ddef46b1f24}</Project>
       <Name>Graphics</Name>

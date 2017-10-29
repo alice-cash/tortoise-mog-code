@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Tortoise.Graphics.Input
 {
@@ -40,10 +41,13 @@ namespace Tortoise.Graphics.Input
 
         private InputState[] _stateManagerArray;
 
-        public TInputManager()
+        public TInputManager(TGraphics graphics)
         {
-            MouseStateManager = new TMouseState();
-            KeyStateManager = new TKeyState();
+            Keyboard.KeyboardManager.LoadKeyboards();
+            Keyboard.KeyboardManager.LoadKeyboard(Keyboard.US_English_103.Type);
+
+            MouseStateManager = new TMouseState(graphics);
+            KeyStateManager = new TKeyState(graphics);
 
             _stateManagerArray = new InputState[] { MouseStateManager, KeyStateManager };
         }

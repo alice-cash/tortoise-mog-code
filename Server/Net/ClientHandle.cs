@@ -112,10 +112,10 @@ namespace Tortoise.Server.Connections
 		{
 			Connection Conn = new Connection(client);
 			_clients.Add(Conn);
-            TConsole.WriteLine("Connection Received from '{0}'.", Conn.RemoteAddress.ToString());
+            StormLib.Console.WriteLine("Connection Received from '{0}'.", Conn.RemoteAddress.ToString());
 			Conn.DisconnectedEvent += delegate(object sender, EventArgs e)
 			{
-                TConsole.WriteLine("Client Disconnected.");
+                StormLib.Console.WriteLine("Client Disconnected.");
                 //If its not a sender item, then it will be null
 				//and a null should "NOT" be in the clients list
 				if(_clients.Contains(sender as Connection))

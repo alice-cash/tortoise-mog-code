@@ -121,7 +121,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         }
 
         int test = 0;
-        protected override void Redraw_PreRenderd()
+        public override void Redraw_PreRenderd()
         {
             //Required for thread enforcement 
             base.Redraw_PreRenderd();

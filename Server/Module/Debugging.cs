@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using Tortoise.Shared.Net;
-using Tortoise.Shared.Module;
-using Tortoise.Shared;
+using StormLib.Module;
+using StormLib;
+
 
 namespace Tortoise.Server.Module
 {
-    class Debugging : ModuleLoader
+    class Debugging : IModuleLoader
     {
         public static void SyncError(Connection Sender, Dictionary<String, Object> ErrorLog0, Dictionary<String, Object> ErrorLog1, Dictionary<String, Object> ErrorLog2)
         {
-            string level = TConsole.GetValue("Debugging_Level").Value;
+            string level = StormLib.Console.GetValue("Debugging_Level").Value;
             switch (level)
             {
                 default:
@@ -31,42 +32,47 @@ namespace Tortoise.Server.Module
 
         }
 
-        public override Version Version
+        public Version Version
         {
             get { return new Version(1, 0, 0, 0); }
         }
 
-        public override string Name
+        public string Name
         {
             get { return "Debugging"; }
         }
 
-        public override void Load()
+        public void Load()
         {
-            TConsole.SetValue("Debugging_Level", new ConsoleVarable() { ValidCheck = CheckConsoleInput, Value = "0", HelpInfo = Shared.Localization.DefaultLanguage.Strings.GetString("DEBUGGING_LEVEL_HELP") });
-
-            Shared.TConsole.SetFunc("debug_db_grabusr", new ConsoleFunction()
+            StormLib.Console.SetValue("Debugging_Level", new ConsoleVarable()
             {
-                Function = new Func<string[], Shared.ConsoleResponce>((string[] debug_args) =>
+                ValidCheck = CheckConsoleInput,
+                Value = "0",
+                HelpInfo = StormLib.Localization.DefaultLanguage.Strings.GetString("DEBUGGING_LEVEL_HELP")
+            });
+
+            StormLib.Console.SetFunc("debug_db_grabusr", new ConsoleFunction()
+            {
+                Function = new Func<string[], ConsoleResponse>((string[] debug_args) =>
                     {
                         if (debug_args.Length == 0 || debug_args.Length > 1)
-                            return Shared.ConsoleResponce.NewFailure(Shared.Localization.DefaultLanguage.Strings.GetString("DEBUG_DB_GRABUSR_HELP"));
+                            return ConsoleResponse.Failed(StormLib.Localization.DefaultLanguage.Strings.GetString("DEBUG_DB_GRABUSR_HELP"));
                         if (debug_args.Length == 1)
                         {
-                            var v = Data.Tables.account.GetAccountByUsername(debug_args[0]);
+                            var v = Data.Tables.Account.GetAccountByUsername(debug_args[0]);
                             if (v.Sucess == false)
-                                return Shared.ConsoleResponce.NewFailure(Shared.Localization.DefaultLanguage.Strings.GetFormatedString("DEBUG_DB_GRABUSR_NOFIND", debug_args[0]));
+                                return ConsoleResponse.Failed(StormLib.Localization.DefaultLanguage.Strings.GetFormatedString("DEBUG_DB_GRABUSR_NOFIND", debug_args[0]));
 
-                            return Shared.ConsoleResponce.NewSucess(Shared.Localization.DefaultLanguage.Strings.GetFormatedString("DEBUG_DB_GRABUSR_FIND", v.Result.ID, v.Result.Username, v.Result.Password));
+                            return ConsoleResponse.Failed(StormLib.Localization.DefaultLanguage.Strings.GetFormatedString("DEBUG_DB_GRABUSR_FIND", v.Result.ID, v.Result.Username, v.Result.Password));
                         }
                         else
                         {
 
                         }
 
-                        return Shared.ConsoleResponce.NewSucess("");
+                        return ConsoleResponse.Succeeded("");
                     }),
-                HelpInfo = Shared.Localization.DefaultLanguage.Strings.GetString("DEBUG_DB_GRABUSR_HELP")
+                HelpInfo = StormLib.Localization.DefaultLanguage.Strings.GetString("DEBUG_DB_GRABUSR_HELP")
             });
         
         }

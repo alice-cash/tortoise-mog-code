@@ -32,7 +32,7 @@
 
 using System;
 using System.Collections.Generic;
-using Tortoise.Shared;
+using StormLib;
 using Tortoise.Shared.Net;
 using Tortoise.Shared.IO;
 
@@ -84,8 +84,7 @@ namespace Tortoise.Server.Module
                 var Type = br.ReadByte();
                 if (!Type)
                     return ExecutionState.Failed();
-                DataType TypeResult;
-                if (!DataTypeHelper.TryParse(Type.Result, out TypeResult))
+                if (!DataTypeHelper.TryParse(Type.Result, out DataType TypeResult))
                     return ExecutionState.Failed();
                 switch (TypeResult)
                 {

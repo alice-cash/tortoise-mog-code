@@ -42,8 +42,8 @@ using System.Diagnostics;
 
 //using C5;
 
-using Tortoise.Shared.Module;
-using Tortoise.Shared.Collection;
+using StormLib.Module;
+using StormLib.Collection;
 using Tortoise.Shared.IO;
 using Tortoise.Shared.Net;
 
@@ -194,7 +194,7 @@ namespace Tortoise.Shared.Net
 //        /// <summary>
 //        /// An event that fires when a core Message is received.
 //        /// </summary>
-//        public EventHandler<MessageEventArgs> MessageEvent;
+        public EventHandler<MessageEventArgs> MessageEvent;
 
 //        /// <summary>
 //        /// Fired when the connects disconnects due to the remote 

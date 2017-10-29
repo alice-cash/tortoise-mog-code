@@ -1,7 +1,7 @@
 ﻿using System;
 using Tortoise.Shared.Net;
 using Tortoise.Shared.IO;
-using Tortoise.Shared.Module;
+using StormLib.Module;
 using Tortoise.Client.Net;
 using Tortoise.Client.Exceptions;
 

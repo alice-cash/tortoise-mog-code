@@ -33,9 +33,6 @@ using System.Diagnostics;
 using Tortoise.Client;
 using Tortoise.Client.Module;
 using Tortoise.Client.Net;
-using Tortoise.Shared.Module;
-using Tortoise.Shared.Localization;
-using Tortoise.Shared.Diagnostics;
 using System.Reflection;
 using System.Globalization;
 using System.IO;
@@ -43,7 +40,7 @@ using System.Text;
 //using System.Windows.Forms;
 using Application = System.Windows.Forms.Application;
 
-
+using StormLib.Localization;
 
 using System.Runtime.InteropServices;
 
@@ -51,6 +48,7 @@ using System.Runtime.InteropServices;
 using Tortoise.Shared;
 using Tortoise.Graphics;
 using Tortoise.Graphics.Rendering;
+using StormLib.Module;
 
 namespace Tortoise.Client
 {
@@ -159,6 +157,13 @@ namespace Tortoise.Client
 
         }
 
+        internal static void Exit()
+        {
+            ThreadsRunning = false;
+            Program.GameLogic.Quit();
+            HideConsoleWindow();
+        }
+
 
 
         /// <summary>
@@ -170,14 +175,14 @@ namespace Tortoise.Client
             Debug.Listeners.Clear();
             Trace.Listeners.Clear();
 
-            Shared.TConsole.Init();
+            StormLib.Console.Init();
 
             Debug.Listeners.Add(new ConsoleTraceListener());
-            Debug.Listeners.Add(new TortoiseConsoleTraceListiner());
+            Debug.Listeners.Add(new StormLib.Diagnostics.ConsoleTraceListiner());
             //Trace.Listeners.Add(new ConsoleTraceListener());
             //Trace.Listeners.Add(new TortoiseConsoleTraceListiner());
 
-            mainForm = new MainForm();
+            mainForm = new MainForm("Tortoise Test",new Size(1280,800), Exit);
             _gameLogic = new Game(mainForm);
 
             Trace.WriteLine(string.Format("Tortoise Version {0}.{1}.{2}.{3}", Program.Version.Major, Program.Version.Minor, Program.Version.Build, Program.Version.Revision));
@@ -187,7 +192,10 @@ namespace Tortoise.Client
 
             ServerConnection.Init();
 
-            ConsoleThread = new System.Threading.Thread(_consoleReader);
+            ConsoleThread = new System.Threading.Thread(_consoleReader)
+            {
+                IsBackground = true
+            };
             ConsoleThread.Start();
         }
 
@@ -214,7 +222,7 @@ namespace Tortoise.Client
                 {
                     Console.Write("$$>");
                     string line = Console.ReadLine();
-                    var responce = Tortoise.Shared.TConsole.ProcessLine(line);
+                    var responce = StormLib.Console.ProcessLine(line);
                     Console.WriteLine(responce.Value);
                 }
                 else

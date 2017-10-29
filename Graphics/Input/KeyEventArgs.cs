@@ -27,44 +27,47 @@
  */
 using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework.Input;
 
 namespace Tortoise.Graphics.Input
 {
-	/// <summary>
-	/// Description of KeyEventArgs.
-	/// </summary>
-	public class KeyEventArgs : EventArgs
-	{
+    /// <summary>
+    /// Description of KeyEventArgs.
+    /// </summary>
+    public class KeyEventArgs : EventArgs
+    {
 
         public KeyEventData EventData { get; private set; }
         public KeyEventArgs(KeyEventData args)
-		{
+        {
             EventData = args;
-		}
+        }
 
-	}
+    }
 
     public struct KeyEventData
     {
-        /// <summary>
-        /// New keys pressed for this event.
-        /// </summary>
-        public IEnumerable<Keys> PressedKeys { get; }
-        /// <summary>
-        /// Keys released for this event.
-        /// </summary>
-        public IEnumerable<Keys> ReleasedKeys { get; }
-        /// <summary>
-        /// All keys currently pressed.
-        /// </summary>
-        public IEnumerable<Keys> AllPressed { get; }
 
-        public KeyEventData(IEnumerable<Keys> kPressed, IEnumerable<Keys> kReleased, IEnumerable<Keys> kAll)
+        /// <summary>
+        /// List of new keys pressed in this event
+        /// </summary>
+        public IEnumerable<Key> KeysPressed { get; }
+        /// <summary>
+        /// List of new keys released in this event
+        /// </summary>
+        public IEnumerable<Key> KeysReleased { get; }
+        /// <summary>
+        /// List of currently pressed keys which have not been released
+        /// </summary>
+        public IEnumerable<Key> KeysDown { get; }
+
+        public KeyEventData(Key[] Down, Key[] Pressed, Key[] Released)
         {
-            PressedKeys = kPressed;
-            ReleasedKeys = kReleased;
-            AllPressed = kAll;
+            KeysDown = Down;
+            KeysPressed = Pressed;
+            KeysReleased = Released;
         }
+
+
+
     }
 }

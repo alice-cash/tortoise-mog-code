@@ -36,19 +36,22 @@ using System.Collections.Generic;
 using Tortoise.Shared;
 using Tortoise.Server;
 using Tortoise.Server.Text;
-using Tortoise.Shared.Module;
 using Tortoise.Shared.IO;
 using Tortoise.Shared.Net;
 using Tortoise.Server.XML;
 
+using StormLib;
+using StormLib.Module;
+
+
 namespace Tortoise.Server.Module
 {
-    class LoginLoader : ModuleLoader
+    class LoginLoader : IModuleLoader
     {
         public const ushort ClientModuleComID = 10010;
         public const ushort ServerModuleComID = 20010;
 
-        public override Version Version
+        public Version Version
         {
             get
             {
@@ -56,7 +59,7 @@ namespace Tortoise.Server.Module
             }
         }
 
-        public override string Name
+        public string Name
         {
             get
             {
@@ -65,7 +68,7 @@ namespace Tortoise.Server.Module
         }
 
         static Login _instance;
-        public override void Load()
+        public void Load()
         {
             _instance = new Login();
             Connection.AddModuleHandle(ServerModuleComID, _instance);
@@ -156,14 +159,19 @@ namespace Tortoise.Server.Module
             //Error point 1
             if (!username || !password)
             {
-                var dbglvl0 = new Dictionary<string, object>();
-                dbglvl0.Add("Location", "Tortoise.Server.Module.Login.ReadLoginRequest.1");
-                var dbglvl1 = new Dictionary<string, object>(dbglvl0);
-                dbglvl1.Add("Username Error", username.Reason);
-                dbglvl1.Add("Password Error", username.Reason);
-                var dbglvl2 = new Dictionary<string, object>(dbglvl1);
-                dbglvl2.Add("ByteReader Dump", data.DumpDebugInfo());
-
+                var dbglvl0 = new Dictionary<string, object>
+                {
+                    { "Location", "Tortoise.Server.Module.Login.ReadLoginRequest.1" }
+                };
+                var dbglvl1 = new Dictionary<string, object>(dbglvl0)
+                {
+                    { "Username Error", username.Reason },
+                    { "Password Error", username.Reason }
+                };
+                var dbglvl2 = new Dictionary<string, object>(dbglvl1)
+                {
+                    { "ByteReader Dump", data.DumpDebugInfo() }
+                };
                 Debugging.SyncError(Sender, dbglvl0, dbglvl1, dbglvl2);
                 return ExecutionState<bool>.Failed();
             }
@@ -171,13 +179,18 @@ namespace Tortoise.Server.Module
             //Error point 2
             if (!result)
             {
-                var dbglvl0 = new Dictionary<string, object>();
-                dbglvl0.Add("Location", "Tortoise.Server.Module.Login.ReadLoginRequest.2");
-                var dbglvl1 = new Dictionary<string, object>(dbglvl0);
-                dbglvl1.Add("LoginAttempt result Error", result.Reason);
-                var dbglvl2 = new Dictionary<string, object>(dbglvl1);
-                dbglvl2.Add("ByteReader Dump", data.DumpDebugInfo());
-
+                var dbglvl0 = new Dictionary<string, object>
+                {
+                    { "Location", "Tortoise.Server.Module.Login.ReadLoginRequest.2" }
+                };
+                var dbglvl1 = new Dictionary<string, object>(dbglvl0)
+                {
+                    { "LoginAttempt result Error", result.Reason }
+                };
+                var dbglvl2 = new Dictionary<string, object>(dbglvl1)
+                {
+                    { "ByteReader Dump", data.DumpDebugInfo() }
+                };
                 Debugging.SyncError(Sender, dbglvl0, dbglvl1, dbglvl2);
                 return ExecutionState<bool>.Failed();
             }

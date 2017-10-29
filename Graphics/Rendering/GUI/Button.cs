@@ -50,7 +50,7 @@ namespace Tortoise.Graphics.Rendering.GUI
 
 
 
-        internal override bool OnMouseMove(MouseEventArgs e)
+        public override bool OnMouseMove(MouseEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
             if (!IsPointOver(e.MouseData.Position))
@@ -63,10 +63,10 @@ namespace Tortoise.Graphics.Rendering.GUI
             }
             _redrawPreRenderd = _useOverTexture == false;
             _useOverTexture = true;
-            return doMouseMove(e);
+            return DoMouseMove(e);
         }
 
-        internal override bool OnMouseDown(MouseEventArgs e)
+        public override bool OnMouseDown(MouseEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
             if (!IsPointOver(e.MouseData.Position)) return false;
@@ -74,17 +74,17 @@ namespace Tortoise.Graphics.Rendering.GUI
             _redrawPreRenderd = _useDownTexture == false || _useOverTexture == true;
             _useOverTexture = false;
             _useDownTexture = true;
-            return doMouseDown(e);
+            return DoMouseDown(e);
         }
 
-        internal override bool OnMouseUp(MouseEventArgs e)
+        public override bool OnMouseUp(MouseEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
             if (!IsPointOver(e.MouseData.Position)) return false;
             _redrawPreRenderd = _useOverTexture == true || _useDownTexture == true;
             _useOverTexture = false;
             _useDownTexture = false;
-            return doMouseUp(e);
+            return DoMouseUp(e);
         }
 
         public Button(TGraphics graphics, string name, string text, Point location, Size size, FontManager fontinfo)

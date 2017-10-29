@@ -34,309 +34,338 @@
  * Console Functions: None
  */
 
-//using System;
-//using System.Collections.Generic;
-//using System.Security.Cryptography;
-//using System.Text;
+using System;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 //using System.Drawing;
 
-//using Tortoise.Client.Net;
-//using Tortoise.Client.Rendering;
-//using Tortoise.Client.Rendering.GUI;
-//using Tortoise.Shared;
-//using Tortoise.Shared.Exceptions;
-//using Tortoise.Shared.IO;
-//using Tortoise.Shared.Module;
-//using Tortoise.Shared.Net;
-//using Tortoise.Shared.Localization;
+using Tortoise.Client.Net;
 
-//namespace Tortoise.Client.Module
-//{
-	
-//    internal class LoginLoader : ModuleLoader
-//    {
-//        public const ushort ClientModuleComID = 10010;
-//        public const ushort ServerModuleComID = 20010;
-		
-//        public override Version Version {
-//            get {
-//                return new Version(1,0,0,0);
-//            }
-//        }
-		
-//        public override string Name {
-//            get {
-//                return "Tortoise Login Manager.";
-//            }
-//        }
-//        static Login _instance;
-//        public override void Load()
-//        {
-//            _instance = new Login();
-//            Connection.AddModuleHandle(ClientModuleComID, _instance);
-//            if (MainMenu.LoginRequest != null)
-//                throw new ModuleLoadException("MainMenu.LoginRequest has already been set!");
-//            MainMenu.LoginRequest = _instance.LoginRequest;
+using Tortoise.Graphics.Rendering;
+using Tortoise.Graphics.Rendering.GUI;
 
-//            if (Window.AvailableScreens.ContainsKey("LoginStatusScreen"))
-//                throw new ModuleLoadException("A LoginStatusScreen screen has already been set!");
-//            LoginStatusScreen.Instance = new LoginStatusScreen();
-//            Window.AvailableScreens.Add("LoginStatusScreen", LoginStatusScreen.Instance);
-//        }
-		
+using StormLib;
+using StormLib.Exceptions;
+using Tortoise.Shared.IO;
+using StormLib.Module;
+using Tortoise.Shared.Net;
+using StormLib.Localization;
+using Tortoise.Graphics;
+using Tortoise.Shared.Drawing;
 
-//    }
-	
-//    /// <summary>
-//    /// Description of Login.
-//    /// </summary>
-//    class Login : IComModule
-//    {
-//        //These are IDs used by the packet. The random numbers
-//        //should help catch sync issues.
-//        //TODO: Change these to different values for your game, make sure they match in the server.
-//        private const byte _packet_AuthKey = 			200;
-//        private const byte _packet_LoginRequest = 	    202;
-//        private const byte _packet_LoginResponce = 	    207;
-//        private const byte _packet_Version =			209;
-		
-//        private string serverIP = "127.0.0.1";
-//        private int serverPort = 9974;
-		
-//        private string username = "", password = "";
-		
-		
-//        public byte[] AuthKey;
-		
+namespace Tortoise.Client.Module
+{
+
+    internal class LoginLoader : IModuleLoader
+    {
+        public const ushort ClientModuleComID = 10010;
+        public const ushort ServerModuleComID = 20010;
+
+        public Version Version
+        {
+            get
+            {
+                return new Version(1, 0, 0, 0);
+            }
+        }
+
+        public string Name
+        {
+            get
+            {
+                return "Tortoise Login Manager.";
+            }
+        }
+        static Login _instance;
+        public void Load()
+        {
+            _instance = new Login();
+            Connection.AddModuleHandle(ClientModuleComID, _instance);
+            if (MainMenuScreen.LoginRequest != null)
+                throw new ModuleLoadException("MainMenu.LoginRequest has already been set!");
+            MainMenuScreen.LoginRequest = _instance.LoginRequest;
+
+            if (Program.GameLogic.Graphics.Window.AvailableScreens.ContainsKey("LoginStatusScreen"))
+                throw new ModuleLoadException("A LoginStatusScreen screen has already been set!");
+            LoginStatusScreen.Instance = new LoginStatusScreen(Program.GameLogic.Graphics);
+            Program.GameLogic.Graphics.Window.AvailableScreens.Add("LoginStatusScreen", LoginStatusScreen.Instance);
+        }
 
 
-//        public Login()
-//        {
-//        }
-		
-//        public void Communication(Connection Sender, ByteReader data)
-//        {
-//            var ComID = data.ReadByte();
-//            if (!ComID)
-//            {
-//                Sender.SyncError("Could not read Packet ID");
-//                return;
-//            }
-//            switch (ComID.Result)
-//            {
-//                case _packet_AuthKey:
-//                    if(!ReadAuthKey(Sender, data))
-//                        return;
-//                    SendLogin();
-//                    break;
-//                case _packet_LoginResponce:
-//                    if(!ReadLoginResponce(Sender, data))
-//                        return;
+    }
 
-//                    break;					
-//            }
-//        }
+    /// <summary>
+    /// Description of Login.
+    /// </summary>
+    class Login : IComModule
+    {
+        //These are IDs used by the packet. The random numbers
+        //should help catch sync issues.
+        //TODO: Change these to different values for your game, make sure they match in the server.
+        private const byte _packet_AuthKey = 200;
+        private const byte _packet_LoginRequest = 202;
+        private const byte _packet_LoginResponce = 207;
+        private const byte _packet_Version = 209;
 
-//        private ExecutionState ReadLoginResponce(Connection Sender, ByteReader data)
-//        {
-//            var sucess = data.ReadBoolean();
-//            if (!sucess)
-//            {
-//                var dbglvl0 = new Dictionary<string, object>();
-//                dbglvl0.Add("Location", "Tortoise.Client.Module.Login.ReadLoginResponce.1");
-//                var dbglvl1 = new Dictionary<string, object>(dbglvl0);
-//                dbglvl1.Add("length Error", sucess.Reason);
-//                var dbglvl2 = new Dictionary<string, object>(dbglvl1);
-//                dbglvl2.Add("ByteReader Dump", data.DumpDebugInfo());
+        private string serverIP = "127.0.0.1";
+        private int serverPort = 9974;
 
-//                Debugging.SyncError(Sender, dbglvl0, dbglvl1, dbglvl2);
-//                return ExecutionState.Failed();
-//            }
-
-//            if(sucess.Result)
-//                LoginStatusScreen.Instance.Text = DefaultLanguage.Strings.GetFormatedString("Login_Status_Sucess");
-//            else
-//                LoginStatusScreen.Instance.Text = DefaultLanguage.Strings.GetFormatedString("Login_Status_Failure");
+        private string username = "", password = "";
 
 
-//            return ExecutionState.Succeeded();
-//        }
-		
-//        private ExecutionState ReadAuthKey(Connection Sender, ByteReader data)
-//        {
-//            var length = data.ReadUShort();
-//            if (!length)
-//            {
-//                var dbglvl0 = new Dictionary<string, object>();
-//                dbglvl0.Add("Location", "Tortoise.Client.Module.Login.ReadAuthKey.1");
-//                var dbglvl1 = new Dictionary<string, object>(dbglvl0);
-//                dbglvl1.Add("length Error", length.Reason);
-//                var dbglvl2 = new Dictionary<string, object>(dbglvl1);
-//                dbglvl2.Add("ByteReader Dump", data.DumpDebugInfo());
+        public byte[] AuthKey;
 
-//                Debugging.SyncError(Sender, dbglvl0, dbglvl1, dbglvl2);
-//                return ExecutionState.Failed();
-//            }
-//            var key = data.ReadBytes(length.Result);
-//            if (!key)
-//            {
-//                var dbglvl0 = new Dictionary<string, object>();
-//                dbglvl0.Add("Location", "Tortoise.Client.Module.Login.ReadAuthKey.2");
-//                var dbglvl1 = new Dictionary<string, object>(dbglvl0);
-//                dbglvl1.Add("key Error", key.Reason);
-//                var dbglvl2 = new Dictionary<string, object>(dbglvl1);
-//                dbglvl2.Add("ByteReader Dump", data.DumpDebugInfo());
 
-//                Debugging.SyncError(Sender, dbglvl0, dbglvl1, dbglvl2);
-//                return ExecutionState.Failed();
-//            }
-			
-//            AuthKey = key.Result;
-//            return ExecutionState.Succeeded();
-//        }
-		
-//        private void SendLogin()
-//        {
-//            LoginStatusScreen.Instance.Text = DefaultLanguage.Strings.GetFormatedString("Login_Status_Authenticating");
+
+        public Login()
+        {
+        }
+
+        public void Communication(Connection Sender, ByteReader data)
+        {
+            var ComID = data.ReadByte();
+            if (!ComID)
+            {
+                Sender.SyncError("Could not read Packet ID");
+                return;
+            }
+            switch (ComID.Result)
+            {
+                case _packet_AuthKey:
+                    if (!ReadAuthKey(Sender, data))
+                        return;
+                    SendLogin();
+                    break;
+                case _packet_LoginResponce:
+                    if (!ReadLoginResponce(Sender, data))
+                        return;
+
+                    break;
+            }
+        }
+
+        private ExecutionState ReadLoginResponce(Connection Sender, ByteReader data)
+        {
+            var sucess = data.ReadBoolean();
+            if (!sucess)
+            {
+                var dbglvl0 = new Dictionary<string, object>
+                {
+                    { "Location", "Tortoise.Client.Module.Login.ReadLoginResponce.1" }
+                };
+                var dbglvl1 = new Dictionary<string, object>(dbglvl0)
+                {
+                    { "length Error", sucess.Reason }
+                };
+                var dbglvl2 = new Dictionary<string, object>(dbglvl1)
+                {
+                    { "ByteReader Dump", data.DumpDebugInfo() }
+                };
+                Debugging.SyncError(Sender, dbglvl0, dbglvl1, dbglvl2);
+                return ExecutionState.Failed();
+            }
+
+            if (sucess.Result)
+                LoginStatusScreen.Instance.Text = DefaultLanguage.Strings.GetFormatedString("Login_Status_Sucess");
+            else
+                LoginStatusScreen.Instance.Text = DefaultLanguage.Strings.GetFormatedString("Login_Status_Failure");
+
+
+            return ExecutionState.Succeeded();
+        }
+
+        private ExecutionState ReadAuthKey(Connection Sender, ByteReader data)
+        {
+            var length = data.ReadUShort();
+            if (!length)
+            {
+                var dbglvl0 = new Dictionary<string, object>
+                {
+                    { "Location", "Tortoise.Client.Module.Login.ReadAuthKey.1" }
+                };
+                var dbglvl1 = new Dictionary<string, object>(dbglvl0)
+                {
+                    { "length Error", length.Reason }
+                };
+                var dbglvl2 = new Dictionary<string, object>(dbglvl1)
+                {
+                    { "ByteReader Dump", data.DumpDebugInfo() }
+                };
+                Debugging.SyncError(Sender, dbglvl0, dbglvl1, dbglvl2);
+                return ExecutionState.Failed();
+            }
+            var key = data.ReadBytes(length.Result);
+            if (!key)
+            {
+                var dbglvl0 = new Dictionary<string, object>
+                {
+                    { "Location", "Tortoise.Client.Module.Login.ReadAuthKey.2" }
+                };
+                var dbglvl1 = new Dictionary<string, object>(dbglvl0)
+                {
+                    { "key Error", key.Reason }
+                };
+                var dbglvl2 = new Dictionary<string, object>(dbglvl1)
+                {
+                    { "ByteReader Dump", data.DumpDebugInfo() }
+                };
+                Debugging.SyncError(Sender, dbglvl0, dbglvl1, dbglvl2);
+                return ExecutionState.Failed();
+            }
+
+            AuthKey = key.Result;
+            return ExecutionState.Succeeded();
+        }
+
+        private void SendLogin()
+        {
+            LoginStatusScreen.Instance.Text = DefaultLanguage.Strings.GetFormatedString("Login_Status_Authenticating");
+
+            string hashedPassword;
+            hashedPassword = MD5String(username + MD5String(password), AuthKey);
+
+            ByteWriter bw = new ByteWriter();
+            bw.Write(_packet_LoginRequest);
+            bw.Write(username);
+            bw.Write(hashedPassword);
+
+            ServerConnection.MainServerConnection.WriteModulePacket(bw.GetArray(), LoginLoader.ServerModuleComID);
+        }
+
+        private string MD5String(string text)
+        {
+            byte[] orignal;
+            MD5 md5;
+
+            md5 = new MD5CryptoServiceProvider();
+            orignal = ASCIIEncoding.Default.GetBytes(text);
+
+            return BitConverter.ToString(md5.ComputeHash(orignal));
+        }
+
+        private string MD5String(string text, byte[] salt)
+        {
+            byte[] orignal, salted;
+            MD5 md5;
+
+            md5 = new MD5CryptoServiceProvider();
+            orignal = ASCIIEncoding.Default.GetBytes(text);
+            salted = new Byte[orignal.Length + salt.Length];
+            Array.Copy(orignal, salted, orignal.Length);
+            Array.Copy(salt, 0, salted, orignal.Length, salted.Length);
+
+            return BitConverter.ToString(md5.ComputeHash(salted));
+        }
+
+        public void LoginRequest(string Username, string Password)
+        {
+            Program.GameLogic.Graphics.Window.ChangeToScreen("LoginStatusScreen");
+            UpdateStatusText(DefaultLanguage.Strings.GetFormatedString("Login_Status_Connecting"));
+
+            ServerConnection.MainServerConnection = new Connection(serverIP, serverPort);
+
+            ServerConnection.MainServerConnection.MessageEvent += delegate (object sender, MessageEventArgs e)
+            {
+                switch (e.Message)
+                {
+                    case MessageID.Null:
+                        UpdateStatusText(DefaultLanguage.Strings.GetFormatedString("Server_Message_Null"));
+                        break;
+                    case MessageID.OutOfDate:
+                        UpdateStatusText(DefaultLanguage.Strings.GetFormatedString("Server_Message_OutOfDate"));
+                        break;
+                    case MessageID.SyncError:
+                        UpdateStatusText(DefaultLanguage.Strings.GetFormatedString("Server_Message_SyncError"));
+                        break;
+
+                }
+            };
+            ServerConnection.MainServerConnection.DisconnectedEvent += delegate (object sender, EventArgs e)
+            {
+
+            };
+
+            UpdateStatusText(DefaultLanguage.Strings.GetFormatedString("Login_Status_Connected"));
+
+            ByteWriter bw = new ByteWriter();
+            bw.Write(_packet_Version);
+            bw.Write(Convert.ToByte(Program.Version.Major));
+            bw.Write(Convert.ToByte(Program.Version.Minor));
+            bw.Write(Convert.ToUInt16(Program.Version.Build));
+            bw.Write(Convert.ToUInt16(Program.Version.Revision));
+
+            username = Username;
+            password = Password;
+
+
+
+            ServerConnection.MainServerConnection.WriteModulePacket(bw.GetArray(), LoginLoader.ServerModuleComID);
+        }
+
+        private void UpdateStatusText(string message)
+        {
+            if (LoginStatusScreen.Instance.InvokeRequired())
+            {
+                LoginStatusScreen.Instance.InvokeMethod((nulldata) =>
+                {
+                    LoginStatusScreen.Instance.Text = message;
+                }, null);
+            }
+            else
+            {
+                LoginStatusScreen.Instance.Text = message;
+            }
+        }
+    }
+
+    class LoginStatusScreen : Screen
+    {
+        public static LoginStatusScreen Instance;
+        public string Text
+        {
+            get { return (Controls["_contents"] as Label).Text; }
+            set
+            {
+                _threadSafety.EnforceThreadSafety();
+                (Controls["_contents"] as Label).Text = value;
+            }
+        }
+
+        public LoginStatusScreen(TGraphics graphics) : base(graphics)
+        {
             
-//            string hashedPassword;
-//            hashedPassword = MD5String(username + MD5String(password), AuthKey);
-			
-//            ByteWriter bw = new ByteWriter();
-//            bw.Write(_packet_LoginRequest);
-//            bw.Write(username);
-//            bw.Write(hashedPassword);
-			
-//            ServerConnection.MainServerConnection.WriteModulePacket(bw.GetArray(), LoginLoader.ServerModuleComID, 0);
-//        }
-		
-//        private string MD5String(string text)
-//        {
-//            byte[] orignal;
-//            MD5 md5;
+            BackgroundColor = System.Drawing.Color.Wheat;
+            Label cointents = new Label(Program.GameLogic.Graphics, "_contents", "", new Point(0, 0), new Size(Program.GameLogic.Graphics.ScreenSize.Width, Program.GameLogic.Graphics.ScreenSize.Height))
+            {
+                TextAlignement = TextAlignement.Center
+            };
+            Controls.Add(10, cointents);
 
-//            md5 = new MD5CryptoServiceProvider();
-//            orignal = ASCIIEncoding.Default.GetBytes(text);
+        }
 
-//            return BitConverter.ToString(md5.ComputeHash(orignal));
-//        }
-		
-//        private string MD5String(string text, byte[] salt)
-//        {
-//            byte[] orignal, salted;
-//            MD5 md5;
+        public new void OnResize()
+        {
+            base.OnResize();
+        }
 
-//            md5 = new MD5CryptoServiceProvider();
-//            orignal = ASCIIEncoding.Default.GetBytes(text);
-//            salted = new Byte[orignal.Length + salt.Length];
-//            Array.Copy(orignal, salted,orignal.Length);
-//            Array.Copy(salt, 0, salted, orignal.Length, salted.Length);
+        public override void Load()
+        {
+            base.Load();
+            //This is called right before the window becomes the focused screen.
+            //Any code to run should go here.
+        }
 
-//            return BitConverter.ToString(md5.ComputeHash(salted));
-//        }
+        public override void Unload()
+        {
+            base.Unload();
+            //This is called when the window is no longer the focused screen.
+            //Any code to run should go here.
+        }
 
-//        public void LoginRequest(string Username, string Password)
-//        {
-//            Window.Instance.ChangeToScreen("LoginStatusScreen");
-//            UpdateStatusText( DefaultLanguage.Strings.GetFormatedString("Login_Status_Connecting"));
-			
-//            ServerConnection.MainServerConnection = new Connection(serverIP, serverPort);
-
-//            ServerConnection.MainServerConnection.MessageEvent += delegate(object sender, MessageEventArgs e)
-//            {
-//                switch (e.Message)
-//                {
-//                    case MessageID.Null:
-//                        UpdateStatusText( DefaultLanguage.Strings.GetFormatedString("Server_Message_Null"));
-//                        break;
-//                    case MessageID.OutOfDate:
-//                        UpdateStatusText( DefaultLanguage.Strings.GetFormatedString("Server_Message_OutOfDate"));
-//                        break;
-//                    case MessageID.SyncError:
-//                       UpdateStatusText( DefaultLanguage.Strings.GetFormatedString("Server_Message_SyncError"));
-//                        break;
-
-//                }
-//            };
-//            ServerConnection.MainServerConnection.DisconnectedEvent += delegate(object sender, EventArgs e)
-//            {
-
-//            };
-
-//            UpdateStatusText (DefaultLanguage.Strings.GetFormatedString("Login_Status_Connected"));
-            
-//            ByteWriter bw = new ByteWriter();
-//            bw.Write(_packet_Version);
-//            bw.Write(Convert.ToByte(Program.Version.Major));
-//            bw.Write(Convert.ToByte(Program.Version.Minor));
-//            bw.Write(Convert.ToUInt16(Program.Version.Build));
-//            bw.Write(Convert.ToUInt16(Program.Version.Revision));
-			
-//            username = Username;
-//            password = Password;
-
-
-			
-//            ServerConnection.MainServerConnection.WriteModulePacket(bw.GetArray(), LoginLoader.ServerModuleComID, 0);
-//        }
-
-//        private void UpdateStatusText(string message)
-//        {
-//            if (LoginStatusScreen.Instance.InvokeRequired())
-//            {
-//                LoginStatusScreen.Instance.InvokeMethod((nulldata) =>
-//                {
-//                    LoginStatusScreen.Instance.Text = message;
-//                }, null);
-//            }
-//            else
-//            {
-//                LoginStatusScreen.Instance.Text = message;
-//            }
-//        }
-//    }
-
-//    class LoginStatusScreen : Screen
-//    {
-//        public static LoginStatusScreen Instance;
-//        public string Text
-//        {
-//            get { return (Controls["_contents"] as Label).Text; }
-//            set
-//            {
-//                _threadSafety.EnforceThreadSafety();
-//                (Controls["_contents"] as Label).Text = value;
-//            }
-//        }
-//        public override void Init()
-//        {
-//            BackgroundColor = Color.Wheat;
-//            Label cointents = new Label("_contents", "", new Point(0, 0), new Size(Window.ScreenWidth, Window.ScreenHeight), FontInfo.GetInstance(10, FontTypes.Sans));
-//            cointents.TextAlignement = TextAlignement.Center;
-//            Controls.Add(10, cointents);
-
-//        }
-
-//        public override void OnResize()
-//        {
-//            Size = Window.Instance.Size;
-//        }
-
-//        public override void Load()
-//        {
-//            base.Load();
-//            //This is called right before the window becomes the focused screen.
-//            //Any code to run should go here.
-//        }
-
-//        public override void Unload()
-//        {
-//            base.Unload();
-//            //This is called when the window is no longer the focused screen.
-//            //Any code to run should go here.
-//        }
-
-
-
-//    }
-//}
+        public override void Initialize()
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

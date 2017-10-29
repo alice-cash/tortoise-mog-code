@@ -65,7 +65,7 @@ namespace Tortoise.Graphics
 
         public System.Windows.Forms.Control Control { get { return _control; } }
 
-        public Size ScreenSize { get { return Size.FromSystem(_control.Size); } }
+        public Size ScreenSize { get { return Size.FromSystem(_control.ClientSize); } }
 
         private Window _window;
 
@@ -116,7 +116,10 @@ namespace Tortoise.Graphics
 
             Content = new ContentManager(_services, "Content");
             
-            InputManager = new TInputManager();
+            InputManager = new TInputManager(this);
+
+            Mouse.WindowHandle = control.Handle;
+
 
             parameters = new PresentationParameters();
 
@@ -124,27 +127,42 @@ namespace Tortoise.Graphics
             parameters.BackBufferHeight = Math.Max(ScreenSize.Height, 1);
             parameters.BackBufferFormat = SurfaceFormat.Color;
             parameters.DepthStencilFormat = DepthFormat.Depth24;
-            parameters.DeviceWindowHandle = control.Handle;
+            parameters.DeviceWindowHandle = this._control.Handle;
             parameters.PresentationInterval = PresentInterval.Immediate;
             parameters.IsFullScreen = false;
 
             _graphicsDevice = new GraphicsDevice(GraphicsAdapter.DefaultAdapter,
                                                 GraphicsProfile.Reach,
                                                 parameters);
-
             _spriteBatch = new SpriteBatch(_graphicsDevice);
 
             _services.AddService(_graphicsDevice);
             _services.AddService(_spriteBatch);
             _services.AddService(typeof(IGraphicsDeviceService), this);
 
-
             this._window.Initialize();
+            this._window.Graphics.Control.Resize += _window_ScreenChanged;
             OnDeviceCreated(EventArgs.Empty);
+        }
+
+        private void _window_ScreenChanged(object sender, EventArgs e)
+        {
+            parameters = new PresentationParameters();
+
+            parameters.BackBufferWidth = Math.Max(ScreenSize.Width, 1);
+            parameters.BackBufferHeight = Math.Max(ScreenSize.Height, 1);
+            parameters.BackBufferFormat = SurfaceFormat.Color;
+            parameters.DepthStencilFormat = DepthFormat.Depth24;
+            parameters.DeviceWindowHandle = this._control.Handle;
+            parameters.PresentationInterval = PresentInterval.Immediate;
+            parameters.IsFullScreen = false;
+
+            _graphicsDevice.Reset(parameters);
         }
 
         public bool DoTick()
         {
+            InputManager.DoEventPoll();
             this._window.Tick();
             return true;
         }
@@ -174,6 +192,11 @@ namespace Tortoise.Graphics
                 // drawing. The lost device will be handled by the next BeginDraw,
                 // so we just swallow the exception.
             }
+        }
+
+        public void Resize()
+        {
+
         }
 
         internal void OnDeviceCreated(EventArgs e)

@@ -28,9 +28,9 @@
 using System;
 using System.Diagnostics;
 using Tortoise.Server.Exceptions;
-using Tortoise.Shared.Module;
+using StormLib.Module;
 using System.Reflection;
-using Tortoise.Shared.Diagnostics;
+
 
 #if LINUX
 using System.Threading;
@@ -74,11 +74,11 @@ namespace Tortoise.Server
 #if LINUX
 			signal_thread.Start();
 #endif
-            Shared.TConsole.Init();
+            StormLib.Console.Init();
 
             //add the diagnostic debug output to console.
             Debug.Listeners.Add(new ConsoleTraceListener());
-            Debug.Listeners.Add(new TortoiseConsoleTraceListiner());
+            Debug.Listeners.Add(new StormLib.Diagnostics.ConsoleTraceListiner());
             //Trace.Listeners.Add(new ConsoleTraceListener());
             //Trace.Listeners.Add(new TortoiseConsoleTraceListiner());
             //Load up the configuration file
@@ -126,7 +126,7 @@ namespace Tortoise.Server
             while (true)
             {
                 Console.Write("$$>");
-                Console.WriteLine(Shared.TConsole.ProcessLine(Console.ReadLine()).Value);
+                Console.WriteLine(StormLib.Console.ProcessLine(Console.ReadLine()).Value);
             }
         }
 

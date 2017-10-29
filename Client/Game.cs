@@ -5,9 +5,9 @@ using System.Diagnostics;
 using Tortoise.Client;
 using Tortoise.Client.Module;
 using Tortoise.Client.Net;
-using Tortoise.Shared.Module;
-using Tortoise.Shared.Localization;
-using Tortoise.Shared.Diagnostics;
+using StormLib.Module;
+using StormLib.Localization;
+using StormLib.Diagnostics;
 using System.Reflection;
 using System.Globalization;
 using System.IO;
@@ -27,6 +27,7 @@ namespace Tortoise.Client
 {
     internal class Game
     {
+        private bool terminated = false;
 
         public TGraphics Graphics { get; private set; }
         public MainForm MainForm { get; private set; }
@@ -52,6 +53,8 @@ namespace Tortoise.Client
 
         public void Quit()
         {
+            if (terminated) return;
+            terminated = true;
             Program.ThreadsRunning = false;
             Graphics.Window.Unload();
             MainForm.Close();

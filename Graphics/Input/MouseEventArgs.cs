@@ -28,8 +28,11 @@
 using System;
 using Tortoise.Shared.Drawing;
 
+using System.Linq;
+
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Tortoise.Graphics.Input
 {
@@ -63,6 +66,59 @@ namespace Tortoise.Graphics.Input
         public bool MiddleButtonPressed { get; private set; }
         public bool X1ButtonPressed { get; private set; }
         public bool X2ButtonPressed { get; private set; }
+
+        public MouseEventData(System.Windows.Forms.MouseEventArgs e, bool IsDownEvent)
+        {
+            ButtonsPressed = new MouseButtons[0];
+            ButtonsReleased = new MouseButtons[0];
+            ButtonsDown = new MouseButtons[0];
+
+            
+
+            Position = Point.FromPoint(e.Location);
+            RelativePosition = Position;
+            WheelPosition = 0;
+            WheelDelta = e.Delta;
+
+            if (e.Button != System.Windows.Forms.MouseButtons.None)
+            {
+                if (IsDownEvent)
+                    ButtonsPressed = new MouseButtons[] { WinFormToTortus(e.Button) };
+                else
+                    ButtonsReleased = new MouseButtons[] { WinFormToTortus(e.Button) };
+            }
+
+            ButtonsDown = ButtonsPressed;
+
+            LeftButtonPressed = false;
+            RightButtonPressed = false;
+            MiddleButtonPressed = false;
+            X1ButtonPressed = false;
+            X2ButtonPressed = false;
+
+            foreach (MouseButtons button in ButtonsDown)
+            {
+                switch (button)
+                {
+                    case MouseButtons.Left:
+                        LeftButtonPressed = true;
+                        continue;
+                    case MouseButtons.Right:
+                        RightButtonPressed = true;
+                        continue;
+                    case MouseButtons.Middle:
+                        MiddleButtonPressed = true;
+                        continue;
+                    case MouseButtons.X1:
+                        X1ButtonPressed = true;
+                        continue;
+                    case MouseButtons.X2:
+                        X2ButtonPressed = true;
+                        continue;
+
+                }
+            }
+        }
 
         public MouseEventData(IEnumerable<MouseButtons> bP, IEnumerable<MouseButtons> bR, IEnumerable<MouseButtons> bD, Point pos, Point rPos, int wheel, int wD)
         {
@@ -103,6 +159,48 @@ namespace Tortoise.Graphics.Input
                 }
             }
         }
+
+        
+
+        public override string ToString()
+        {
+            return string.Format("[(Pressed:{0}),(Released:{1}),(Down:{2}),(Position:{3}),(Wheel:{4}),(WheelDelta:{5})",
+                _buttonDataToString(ButtonsPressed), _buttonDataToString(ButtonsReleased), _buttonDataToString(ButtonsDown), 
+                Position.ToString(),WheelPosition.ToString(),WheelDelta.ToString());
+        }
+
+        private static string _buttonDataToString(IEnumerable<MouseButtons> data)
+        {
+            if(data.Count() == 0) { return "{}"; }
+            StringBuilder sb = new StringBuilder();
+            sb.Append("{");
+            foreach (MouseButtons e in data)
+            {
+                sb.Append(e.ToString());
+                sb.Append(",");
+            }
+            sb.Remove(sb.Length - 1, 1);
+            sb.Append("}");
+            return sb.ToString();
+        }
+
+        private static MouseButtons WinFormToTortus(System.Windows.Forms.MouseButtons button)
+        {
+            switch (button)
+            {
+                case System.Windows.Forms.MouseButtons.Left:
+                    return MouseButtons.Left;
+                case System.Windows.Forms.MouseButtons.Middle:
+                    return MouseButtons.Middle;
+                case System.Windows.Forms.MouseButtons.Right:
+                    return MouseButtons.Right;
+                case System.Windows.Forms.MouseButtons.XButton1:
+                    return MouseButtons.X1;
+                case System.Windows.Forms.MouseButtons.XButton2:
+                    return MouseButtons.X2;
+            }
+            return MouseButtons.None;
+        }
     }
 
     public enum MouseButtons
@@ -111,6 +209,7 @@ namespace Tortoise.Graphics.Input
         Right,
         Middle,
         X1,
-        X2
+        X2,
+        None
     }
 }

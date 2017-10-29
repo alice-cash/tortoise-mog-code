@@ -30,11 +30,11 @@ using System.Collections.Generic;
 //using System.Drawing;
 using Color = System.Drawing.Color;
 //using Tortoise.Client.Extension.System.Drawing;
-using Tortoise.Shared.Threading;
+using StormLib.Threading;
 
 using Tortoise.Graphics.Input;
 
-using Tortoise.Shared.Exceptions;
+using StormLib.Exceptions;
 
 using Tortoise.Shared.Drawing;
 
@@ -54,7 +54,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         protected Surface _backgroundImage = null;
         protected bool _visible = true;
 
-        //Mark items that have changed so they can be updated next time their rendered.
+        //Mark items that have changed so they can be updated next time they are rendered.
         /*
         protected bool _changed = false;
         protected bool _chancedLocation = false;
@@ -74,6 +74,8 @@ namespace Tortoise.Graphics.Rendering.GUI
 
         protected bool _hasFocus;
 
+        protected ControlAnchor _anchor;
+
         protected ThreadSafetyEnforcer _threadSafety;
        // protected Invoker _invoker;
         #endregion
@@ -90,25 +92,22 @@ namespace Tortoise.Graphics.Rendering.GUI
 
         public System.EventHandler TickEvent;
 
-        protected bool doMouseDown(MouseEventArgs e)
+        protected bool DoMouseDown(MouseEventArgs e)
         {
-            if (MouseDown != null)
-                MouseDown(this, e);
+            MouseDown?.Invoke(this, e);
             return MouseDown != null;
         }
-        protected bool doMouseUp(MouseEventArgs e)
+        protected bool DoMouseUp(MouseEventArgs e)
         {
-            if (MouseUp != null)
-                MouseUp(this, e);
+            MouseUp?.Invoke(this, e);
             return MouseUp != null;
         }
-        protected bool doMouseMove(MouseEventArgs e)
+        protected bool DoMouseMove(MouseEventArgs e)
         {
-            if (MouseMove != null)
-                MouseMove(this, e);
+            MouseMove?.Invoke(this, e);
             return MouseMove != null;
         }
-        protected bool doKeyboardDown(KeyEventArgs e)
+        protected bool DoKeyboardDown(KeyEventArgs e)
         {
             //Keyboard events should never be triggered in the base control event.
             return false;
@@ -116,7 +115,7 @@ namespace Tortoise.Graphics.Rendering.GUI
             //    KeyboardDown(this, e);
             //return KeyboardDown != null;
         }
-        protected bool doKeyboardUp(KeyEventArgs e)
+        protected bool DoKeyboardUp(KeyEventArgs e)
         {
             //Keyboard events should never be triggered in the base control event.
             return false;
@@ -124,31 +123,36 @@ namespace Tortoise.Graphics.Rendering.GUI
             //    KeyboardUp(this, e);
             //return KeyboardUp != null;
         }
-        protected bool doKeyboardPress(KeyEventArgs e)
+        protected bool DoKeyboardPress(KeyEventArgs e)
         {
             return false;
         }
-        protected void doResize(ResizeEventArgs e)
+        public virtual void DoResize(ResizeEventArgs e)
         {
-            if (Resized != null)
-                Resized(this, e);
+            Resized?.Invoke(this, e);
         }
-        protected void doMove(MovedEventArgs e)
+        protected void DoMove(MovedEventArgs e)
         {
-            if (Moved != null)
-                Moved(this, e);
+            Moved?.Invoke(this, e);
         }
 
-        protected void doFocusChange()
+        protected void DoFocusChange()
         {
-            if (FocusChanged != null)
-                FocusChanged(this, EventArgs.Empty);
+            FocusChanged?.Invoke(this, EventArgs.Empty);
         }
         #endregion
 
         #region Properties
         public string Name { get; protected set; }
 
+        public ControlAnchor Anchor {
+            get { return _anchor; }
+            set
+            {
+                _threadSafety.EnforceThreadSafety();
+                _anchor = value;
+            }
+        }
         public bool HasFocus
         {
             get { return _hasFocus; }
@@ -224,10 +228,10 @@ namespace Tortoise.Graphics.Rendering.GUI
                 }
 
                 if (_area.X != value.X || _area.Y != value.Y)
-                    doResize(new ResizeEventArgs(OldRec.Size, _area.Size));
+                    DoResize(new ResizeEventArgs(OldRec.Size, _area.Size));
 
                 if (_area.Width != value.Width || _area.Height != value.Height)
-                    doMove(new MovedEventArgs(OldRec.Location, _area.Location));
+                    DoMove(new MovedEventArgs(OldRec.Location, _area.Location));
             }
         }
 
@@ -241,7 +245,7 @@ namespace Tortoise.Graphics.Rendering.GUI
                 {
                     Point OldLocation =_area.Location;
                     _area.Location = value;
-                    doMove(new MovedEventArgs(OldLocation, _area.Location));
+                    DoMove(new MovedEventArgs(OldLocation, _area.Location));
                 }
             }
         }
@@ -257,7 +261,7 @@ namespace Tortoise.Graphics.Rendering.GUI
 
                     Size OldSize = Size;
                     _area.Size = value;
-                    doResize(new ResizeEventArgs(OldSize, Size));
+                    DoResize(new ResizeEventArgs(OldSize, Size));
                     _redrawPreRenderd = true;
                 }
             }
@@ -270,6 +274,7 @@ namespace Tortoise.Graphics.Rendering.GUI
             {
                 _threadSafety.EnforceThreadSafety();
                 _area.X = value;
+                _redrawPreRenderd = true;
             }
         }
 
@@ -280,6 +285,7 @@ namespace Tortoise.Graphics.Rendering.GUI
             {
                 _threadSafety.EnforceThreadSafety();
                 _area.Y = value;
+                _redrawPreRenderd = true;
             }
         }
 
@@ -293,7 +299,7 @@ namespace Tortoise.Graphics.Rendering.GUI
                 {
                     Size OldSize = Size;
                     _area.Width = value;
-                    doResize(new ResizeEventArgs(OldSize, Size));
+                    DoResize(new ResizeEventArgs(OldSize, Size));
                     _redrawPreRenderd = true;
                 }
             }
@@ -309,7 +315,7 @@ namespace Tortoise.Graphics.Rendering.GUI
                 {
                     Size OldSize = Size;
                     _area.Height = value;
-                    doResize(new ResizeEventArgs(OldSize, Size));
+                    DoResize(new ResizeEventArgs(OldSize, Size));
                     _redrawPreRenderd = true;
                 }
             }
@@ -317,22 +323,26 @@ namespace Tortoise.Graphics.Rendering.GUI
 
         public int Top
         {
-            get { return _area.Top; }
+            get { return Y; }
+            set { Y = value; }
         }
 
         public int Left
         {
-            get { return _area.Left; }
+            get { return X; }
+            set { X = value; }
         }
 
         public int Right
         {
-            get { return _area.Right; }
+            get { return X + Width; }
+            set { Width = value - X; }
         }
 
         public int Bottom
         {
-            get { return _area.Bottom; }
+            get { return Y + Height; }
+            set { Height = value - Y; }
         }
 
         public Point RealLocation
@@ -363,6 +373,7 @@ namespace Tortoise.Graphics.Rendering.GUI
             _threadSafety = new ThreadSafetyEnforcer(name);
             _invoker = new Invoker(_threadSafety);
             _area = area;
+            _anchor = ControlAnchor.Default;
             Name = name;
         }
         #endregion
@@ -400,7 +411,7 @@ namespace Tortoise.Graphics.Rendering.GUI
                 Unload();
         }
 
-        internal virtual void Tick(TickEventArgs e)
+        public virtual void Tick(TickEventArgs e)
         {
             if (!Loaded) throw new LogicException("Control not loaded!");
 
@@ -414,15 +425,14 @@ namespace Tortoise.Graphics.Rendering.GUI
                 _redrawPreRenderd = false;
             }
 
-            if (TickEvent != null)
-                TickEvent(this, EventArgs.Empty);
+            TickEvent?.Invoke(this, EventArgs.Empty);
         }
 
 
         /// <summary>
         /// Renders the control to the screen. You should 
         /// </summary>
-        internal virtual void Render()
+        public virtual void Render()
         {
             _threadSafety.EnforceThreadSafety();
 
@@ -440,7 +450,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         /// Redraws the PreRenderd Surface.
         /// </summary>
         [ThreadSafeAttribute(ThreadSafeFlags.ThreadSafeEnforced)]
-        protected virtual void Redraw_PreRenderd()
+        public virtual void Redraw_PreRenderd()
         {
 
             _threadSafety.EnforceThreadSafety();
@@ -467,35 +477,35 @@ namespace Tortoise.Graphics.Rendering.GUI
         /// <summary>
         /// A MouseButton Event, returns true if the event is used, and false if it isn't.
         /// </summary>
-        internal virtual bool OnMouseDown(MouseEventArgs e)
+        public virtual bool OnMouseDown(MouseEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
             if (!IsPointOver(e.MouseData.Position)) return false;
-            return doMouseDown(e);
+            return DoMouseDown(e);
         }
         /// <summary>
         /// A MouseButton Event, returns true if the event is used, and false if it isn't.
         /// </summary>
-        internal virtual bool OnMouseUp(MouseEventArgs e)
+        public virtual bool OnMouseUp(MouseEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
             if (!IsPointOver(e.MouseData.Position)) return false;
-            return doMouseUp(e);
+            return DoMouseUp(e);
         }
         /// <summary>
         /// A MouseMove Event, returns true if the event is used, and false if it isn't.
         /// </summary>
-        internal virtual bool OnMouseMove(MouseEventArgs e)
+        public virtual bool OnMouseMove(MouseEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
             if (!IsPointOver(e.MouseData.Position)) return false;
-            return doMouseMove(e);
+            return DoMouseMove(e);
         }
 
         /// <summary>
         /// A Keyboard Event, returns true if the event is used, and false if it isn't.
         /// </summary>
-        internal virtual bool OnKeyboardPress(KeyEventArgs e)
+        public virtual bool OnKeyboardPress(KeyEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
             //Keyboard events should never be triggered in the base control event.
@@ -505,7 +515,7 @@ namespace Tortoise.Graphics.Rendering.GUI
         /// <summary>
         /// A Keyboard Event, returns true if the event is used, and false if it isn't.
         /// </summary>
-        internal virtual bool OnKeyboardDown(KeyEventArgs e)
+        public virtual bool OnKeyboardDown(KeyEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
             //Keyboard events should never be triggered in the base control event.
@@ -514,14 +524,13 @@ namespace Tortoise.Graphics.Rendering.GUI
         /// <summary>
         /// A Keyboard Event, returns true if the event is used, and false if it isn't.
         /// </summary>
-        internal virtual bool OnKeyboardUp(KeyEventArgs e)
+        public virtual bool OnKeyboardUp(KeyEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
             //Keyboard events should never be triggered in the base control event.
             return false; //doKeyboardUp(e);
         }
         #endregion
-
 
         #region protected Methods
         protected bool IsPointOver(System.Drawing.Point pos)
@@ -540,6 +549,44 @@ namespace Tortoise.Graphics.Rendering.GUI
             return Area.Contains((int)pos.X, (int)pos.Y);
         }
 
+
+        #endregion
+
+        #region Methods
+        public void ContainerResized(ResizeEventArgs e)
+        {
+            if ((_anchor & (ControlAnchor.Left | ControlAnchor.Right)) == 0)
+            {
+                X = X * e.NewSize.Width / e.OldSize.Width;
+            } else
+            {
+                //Nothing needs to be done if the left ancher is set
+                //if ((_anchor & ControlAnchor.Left) != 0)
+                //{
+                //
+                //}
+                if ((_anchor & ControlAnchor.Right) != 0)
+                {
+                    Right += e.NewSize.Width - e.OldSize.Width;
+                }
+            }
+
+
+            if ((_anchor & (ControlAnchor.Top | ControlAnchor.Bottom)) == 0)
+            {
+                Y = Y * e.NewSize.Height / e.OldSize.Height;
+            } else
+            {
+                //Nothing needs to be done if the top ancher is set
+
+                if ((_anchor & ControlAnchor.Bottom) != 0)
+                {
+                    Bottom += e.NewSize.Height - e.OldSize.Height;
+                }
+            }
+        }
+
         #endregion
     }
+
 }

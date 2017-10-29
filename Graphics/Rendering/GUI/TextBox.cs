@@ -28,15 +28,17 @@
 using System;
 using System.Text;
 //using System.Drawing;
+using System.Collections.Generic;
+using System.Linq;
 
 using Color = System.Drawing.Color;
 using Tortoise.Shared.Drawing;
 
-using Tortoise.Shared;
+using StormLib;
 using Tortoise.Graphics.Input;
 using System.Collections;
-using Microsoft.Xna.Framework.Input;
-using System.Collections.Generic;
+//using Microsoft.Xna.Framework.Input;
+
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using XColor = Microsoft.Xna.Framework.Color;
 //using MonoGame.Extended.BitmapFonts;
@@ -50,8 +52,7 @@ namespace Tortoise.Graphics.Rendering.GUI
     {
         private struct KeysLastPressed
         {
-            public Keys Key { get; set; }
-            //public int TimeSinceLast;
+            public Key Key { get; set; }
         }
 
         private string _text = "";
@@ -59,12 +60,12 @@ namespace Tortoise.Graphics.Rendering.GUI
         private Size _textSize;
         private int _markerPosition = 0;
         private FontManager _fontInfo;
-        //private GorgonText _gorgonText;
+
         private char _passwordChar = '*';
         private bool _usePasswordChar = false;
         private int _cursorPosition;
         private Timer _flasherTimer;
-        //private Timing.StopWatch _repeaterTimer;
+
         private bool _showMarker;
 
         private Color _textColor;
@@ -158,52 +159,15 @@ namespace Tortoise.Graphics.Rendering.GUI
             {
                 _redrawPreRenderd = true;
             };
+
             _textColor = Color.Black;
 		}
 
-        internal override void Tick(TickEventArgs e)
+        public override void Tick(TickEventArgs e)
         {
-            _visibleText = Text;
-            if (_usePasswordChar)
-            {
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < _visibleText.Length; i++)
-                    sb.Append(_passwordChar);
+            base.Tick(e);
 
-                _visibleText = sb.ToString();
-            }
-
-            PointF stringSize = FontManager.MeasureString(_fontInfo, _visibleText);
-            FontManager.DrawString(_fontInfo, _text, new Point(0, 0), TextColor);
-
-            _textSize.Width = (int)stringSize.X;
-            _textSize.Height = (int)stringSize.Y;
-
-            /*
-            if (_visibleText == "")
-                _textSize = _fontInfo.Font.SizeText(" ");
-            else
-                _textSize = _fontInfo.Font.SizeText(_visibleText);
-
-            //_textSize.Width += (int)(_visibleText.Length * 1.5);
-
-            */
-            if (HasFocus)
-            {
-                if (_flasherTimer.ElapsedMilliseconds > 500)
-                {
-                    _flasherTimer.Reset();
-                    _showMarker = !_showMarker;
-                    _redrawPreRenderd = true;
-                }
-
-                stringSize = FontManager.MeasureString(_fontInfo, _visibleText.Substring(0, _cursorPosition));
-                _markerPosition = (int)stringSize.X;
-
-                
-            }
-            
-
+            DoMarker();
             /*
              * This is code pulled from a random project i have. Its not goanna get used, but its here
              * as a reference when i put in some form of selection code.
@@ -217,7 +181,10 @@ namespace Tortoise.Graphics.Rendering.GUI
             //start choppin it up
             {
 
-                while (TransferInfo.FontDraw.MeasureString(null, VisualPart.Substring(Sub_cursorPosition), DrawTextFormat.None, Color.White).Width > tWidth)
+                while (TransferInfo.FontDraw.MeasureString(
+                    null, VisualPart.Substring(Sub_cursorPosition), 
+                    DrawTextFormat.None, Color.White
+                    ).Width > tWidth)
                 {
                     VisualPart = VisualPart.Remove(0, 1);
                     Sub_cursorPosition--;
@@ -227,117 +194,169 @@ namespace Tortoise.Graphics.Rendering.GUI
 
 
             }*/
-            base.Tick(e);
         }
 
-        internal override bool OnMouseUp(MouseEventArgs e)
+        void DoMarker(bool forceShow = false)
+        {
+            _visibleText = Text;
+            if (_usePasswordChar)
+            {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < _visibleText.Length; i++)
+                    sb.Append(_passwordChar);
+
+                _visibleText = sb.ToString();
+            }
+
+            PointF stringSize = FontManager.MeasureString(_fontInfo, _visibleText);
+
+            _textSize.Width = (int)stringSize.X;
+            _textSize.Height = (int)stringSize.Y;
+
+            if (HasFocus)
+            {
+                if (!_flasherTimer.IsRunning) _flasherTimer.Start();
+                if (_flasherTimer.ElapsedMilliseconds > 500)
+                {
+                    _flasherTimer.Reset();
+                    _showMarker = !_showMarker || forceShow;
+                    _redrawPreRenderd = true;
+                }
+            }
+
+            _markerPosition = (int)FontManager.MeasureString(_fontInfo, _visibleText.Substring(0, _cursorPosition)).X;
+        }
+
+        public override bool OnMouseUp(MouseEventArgs e)
         {
             _threadSafety.EnforceThreadSafety();
             if (IsPointOver(e.MouseData.Position))
             {
                 this.HasFocus = true;
-                doMouseUp(e);
+                DoMouseUp(e);
                 return true;
             }
             return false;
         }
 
-        internal override bool OnKeyboardDown(KeyEventArgs e)
+        public override bool OnKeyboardDown(KeyEventArgs e)
         {
             if (!HasFocus) return false;
-            return doKeyboardDown(e);
+            _flasherTimer.Reset();
+            
+            DoMarker(true);
+
+            DoKeyboardDown(e);
+            return true;
         }
 
-        internal override bool OnKeyboardUp(KeyEventArgs e)
+        public override bool OnKeyboardUp(KeyEventArgs e)
         {
             if (!HasFocus) return false;
             //we base all work on the up part.
-            
-            HandleKey(e.EventData.PressedKeys);
-            _flasherTimer.Reset();
-            _showMarker = true;
 
-            doKeyboardUp(e);
+
+
+            DoKeyboardUp(e);
             return true;
         }
 
-        internal override bool OnKeyboardPress(KeyEventArgs e)
+        public override bool OnKeyboardPress(KeyEventArgs e)
         {
             if (!HasFocus) return false;
-            HandleKeyPress(e.EventData.PressedKeys);
-            _flasherTimer.Reset();
-            _showMarker = true;
+            HandleKeyEvent(e);
 
-            doKeyboardPress(e);
+            _flasherTimer.Reset();
+            DoMarker(true);
+
+
+            DoKeyboardPress(e);
             return true;
         }
 
-        private void HandleKeyPress(IEnumerable<Keys> keyData)
-        {
 
-            foreach (Keys key in keyData)
+        private void HandleKeyEvent(KeyEventArgs e)
+        {
+            bool isShift = HasShiftKey(e.EventData.KeysDown);
+
+            foreach (Key key in e.EventData.KeysPressed)
             {
                 //TODO: Messy, make more readable.
-
 
                 //Check for any KeyWasPressed events
                 //Then check if Cancel was set to true
                 //Useful for sub-classes with special input checkers
                 if (CancelCharacterInput != null)
                 {
-                    KeyPressed kp = new KeyPressed();
-                    kp.Key = key;
-                    kp.Cancel = false;
+                    KeyPressed kp = new KeyPressed()
+                    {
+                        Key = key,
+                        Cancel = false
+                    };
                     CancelCharacterInput(this, kp);
                     if (kp.Cancel)
-                        return;
+                        return; 
                 }
-
-                StringBuilder sb = new StringBuilder();
-                sb.Append(Text.Substring(0, _cursorPosition));
-                sb.Append(key);
-                sb.Append(Text.Substring(_cursorPosition));
-                _cursorPosition += 1;
-                Text = sb.ToString();
             }
-        
-        }
 
-        private void HandleKey(IEnumerable<Keys> keyData)
-        {
-            foreach (Keys key in keyData)
+            foreach (Key key in e.EventData.KeysDown)
+            {
                 HandleKey(key);
+            }
+
+            char c = Input.Keyboard.KeyboardManager.CurrentKeyboard.GetCharacterCode(e.EventData.KeysDown.ToArray());
+            if (c == (char)0x00) return;
+
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append(Text.Substring(0, _cursorPosition));
+            sb.Append(c);
+            sb.Append(Text.Substring(_cursorPosition));
+            _cursorPosition += 1;
+            Text = sb.ToString();
         }
 
-        private void HandleKey(Keys key)
+        private bool HasShiftKey(IEnumerable<Key> keyData)
+        {
+            foreach(Key k in keyData)
+            {
+                if (k == Key.Shift || k == Key.RightShift || k == Key.LeftShift)
+                    return true;
+            }
+            return false;
+        }
+
+ 
+
+        private void HandleKey(Key key)
         {
             switch (key)
             {
-                case (Keys.Back):
+                case (Key.Back):
                     if (_cursorPosition > 0)
                     {
                         Text = Text.Remove(_cursorPosition - 1, 1);
                         //_cursorPosition -= 1;
                     }
                     break;
-                case (Keys.Delete):
+                case (Key.Delete):
 
                     if (_cursorPosition < Text.Length)
                     {
                         Text = Text.Remove(_cursorPosition, 1);
                     }
                     break;
-                case (Keys.End):
+                case (Key.End):
                     _cursorPosition = Text.Length;
                     break;
-                case (Keys.Home):
+                case (Key.Home):
                     _cursorPosition = 0;
                     break;
-                case (Keys.Left):
+                case (Key.Left):
                     if (_cursorPosition > 0)
                         _cursorPosition -= 1;
                     break;
-                case (Keys.Right):
+                case (Key.Right):
                     if (_cursorPosition < Text.Length)
                         _cursorPosition += 1;
                     break;
@@ -353,8 +372,11 @@ namespace Tortoise.Graphics.Rendering.GUI
 
         }
 
-        protected new void Redraw_PreRenderd()
+        public override void Redraw_PreRenderd()
         {
+            //Required for thread enforcement 
+            base.Redraw_PreRenderd();
+
             _preRenderdSurface.BeginChanges();
             _preRenderdSurface.Fill(_backgroundColor);
 
@@ -365,8 +387,10 @@ namespace Tortoise.Graphics.Rendering.GUI
 
             if (_showMarker && HasFocus)
             {
-                Point drawPos = new Point();
-                drawPos.X= _markerPosition;
+                Point drawPos = new Point()
+                {
+                    X = _markerPosition
+                };
                 //_graphics.SpriteBatch.DrawString(_fontInfo.Bitmap, "|", drawPos, XColor.Black);
                 FontManager.DrawString(_fontInfo, "|", drawPos, TextColor);
             }

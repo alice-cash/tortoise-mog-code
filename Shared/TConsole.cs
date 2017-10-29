@@ -248,7 +248,7 @@ namespace Tortoise.Shared
 
         public static ConsoleResponce ProcessLine(string line)
         {
-
+            line = line.Trim();
             lock (_varables)
             {
                 ConsoleResponce cr = new ConsoleResponce();

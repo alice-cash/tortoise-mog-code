@@ -24,8 +24,6 @@ namespace Tortoise.Graphics
         public static MainForm Instance;
 
         
-        public static bool ThreadsRunning { get; set; }
-
         public static Dictionary<string, Screen> AvailableScreens { get; private set; }
 
         public static Screen CurrentScreen { get; private set; }
@@ -36,14 +34,19 @@ namespace Tortoise.Graphics
 
         public event EventHandler ScreenChanged;
 
-        public MainForm(string ScreenTitle)
+        private System.Action _onCloseAction;
+        
+
+        public MainForm(string ScreenTitle, Size resolution, System.Action onClose)
         {
             if (Instance != null)
                 throw new Exception("Duplicate MainForm detected!");
 
+            this._onCloseAction = onClose;
             Instance = this;
             InitializeComponent();
             this.Text = ScreenTitle;
+            this.ClientSize = resolution;
         }
 
         public MainForm()
@@ -70,15 +73,14 @@ namespace Tortoise.Graphics
 
             CurrentScreen = AvailableScreens["MainMenu"];
             CurrentScreen.Load();
-            if (ScreenChanged != null)
-                ScreenChanged(this, EventArgs.Empty);
+            ScreenChanged?.Invoke(this, EventArgs.Empty);
 
             this.Show();
         }
 
         void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            ThreadsRunning = false;
+
         }
 
 
@@ -98,8 +100,7 @@ namespace Tortoise.Graphics
                 CurrentScreen = AvailableScreens[screenName];
 
                 CurrentScreen.Load();
-                if (ScreenChanged != null)
-                    ScreenChanged(this, EventArgs.Empty);
+                ScreenChanged?.Invoke(this, EventArgs.Empty);
 
             },null);
         }
@@ -120,6 +121,11 @@ namespace Tortoise.Graphics
             {
                 methodToInvoke(userData);
             }
+        }
+
+        private void MainForm_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
+        {
+            _onCloseAction?.Invoke();
         }
 
         /// <summary>

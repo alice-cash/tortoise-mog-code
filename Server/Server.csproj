@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tortoise.Server</RootNamespace>
     <AssemblyName>Tortoise.Server</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -38,9 +38,8 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="C5, Version=2.3.5280.26713, Culture=neutral, PublicKeyToken=282361b99ded7e8e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\C5.2.3.0.1\lib\net40\C5.dll</HintPath>
+    <Reference Include="C5, Version=2.5.0.0, Culture=neutral, PublicKeyToken=282361b99ded7e8e, processorArchitecture=MSIL">
+      <HintPath>..\packages\C5.2.5.3\lib\net45\C5.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\Shared\packages\EntityFramework.5.0.0\lib\net40\EntityFramework.dll</HintPath>
@@ -71,10 +70,8 @@
   <ItemGroup>
     <Compile Include="Collection\CachedData.cs" />
     <Compile Include="Collection\CachedDictionary.cs" />
-    <Compile Include="Console.cs" />
     <Compile Include="Data\Mysql.cs" />
     <Compile Include="Data\Tables\account.cs" />
-    <Compile Include="Exceptions\ModuleLoadException.cs" />
     <Compile Include="Exceptions\TortoiseFileException.cs" />
     <Compile Include="Exceptions\TortoiseFormatException.cs" />
     <Compile Include="Exceptions\TortoiseGeneralException.cs" />
@@ -110,6 +107,10 @@
     <Folder Include="Threading\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\StormLib\StormLib.csproj">
+      <Project>{78870f52-be99-459a-9a5a-48135d1cae81}</Project>
+      <Name>StormLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Shared\Shared.csproj">
       <Project>{da8ab668-ec4d-4ae2-8f6c-4783f5925564}</Project>
       <Name>Shared</Name>

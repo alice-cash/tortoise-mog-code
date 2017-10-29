@@ -31,6 +31,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Text;
 
+using StormLib;
+
 namespace Tortoise.Shared.IO
 {
     /// <summary>
@@ -60,7 +62,7 @@ namespace Tortoise.Shared.IO
             {
                 _array = array;
             }
-            init();
+            Init();
         }
 
         public ByteReader(byte[] array)
@@ -73,14 +75,14 @@ namespace Tortoise.Shared.IO
         {
             _array = new byte[length];
             stream.Read(_array, offset, length);
-            init();
+            Init();
         }
 
         public ByteReader(BinaryReader stream, int length)
         {
             _array = new byte[length];
             _array = stream.ReadBytes(length);
-            init();
+            Init();
         }
 
         public void LoadNewArray(byte[] array)
@@ -97,7 +99,7 @@ namespace Tortoise.Shared.IO
             return debug.ToArray();            
         }
 
-        private void init()
+        private void Init()
         {
             _encoder = Encoding.Unicode;
             _pos = 0;
